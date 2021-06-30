@@ -8,4 +8,5 @@ object Properties {
     var modsFolderField = "C:/Users/${nt.name}/AppData/Roaming/.minecraft/mods"
     var cacheFolderField = "C:/Users/${nt.name}/.openmodinstaller/cache"
     var useUnverifiedSources = true
+    var useNIO = true
 }
