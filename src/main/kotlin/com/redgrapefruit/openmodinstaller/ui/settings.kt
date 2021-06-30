@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +58,22 @@ fun createSettings(enabled: Boolean) {
                 value = cacheFolderField,
                 onValueChange = { new -> cacheFolderField = new },
                 textStyle = TextStyle(fontSize = 1.3.em)
+            )
+        }
+        Row {
+            // Use unverified distributions
+            // Label
+            Text(
+                text = "Use unverified distributions: ",
+                fontSize = 1.7.em,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(0.dp, 10.dp)
+            )
+            // Button
+            Checkbox(
+                checked = useUnverifiedSources,
+                onCheckedChange = { new -> useUnverifiedSources = new },
+                modifier = Modifier.padding(10.dp, 20.dp).scale(1.2f)
             )
         }
     }
