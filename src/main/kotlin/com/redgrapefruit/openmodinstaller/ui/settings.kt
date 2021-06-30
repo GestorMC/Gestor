@@ -3,14 +3,12 @@ package com.redgrapefruit.openmodinstaller.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -22,10 +20,6 @@ private val ntSystem = NTSystem()
 @Composable
 fun createSettings(enabled: Boolean) {
     if (!enabled) return
-
-    var modsFolderField by remember { mutableStateOf("C:/Users/${ntSystem.name}/AppData/Roaming/.minecraft/mods") }
-    var cacheFolderField by remember { mutableStateOf("C:/Users/${ntSystem.name}/.openmodinstaller/cache") }
-    var useUnverifiedSources by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.padding(40.dp, 75.dp)) {
         Row {
@@ -39,8 +33,8 @@ fun createSettings(enabled: Boolean) {
             )
             // Text Area
             TextField(
-                value = modsFolderField,
-                onValueChange = { new -> modsFolderField = new },
+                value = Properties.modsFolderField,
+                onValueChange = { new -> Properties.modsFolderField = new },
                 textStyle = TextStyle(fontSize = 1.3.em)
             )
         }
@@ -55,8 +49,8 @@ fun createSettings(enabled: Boolean) {
             )
             // Text Area
             TextField(
-                value = cacheFolderField,
-                onValueChange = { new -> cacheFolderField = new },
+                value = Properties.cacheFolderField,
+                onValueChange = { new -> Properties.cacheFolderField = new },
                 textStyle = TextStyle(fontSize = 1.3.em)
             )
         }
@@ -71,8 +65,8 @@ fun createSettings(enabled: Boolean) {
             )
             // Button
             Checkbox(
-                checked = useUnverifiedSources,
-                onCheckedChange = { new -> useUnverifiedSources = new },
+                checked = Properties.useUnverifiedSources,
+                onCheckedChange = { new -> Properties.useUnverifiedSources = new },
                 modifier = Modifier.padding(10.dp, 20.dp).scale(1.2f)
             )
         }
