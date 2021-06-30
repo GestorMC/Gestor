@@ -77,23 +77,3 @@ fun createUI() {
     }
 }
 
-@Composable
-fun createHome(enabled: Boolean) {
-    if (!enabled) return
-
-
-}
-
-@Composable
-fun createSettings(enabled: Boolean) {
-    if (!enabled) return
-
-    
-}
-
-@Composable
-fun createDiscovery(enabled: Boolean) {
-    if (!enabled) return
-
-
-}
