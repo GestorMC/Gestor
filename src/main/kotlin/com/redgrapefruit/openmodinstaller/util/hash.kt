@@ -2,7 +2,6 @@ package com.redgrapefruit.openmodinstaller.util
 
 import java.io.File
 import java.io.FileInputStream
-import java.lang.RuntimeException
 import java.security.MessageDigest
 
 enum class Hash(private val hashName: String) {

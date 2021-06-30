@@ -2,8 +2,8 @@
 
 package com.redgrapefruit.openmodinstaller.data.mod
 
-import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributedModLink
+import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import kotlinx.serialization.Serializable
 
 /**

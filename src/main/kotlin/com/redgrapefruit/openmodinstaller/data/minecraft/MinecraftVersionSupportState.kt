@@ -31,7 +31,8 @@ enum class MinecraftVersionSupportState(private val jsonName: String) : KSeriali
      */
     NoLongerSupported("NoLongerSupported");
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ModMinecraftVersionSupport", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("ModMinecraftVersionSupport", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): MinecraftVersionSupportState {
         val modMinecraftVersionSupport = decoder.decodeString()

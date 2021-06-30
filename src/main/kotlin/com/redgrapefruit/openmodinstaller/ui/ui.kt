@@ -43,7 +43,7 @@ fun createUI() {
                             fontWeight = FontWeight.Bold
                         )
                     },
-                    onClick =  {
+                    onClick = {
                         selectedTab = 1
                         homeEnabled = false
                         settingsEnabled = true

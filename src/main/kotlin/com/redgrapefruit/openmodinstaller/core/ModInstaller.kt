@@ -29,7 +29,8 @@ object ModInstaller {
         /**
          * The output path, local
          */
-        output: String) {
+        output: String
+    ) {
         if (Properties.useNIO) {
             var readableBC: ReadableByteChannel? = null
             var fileOS: FileOutputStream? = null
@@ -96,7 +97,8 @@ object ModInstaller {
         /**
          * Output path, local
          */
-        output: String) {
+        output: String
+    ) {
         // Init the File with the output path and (re)create it
         val outputFile = File(output)
         if (!outputFile.exists()) {
@@ -136,7 +138,8 @@ object ModInstaller {
         /**
          * Dependency mod ID. Specified if [isMain] = false
          */
-        depId: String = "") {
+        depId: String = ""
+    ) {
         val entry = releaseType.getEntry(isMain, mod, depId)
 
         downloadMod(entry.url, "$modsFolder/${if (isMain) mainId else depId}.jar")
