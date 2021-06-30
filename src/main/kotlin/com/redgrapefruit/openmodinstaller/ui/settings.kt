@@ -3,23 +3,28 @@ package com.redgrapefruit.openmodinstaller.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.sun.security.auth.module.NTSystem
 
+private val ntSystem = NTSystem()
+
 @Composable
 fun createSettings(enabled: Boolean) {
     if (!enabled) return
 
-    var modsFolderField by remember { mutableStateOf("C:/Users/${NTSystem().name}/AppData/Roaming/.minecraft/mods") }
+    var modsFolderField by remember { mutableStateOf("C:/Users/${ntSystem.name}/AppData/Roaming/.minecraft/mods") }
+    var cacheFolderField by remember { mutableStateOf("C:/Users/${ntSystem.name}/.openmodinstaller/cache") }
+    var useUnverifiedSources by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.padding(40.dp, 75.dp)) {
         Row {
@@ -35,7 +40,22 @@ fun createSettings(enabled: Boolean) {
             TextField(
                 value = modsFolderField,
                 onValueChange = { new -> modsFolderField = new },
-                modifier = Modifier,
+                textStyle = TextStyle(fontSize = 1.3.em)
+            )
+        }
+        Row(modifier = Modifier.padding(0.dp, 40.dp)) {
+            // Cache folder
+            // Label
+            Text(
+                text = "Cache folder: ",
+                fontSize = 1.7.em,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(0.dp, 10.dp)
+            )
+            // Text Area
+            TextField(
+                value = cacheFolderField,
+                onValueChange = { new -> cacheFolderField = new },
                 textStyle = TextStyle(fontSize = 1.3.em)
             )
         }
