@@ -15,7 +15,7 @@ fun createUI() {
     var settingsEnabled by remember { mutableStateOf(false) }
     var discoveryEnabled by remember { mutableStateOf(false) }
 
-    MaterialTheme {
+    MaterialTheme(colors = lightColors()) {
         TabRow(
             selectedTabIndex = selectedTab,
             tabs = {
