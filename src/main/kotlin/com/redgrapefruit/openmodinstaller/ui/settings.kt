@@ -21,6 +21,10 @@ private val ntSystem = NTSystem()
 fun createSettings(enabled: Boolean) {
     if (!enabled) return
 
+    var modsFolderField by remember { mutableStateOf(Properties.modsFolderField) }
+    var cacheFolderField by remember { mutableStateOf(Properties.cacheFolderField) }
+    var useUnverifiedSources by remember { mutableStateOf(Properties.useUnverifiedSources) }
+
     Column(modifier = Modifier.padding(40.dp, 75.dp)) {
         Row {
             // Mods folder
@@ -33,8 +37,8 @@ fun createSettings(enabled: Boolean) {
             )
             // Text Area
             TextField(
-                value = Properties.modsFolderField,
-                onValueChange = { new -> Properties.modsFolderField = new },
+                value = modsFolderField,
+                onValueChange = { new -> modsFolderField = new; Properties.modsFolderField = new },
                 textStyle = TextStyle(fontSize = 1.3.em)
             )
         }
@@ -49,8 +53,8 @@ fun createSettings(enabled: Boolean) {
             )
             // Text Area
             TextField(
-                value = Properties.cacheFolderField,
-                onValueChange = { new -> Properties.cacheFolderField = new },
+                value = cacheFolderField,
+                onValueChange = { new -> cacheFolderField = new; Properties.cacheFolderField = new },
                 textStyle = TextStyle(fontSize = 1.3.em)
             )
         }
@@ -65,8 +69,8 @@ fun createSettings(enabled: Boolean) {
             )
             // Button
             Checkbox(
-                checked = Properties.useUnverifiedSources,
-                onCheckedChange = { new -> Properties.useUnverifiedSources = new },
+                checked = useUnverifiedSources,
+                onCheckedChange = { new -> useUnverifiedSources = new; Properties.useUnverifiedSources = new },
                 modifier = Modifier.padding(10.dp, 20.dp).scale(1.2f)
             )
         }
