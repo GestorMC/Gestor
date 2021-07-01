@@ -1,8 +1,6 @@
 package com.redgrapefruit.openmodinstaller.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -233,6 +231,9 @@ fun createSettings(enabled: Boolean) {
                 }
             )
         }
+
+        Spacer(modifier = Modifier.height(30.dp))
+
         Row(modifier = Modifier.padding(0.dp, 10.dp)) {
             // Use unverified distributions
             // Label
