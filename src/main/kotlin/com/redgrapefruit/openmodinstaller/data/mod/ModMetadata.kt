@@ -1,5 +1,3 @@
-@file:Suppress("ArrayInDataClass")
-
 package com.redgrapefruit.openmodinstaller.data.mod
 
 import com.redgrapefruit.openmodinstaller.data.dependency.Dependency
@@ -18,9 +16,9 @@ data class ModMetadata(
      */
     val name: String = "Unknown Mod Name",
     /**
-     * An array of authors of the mod. Should not include contributors
+     * A list of authors of the mod. Should not include contributors
      */
-    val authors: Array<String> = arrayOf(),
+    val authors: List<String> = listOf(),
     /**
      * The mod's description
      */
@@ -36,19 +34,19 @@ data class ModMetadata(
     /**
      * A list of [MinecraftVersionSupport]'s for every currently available MC version
      */
-    val minecraft: Array<MinecraftVersionSupport> = arrayOf(),
+    val minecraft: List<MinecraftVersionSupport> = listOf(),
     /**
      * A list of supported [ModLoader]s.
      *
      * Most of the time, developers only support one [ModLoader], but there are some rare exceptions.
      */
-    val loaders: Array<ModLoader> = arrayOf(),
+    val loaders: List<ModLoader> = listOf(),
     /**
      * A list of [Incompatibility]s with this mod
      */
-    val incompatibilities: Array<Incompatibility> = arrayOf(),
+    val incompatibilities: List<Incompatibility> = listOf(),
     /**
      * A list of [Dependency]s for this mod
      */
-    val dependencies: Array<Dependency> = arrayOf()
+    val dependencies: List<Dependency> = listOf()
 )

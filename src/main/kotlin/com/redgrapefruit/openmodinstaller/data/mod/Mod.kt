@@ -1,5 +1,3 @@
-@file:Suppress("ArrayInDataClass")
-
 package com.redgrapefruit.openmodinstaller.data.mod
 
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributedModLink
@@ -20,9 +18,9 @@ data class Mod(
     /**
      * The [ReleaseEntry]s of the main mod
      */
-    val main: Array<ReleaseEntry> = arrayOf(),
+    val main: List<ReleaseEntry> = listOf(),
     /**
      * The [DependencyReleaseEntryWrapper]s (workaround) of the dependencies
      */
-    val dependencies: Array<DependencyReleaseEntryWrapper> = arrayOf()
+    val dependencies: List<DependencyReleaseEntryWrapper> = listOf()
 )

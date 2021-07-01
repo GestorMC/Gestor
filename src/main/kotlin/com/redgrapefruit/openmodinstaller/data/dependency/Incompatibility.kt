@@ -1,5 +1,3 @@
-@file:Suppress("ArrayInDataClass")
-
 package com.redgrapefruit.openmodinstaller.data.dependency
 
 import kotlinx.serialization.Serializable
@@ -23,8 +21,8 @@ data class Incompatibility(
      */
     val reason: String = "Reason Not Provided",
     /**
-     * If there are exceptions, fill this array with versions of the incompatible
+     * If there are exceptions, fill this list with versions of the incompatible
      * mod which are fully/partially compatible
      */
-    val compatibleVersions: Array<String> = arrayOf()
+    val compatibleVersions: List<String> = listOf()
 )

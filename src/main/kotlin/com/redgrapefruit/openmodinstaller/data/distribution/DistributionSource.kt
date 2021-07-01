@@ -1,5 +1,3 @@
-@file:Suppress("ArrayInDataClass")
-
 package com.redgrapefruit.openmodinstaller.data.distribution
 
 import kotlinx.serialization.Serializable
@@ -14,9 +12,9 @@ data class DistributionSource(
      */
     val meta: DistributionSourceMetadata,
     /**
-     * An array of [DistributedModLink]s that this source contains
+     * A list of [DistributedModLink]s that this source contains
      */
-    val mods: Array<DistributedModLink>
+    val mods: List<DistributedModLink>
 )
 
 
