@@ -2,6 +2,7 @@ package com.redgrapefruit.openmodinstaller.ui
 
 import com.sun.security.auth.module.NTSystem
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
+import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
 
 object Properties {
     private val nt = NTSystem()
@@ -32,4 +33,9 @@ object Properties {
      * Use autocomplete for connecting to distribution sources
      */
     var useAutocomplete = true
+
+    /**
+     * The target [ReleaseType] for downloading
+     */
+    var chosenReleaseType = ReleaseType.Stable
 }
