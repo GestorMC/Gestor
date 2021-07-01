@@ -27,4 +27,9 @@ object Properties {
      * If not, the caches will immediately be deleted after use.
      */
     var storeCaches = true
+
+    /**
+     * Use autocomplete for connecting to distribution sources
+     */
+    var useAutocomplete = true
 }

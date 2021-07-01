@@ -25,6 +25,7 @@ fun createSettings(enabled: Boolean) {
     var cacheFolderField by remember { mutableStateOf(Properties.cacheFolderField) }
     var useUnverifiedSources by remember { mutableStateOf(Properties.useUnverifiedSources) }
     var storeCaches by remember { mutableStateOf(Properties.storeCaches) }
+    var useAutocomplete by remember { mutableStateOf(Properties.useAutocomplete) }
 
     Column(modifier = Modifier.padding(40.dp, 75.dp)) {
         Row {
@@ -32,7 +33,7 @@ fun createSettings(enabled: Boolean) {
             // Label
             Text(
                 text = "Mods folder: ",
-                fontSize = 1.7.em,
+                fontSize = 1.4.em,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(0.dp, 10.dp)
             )
@@ -40,15 +41,15 @@ fun createSettings(enabled: Boolean) {
             TextField(
                 value = modsFolderField,
                 onValueChange = { new -> modsFolderField = new; Properties.modsFolderField = new },
-                textStyle = TextStyle(fontSize = 1.3.em)
+                textStyle = TextStyle(fontSize = 1.2.em)
             )
         }
-        Row(modifier = Modifier.padding(0.dp, 40.dp)) {
+        Row(modifier = Modifier.padding(0.dp, 20.dp)) {
             // Cache folder
             // Label
             Text(
                 text = "Cache folder: ",
-                fontSize = 1.7.em,
+                fontSize = 1.4.em,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(0.dp, 10.dp)
             )
@@ -56,7 +57,7 @@ fun createSettings(enabled: Boolean) {
             TextField(
                 value = cacheFolderField,
                 onValueChange = { new -> cacheFolderField = new; Properties.cacheFolderField = new },
-                textStyle = TextStyle(fontSize = 1.3.em)
+                textStyle = TextStyle(fontSize = 1.2.em)
             )
         }
         Row {
@@ -64,7 +65,7 @@ fun createSettings(enabled: Boolean) {
             // Label
             Text(
                 text = "Use unverified distributions: ",
-                fontSize = 1.7.em,
+                fontSize = 1.4.em,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(0.dp, 10.dp)
             )
@@ -72,15 +73,15 @@ fun createSettings(enabled: Boolean) {
             Checkbox(
                 checked = useUnverifiedSources,
                 onCheckedChange = { new -> useUnverifiedSources = new; Properties.useUnverifiedSources = new },
-                modifier = Modifier.padding(10.dp, 20.dp).scale(1.2f)
+                modifier = Modifier.padding(10.dp, 20.dp)
             )
         }
-        Row(modifier = Modifier.padding(0.dp, 10.dp)) {
+        Row {
             // Use NIO API to shorten download times
             // Label
             Text(
                 text = "Store cache: ",
-                fontSize = 1.7.em,
+                fontSize = 1.4.em,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(0.dp, 10.dp)
             )
@@ -88,7 +89,23 @@ fun createSettings(enabled: Boolean) {
             Checkbox(
                 checked = storeCaches,
                 onCheckedChange = { new -> storeCaches = new; Properties.storeCaches = new },
-                modifier = Modifier.padding(10.dp, 20.dp).scale(1.2f)
+                modifier = Modifier.padding(10.dp, 20.dp)
+            )
+        }
+        Row {
+            // Use autocomplete
+            // Label
+            Text(
+                text = "Use autocompletion: ",
+                fontSize = 1.4.em,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(0.dp, 10.dp)
+            )
+            // Button
+            Checkbox(
+                checked = useAutocomplete,
+                onCheckedChange = { new -> useAutocomplete = new; Properties.useAutocomplete = new },
+                modifier = Modifier.padding(10.dp, 20.dp)
             )
         }
     }
