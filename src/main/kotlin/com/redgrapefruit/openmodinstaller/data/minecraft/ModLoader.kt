@@ -10,33 +10,33 @@ import kotlinx.serialization.encoding.Encoder
 /**
  * A modloader used by the mod.
  */
-enum class ModLoader(private val jsonName: String) : KSerializer<ModLoader> {
+enum class ModLoader : KSerializer<ModLoader> {
     /**
      * The biggest and most famous modloader - Forge.
      */
-    MinecraftForge("MinecraftForge"),
+    MinecraftForge,
 
     /**
      * A lightweight, powerful and modern modloader - Fabric.
      */
-    FabricMC("FabricMC"),
+    FabricMC,
 
     /**
      * A fork of Fabric highly work-in-progress with lots of future promises.
      */
-    QuiltMC("QuiltMC");
+    QuiltMC;
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ModLoader", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): ModLoader {
         val modLoader = decoder.decodeString()
         values().forEach {
-            if (it.jsonName.equals(modLoader, true)) return it
+            if (it.name.equals(modLoader, true)) return it
         }
         return MinecraftForge
     }
 
     override fun serialize(encoder: Encoder, value: ModLoader) {
-        encoder.encodeString(value.jsonName)
+        encoder.encodeString(value.name)
     }
 }

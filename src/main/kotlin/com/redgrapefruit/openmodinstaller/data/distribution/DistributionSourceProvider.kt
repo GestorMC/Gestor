@@ -10,63 +10,63 @@ import kotlinx.serialization.encoding.Encoder
 /**
  * The [DistributionSourceProvider] determines the source where these distributions are hosted on the Internet
  */
-enum class DistributionSourceProvider(private val jsonName: String) : KSerializer<DistributionSourceProvider> {
+enum class DistributionSourceProvider : KSerializer<DistributionSourceProvider> {
     /**
      * GitHub host. The easiest way (creating a GitHub repository as the distribution source)
      */
-    GitHub("GitHub"),
+    GitHub,
 
     /**
      * GitLab host. An alternative way to [GitHub]
      */
-    GitLab("GitLab"),
+    GitLab,
 
     /**
      * BitBucket host. Another alternative to [GitHub] and [GitLab], though not recommended for production use
      */
-    BitBucket("BitBucket"),
+    BitBucket,
 
     /**
      * Mega. Host your files on the cloud publicly for download
      */
-    Mega("Mega"),
+    Mega,
 
     /**
      * Google Drive. A Google cloud alternative to Mega with better reputation
      */
-    GoogleDrive("GoogleDrive"),
+    GoogleDrive,
 
     /**
      * Microsoft OneDrive. Built-in cloud storage by Microsoft, integrated for Windows users
      */
-    OneDrive("OneDrive"),
+    OneDrive,
 
     /**
      * Dropbox. Another famous cloud storage, but with only 2GB in the Free plan
      */
-    Dropbox("Dropbox"),
+    Dropbox,
 
     /**
      * Any CDN service with your files
      */
-    CDN("CDN"),
+    CDN,
 
     /**
      * Any other website not listed here or your own website
      */
-    Custom("Custom");
+    Custom;
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("DistributionsWebsite", PrimitiveKind.STRING)
 
     override fun deserialize(decoder: Decoder): DistributionSourceProvider {
         val distributionsWebsite = decoder.decodeString()
         values().forEach {
-            if (it.jsonName.equals(distributionsWebsite, true)) return it
+            if (it.name.equals(distributionsWebsite, true)) return it
         }
         return Custom
     }
 
     override fun serialize(encoder: Encoder, value: DistributionSourceProvider) {
-        encoder.encodeString(value.jsonName)
+        encoder.encodeString(value.name)
     }
 }
