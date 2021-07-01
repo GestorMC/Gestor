@@ -31,57 +31,27 @@ object ModInstaller {
          */
         output: String
     ) {
-        if (Properties.useNIO) {
-            var readableBC: ReadableByteChannel? = null
-            var fileOS: FileOutputStream? = null
+        var readableBC: ReadableByteChannel? = null
+        var fileOS: FileOutputStream? = null
+        try {
+            val urlObj = URL(input)
+            readableBC = Channels.newChannel(urlObj.openStream())
+            fileOS = FileOutputStream(output)
+            fileOS.channel.transferFrom(readableBC, 0, Long.MAX_VALUE)
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
             try {
-                val urlObj = URL(input)
-                readableBC = Channels.newChannel(urlObj.openStream())
-                fileOS = FileOutputStream(output)
-                fileOS.channel.transferFrom(readableBC, 0, Long.MAX_VALUE)
-            } catch (e: MalformedURLException) {
-                e.printStackTrace()
+                fileOS?.close()
             } catch (e: IOException) {
                 e.printStackTrace()
-            } finally {
-                try {
-                    fileOS?.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-                try {
-                    readableBC?.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
             }
-        } else {
-            var bufferedIS: BufferedInputStream? = null
-            var fileOS: FileOutputStream? = null
             try {
-                val urlObj = URL(input)
-                bufferedIS = BufferedInputStream(urlObj.openStream())
-                fileOS = FileOutputStream(output)
-                var data = bufferedIS.read()
-                while (data != -1) {
-                    fileOS.write(data)
-                    data = bufferedIS.read()
-                }
-            } catch (e: MalformedURLException) {
-                e.printStackTrace()
+                readableBC?.close()
             } catch (e: IOException) {
                 e.printStackTrace()
-            } finally {
-                try {
-                    fileOS?.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-                try {
-                    bufferedIS?.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
             }
         }
     }

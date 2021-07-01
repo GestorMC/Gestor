@@ -24,7 +24,7 @@ fun createSettings(enabled: Boolean) {
     var modsFolderField by remember { mutableStateOf(Properties.modsFolderField) }
     var cacheFolderField by remember { mutableStateOf(Properties.cacheFolderField) }
     var useUnverifiedSources by remember { mutableStateOf(Properties.useUnverifiedSources) }
-    var useNIO by remember { mutableStateOf(Properties.useNIO) }
+    var storeCaches by remember { mutableStateOf(Properties.storeCaches) }
 
     Column(modifier = Modifier.padding(40.dp, 75.dp)) {
         Row {
@@ -79,15 +79,15 @@ fun createSettings(enabled: Boolean) {
             // Use NIO API to shorten download times
             // Label
             Text(
-                text = "Use NIO for downloading: ",
+                text = "Store cache: ",
                 fontSize = 1.7.em,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(0.dp, 10.dp)
             )
             // Button
             Checkbox(
-                checked = useNIO,
-                onCheckedChange = { new -> useNIO = new; Properties.useNIO = new },
+                checked = storeCaches,
+                onCheckedChange = { new -> storeCaches = new; Properties.storeCaches = new },
                 modifier = Modifier.padding(10.dp, 20.dp).scale(1.2f)
             )
         }

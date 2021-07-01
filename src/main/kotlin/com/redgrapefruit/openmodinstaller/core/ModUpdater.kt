@@ -1,6 +1,7 @@
 package com.redgrapefruit.openmodinstaller.core
 
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.ui.Properties
 import com.redgrapefruit.openmodinstaller.util.Hash
 import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.Json
@@ -54,6 +55,12 @@ object ModUpdater {
         currentVersionInput.close()
         // Compare
         val areVersionsDifferent = currentVersion == entry.version
+
+        // Delete caches if that option is enabled in the settings
+        if (!Properties.storeCaches) {
+            File(latestJarPath).delete()
+            File(unjarPath).deleteRecursively()
+        }
 
         // If any of these comparisons is successful, updates are available
         return areChecksumsDifferent || areVersionsDifferent
