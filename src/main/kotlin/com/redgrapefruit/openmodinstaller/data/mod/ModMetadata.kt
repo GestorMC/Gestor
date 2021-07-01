@@ -26,9 +26,9 @@ data class ModMetadata(
      */
     val description: String = "No Description Provided",
     /**
-     * A URL to the sources repository, GitHub, GitLab or BitBucket
+     * List of [Link]s associated with this mod
      */
-    val sources: String = "Unknown Sources",
+    val links: List<Link> = listOf(),
     /**
      * A [ModLicense] for this mod
      */
