@@ -21,11 +21,17 @@ data class ReleaseEntry(
      * The latest version of the mod required for the updating system to work.
      *
      * You can put ~ as the value if the version isn't specified in `fabric.mod.json`,
-     * which disables the updating system.
+     * which disables the updating system except for the SHA-512 check.
      *
      * Modders, **for the love of god, put the goddamn version** into the `fabric.mod.json`
      */
-    val version: String = "~"
+    val version: String = "~",
+    /**
+     * The changelog for this release.
+     *
+     * You can provide the text with the changelog
+     */
+    val changelog: String = ""
 )
 
 /**
