@@ -26,10 +26,6 @@ data class ModMetadata(
      */
     val description: String = "No Description Provided",
     /**
-     * The current [ModDevelopmentState] assigned by the mod's developer.
-     */
-    val state: ModDevelopmentState = ModDevelopmentState.Ready,
-    /**
      * A URL to the sources repository, GitHub, GitLab or BitBucket
      */
     val sources: String = "Unknown Sources",
