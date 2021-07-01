@@ -19,12 +19,5 @@ data class MinecraftVersionSupport(
     /**
      * The [MinecraftVersionSupportState] for this release.
      */
-    val support: MinecraftVersionSupportState = MinecraftVersionSupportState.Active,
-    /**
-     * The feature parity of this release with the max updated release in percents.
-     *
-     * For instance, 100% feature parity means that all possible features and updates
-     * have been delivered into this release.
-     */
-    val featureParity: Int = 100
+    val support: MinecraftVersionSupportState = MinecraftVersionSupportState.Active
 )
