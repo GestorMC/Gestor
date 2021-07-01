@@ -7,7 +7,7 @@ import java.io.FileInputStream
 import kotlin.random.Random
 
 object ModJSONDiscovery {
-    private val database: MutableSet<DistributionSource> = mutableSetOf()
+    val database: MutableSet<DistributionSource> = mutableSetOf()
 
     fun discover(url: String, cacheFolderPath: String) {
         // Download the JSON
