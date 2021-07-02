@@ -62,14 +62,17 @@ fun createDiscovery(enabled: Boolean) {
             )
         }
         ModJSONDiscovery.database.forEach { source ->
+            var expanded by remember { mutableStateOf(false) }
+
             Row(modifier = Modifier.padding(0.dp, 10.dp)) {
                 Text(
                     text = source.meta.name,
+                    fontWeight = FontWeight.SemiBold,
                     fontSize = 1.2.em
                 )
                 Button(
                     onClick = {
-
+                        expanded = !expanded
                     },
                     content = {
                         Image(
@@ -91,6 +94,30 @@ fun createDiscovery(enabled: Boolean) {
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red, contentColor = Color.White),
                     modifier = Modifier.padding(15.dp, 0.dp)
                 )
+            }
+
+            if (expanded) {
+                Row {
+                    Text(
+                        text = "Name: ",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(source.meta.name)
+                }
+                Row {
+                    Text(
+                        text = "Host: ",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(source.meta.host)
+                }
+                Row {
+                    Text(
+                        text = "Provider: ",
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(source.meta.provider.name)
+                }
             }
         }
     }
