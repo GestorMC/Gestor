@@ -1,9 +1,7 @@
 package com.redgrapefruit.openmodinstaller.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -12,9 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
@@ -73,12 +73,12 @@ fun createDiscovery(enabled: Boolean) {
                     },
                     content = {
                         Image(
-                            bitmap = imageResource("nav_arrow.png"),
+                            painter = svgResource("arrow.svg"),
                             contentDescription = null,
-                            contentScale = ContentScale.FillBounds
+                            modifier = Modifier.width(20.dp).height(20.dp)
                         )
                     },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
+                    colors = ButtonDefaults.textButtonColors(backgroundColor = Color.White),
                     modifier = Modifier.padding(10.dp, 0.dp)
                 )
                 Button(
