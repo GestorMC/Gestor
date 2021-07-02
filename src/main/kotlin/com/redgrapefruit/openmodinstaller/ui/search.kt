@@ -42,6 +42,15 @@ fun createSearch(enabled: Boolean) {
 
     val results = ModJSONDiscovery.searchMods(searchField)
 
+    if (results.isEmpty()) {
+        Row(modifier = Modifier.padding(300.dp, 200.dp)) {
+            Text(
+                text = "No results",
+                fontSize = 1.6.em
+            )
+        }
+    }
+
     results.forEach { mod ->
         Row(modifier = Modifier.padding(40.dp, 170.dp)) {
             Text(mod.meta.name)
