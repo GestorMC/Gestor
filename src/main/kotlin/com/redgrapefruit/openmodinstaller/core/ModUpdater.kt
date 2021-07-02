@@ -2,7 +2,7 @@ package com.redgrapefruit.openmodinstaller.core
 
 import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
-import com.redgrapefruit.openmodinstaller.util.Properties
+import com.redgrapefruit.openmodinstaller.util.Settings
 import com.redgrapefruit.openmodinstaller.util.Hash
 import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.jsonObject
@@ -57,7 +57,7 @@ object ModUpdater {
         val areVersionsDifferent = currentVersion == entry.version
 
         // Delete caches if that option is enabled in the settings
-        if (!Properties.storeCaches) {
+        if (!Settings.storeCaches) {
             File(latestJarPath).delete()
             File(unjarPath).deleteRecursively()
         }

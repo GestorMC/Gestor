@@ -3,7 +3,7 @@ package com.redgrapefruit.openmodinstaller.core
 import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
-import com.redgrapefruit.openmodinstaller.util.Properties
+import com.redgrapefruit.openmodinstaller.util.Settings
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
@@ -127,7 +127,7 @@ object ModJSONDiscovery {
      */
     private fun initLocal(): File {
         // Check if the folder exists, create it
-        val installerFolder = File(File(Properties.cacheFolderField).parent)
+        val installerFolder = File(File(Settings.cacheFolderField).parent)
         if (!installerFolder.exists()) installerFolder.mkdirs()
         // Check if the source file exists, create it
         val sourceFile = File("$installerFolder/sources.json")
@@ -151,7 +151,7 @@ object ModJSONDiscovery {
 
         source.mods.forEach { link ->
             // Download
-            val path = "${Properties.cacheFolderField}/src_${Random.nextInt(Int.MAX_VALUE)}"
+            val path = "${Settings.cacheFolderField}/src_${Random.nextInt(Int.MAX_VALUE)}"
             File(path).createNewFile()
             ModInstaller.downloadFile(link.modJsonURL, path)
             // Add to paths

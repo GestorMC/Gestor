@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.core.ModJSONDiscovery
-import com.redgrapefruit.openmodinstaller.util.Properties
+import com.redgrapefruit.openmodinstaller.util.Settings
 
 @Composable
 fun createDiscovery(enabled: Boolean) {
@@ -45,7 +45,7 @@ fun createDiscovery(enabled: Boolean) {
             // Submit button
             Button(
                 onClick = {
-                    ModJSONDiscovery.discover(urlFieldText, Properties.cacheFolderField, true)
+                    ModJSONDiscovery.discover(urlFieldText, Settings.cacheFolderField, true)
                 },
                 content = {
                     Text("Submit")

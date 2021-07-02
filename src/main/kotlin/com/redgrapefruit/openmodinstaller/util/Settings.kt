@@ -4,7 +4,7 @@ import com.sun.security.auth.module.NTSystem
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
 
-object Properties {
+object Settings {
     val nt = NTSystem()
 
     /**

@@ -3,7 +3,7 @@ package com.redgrapefruit.openmodinstaller
 import androidx.compose.desktop.Window
 import androidx.compose.ui.unit.IntSize
 import com.redgrapefruit.openmodinstaller.core.ModJSONDiscovery
-import com.redgrapefruit.openmodinstaller.util.Properties
+import com.redgrapefruit.openmodinstaller.util.Settings
 import com.redgrapefruit.openmodinstaller.ui.createUI
 import kotlinx.serialization.json.Json
 
@@ -13,7 +13,7 @@ val JSON = Json {
 
 fun main() = Window(resizable = false, size = IntSize(850, 650)) {
     // Init discovery
-    ModJSONDiscovery.load(Properties.cacheFolderField)
+    ModJSONDiscovery.load(Settings.cacheFolderField)
 
     createUI()
 }

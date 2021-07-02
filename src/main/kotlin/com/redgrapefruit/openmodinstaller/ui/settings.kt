@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
-import com.redgrapefruit.openmodinstaller.util.Properties
+import com.redgrapefruit.openmodinstaller.util.Settings
 import com.sun.security.auth.module.NTSystem
 
 private val ntSystem = NTSystem()
@@ -20,11 +20,11 @@ private val ntSystem = NTSystem()
 fun createSettings(enabled: Boolean) {
     if (!enabled) return
 
-    var modsFolderField by remember { mutableStateOf(Properties.modsFolderField) }
-    var cacheFolderField by remember { mutableStateOf(Properties.cacheFolderField) }
-    var useUnverifiedSources by remember { mutableStateOf(Properties.useUnverifiedSources) }
-    var storeCaches by remember { mutableStateOf(Properties.storeCaches) }
-    var useAutocomplete by remember { mutableStateOf(Properties.useAutocomplete) }
+    var modsFolderField by remember { mutableStateOf(Settings.modsFolderField) }
+    var cacheFolderField by remember { mutableStateOf(Settings.cacheFolderField) }
+    var useUnverifiedSources by remember { mutableStateOf(Settings.useUnverifiedSources) }
+    var storeCaches by remember { mutableStateOf(Settings.storeCaches) }
+    var useAutocomplete by remember { mutableStateOf(Settings.useAutocomplete) }
     var releaseTypeDropdownExpanded by remember { mutableStateOf(false) }
     var releaseTypeDropdownBoldItem by remember { mutableStateOf(1) }
 
@@ -41,7 +41,7 @@ fun createSettings(enabled: Boolean) {
             // Text Area
             TextField(
                 value = modsFolderField,
-                onValueChange = { new -> modsFolderField = new; Properties.modsFolderField = new },
+                onValueChange = { new -> modsFolderField = new; Settings.modsFolderField = new },
                 textStyle = TextStyle(fontSize = 1.2.em)
             )
         }
@@ -57,7 +57,7 @@ fun createSettings(enabled: Boolean) {
             // Text Area
             TextField(
                 value = cacheFolderField,
-                onValueChange = { new -> cacheFolderField = new; Properties.cacheFolderField = new },
+                onValueChange = { new -> cacheFolderField = new; Settings.cacheFolderField = new },
                 textStyle = TextStyle(fontSize = 1.2.em)
             )
         }
@@ -88,7 +88,7 @@ fun createSettings(enabled: Boolean) {
                 content = {
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.LTS
+                            Settings.chosenReleaseType = ReleaseType.LTS
                             releaseTypeDropdownBoldItem = 0
                         },
                         content = {
@@ -101,7 +101,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.Stable
+                            Settings.chosenReleaseType = ReleaseType.Stable
                             releaseTypeDropdownBoldItem = 1
                         },
                         content = {
@@ -114,7 +114,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.RC
+                            Settings.chosenReleaseType = ReleaseType.RC
                             releaseTypeDropdownBoldItem = 2
                         },
                         content = {
@@ -127,7 +127,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.Preview
+                            Settings.chosenReleaseType = ReleaseType.Preview
                             releaseTypeDropdownBoldItem = 3
                         },
                         content = {
@@ -140,7 +140,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.EAP
+                            Settings.chosenReleaseType = ReleaseType.EAP
                             releaseTypeDropdownBoldItem = 4
                         },
                         content = {
@@ -153,7 +153,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.Beta
+                            Settings.chosenReleaseType = ReleaseType.Beta
                             releaseTypeDropdownBoldItem = 5
                         },
                         content = {
@@ -166,7 +166,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.Alpha
+                            Settings.chosenReleaseType = ReleaseType.Alpha
                             releaseTypeDropdownBoldItem = 6
                         },
                         content = {
@@ -179,7 +179,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.BetaPreview
+                            Settings.chosenReleaseType = ReleaseType.BetaPreview
                             releaseTypeDropdownBoldItem = 7
                         },
                         content = {
@@ -192,7 +192,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.AlphaPreview
+                            Settings.chosenReleaseType = ReleaseType.AlphaPreview
                             releaseTypeDropdownBoldItem = 8
                         },
                         content = {
@@ -205,7 +205,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.Snapshot
+                            Settings.chosenReleaseType = ReleaseType.Snapshot
                             releaseTypeDropdownBoldItem = 9
                         },
                         content = {
@@ -218,7 +218,7 @@ fun createSettings(enabled: Boolean) {
                     )
                     DropdownMenuItem(
                         onClick = {
-                            Properties.chosenReleaseType = ReleaseType.Nightly
+                            Settings.chosenReleaseType = ReleaseType.Nightly
                             releaseTypeDropdownBoldItem = 10
                         },
                         content = {
@@ -247,7 +247,7 @@ fun createSettings(enabled: Boolean) {
             // Button
             Checkbox(
                 checked = useUnverifiedSources,
-                onCheckedChange = { new -> useUnverifiedSources = new; Properties.useUnverifiedSources = new },
+                onCheckedChange = { new -> useUnverifiedSources = new; Settings.useUnverifiedSources = new },
                 modifier = Modifier.padding(10.dp, 20.dp)
             )
         }
@@ -263,7 +263,7 @@ fun createSettings(enabled: Boolean) {
             // Button
             Checkbox(
                 checked = storeCaches,
-                onCheckedChange = { new -> storeCaches = new; Properties.storeCaches = new },
+                onCheckedChange = { new -> storeCaches = new; Settings.storeCaches = new },
                 modifier = Modifier.padding(10.dp, 20.dp)
             )
         }
@@ -279,7 +279,7 @@ fun createSettings(enabled: Boolean) {
             // Button
             Checkbox(
                 checked = useAutocomplete,
-                onCheckedChange = { new -> useAutocomplete = new; Properties.useAutocomplete = new },
+                onCheckedChange = { new -> useAutocomplete = new; Settings.useAutocomplete = new },
                 modifier = Modifier.padding(10.dp, 20.dp)
             )
         }
