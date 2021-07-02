@@ -1,6 +1,8 @@
 package com.redgrapefruit.openmodinstaller.core
 
+import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
+import com.redgrapefruit.openmodinstaller.data.mod.Mod
 import com.redgrapefruit.openmodinstaller.ui.Properties
 import kotlinx.serialization.json.*
 import java.io.File
@@ -10,6 +12,7 @@ import kotlin.random.Random
 
 object ModJSONDiscovery {
     val database: MutableMap<String, DistributionSource> = mutableMapOf()
+    val search: MutableMap<DistributionSource, MutableList<String>> = mutableMapOf()
 
     /**
      * Loads all user-defined sources
@@ -18,7 +21,7 @@ object ModJSONDiscovery {
         val sourceFile = initLocal()
         // Read everything from the JSON
         FileInputStream(sourceFile).use { stream ->
-            val json = Json.parseToJsonElement(stream.readBytes().decodeToString())
+            val json = JSON.parseToJsonElement(stream.readBytes().decodeToString())
             json.jsonObject.entries.forEach { entry ->
                 discover(entry.value.jsonPrimitive.content, cacheFolderPath, false)
             }
@@ -35,14 +38,14 @@ object ModJSONDiscovery {
         ModInstaller.downloadFile(url, cachePath)
         // Deserialize and add into the database
         FileInputStream(cachePath).use {
-            val source = Json.decodeFromString(DistributionSource.serializer(), it.readBytes().decodeToString())
+            val source = JSON.decodeFromString(DistributionSource.serializer(), it.readBytes().decodeToString())
             database.put(url, source)
         }
         // Try to add to the local DB if needed
         if (tryAdd) {
             val sourceFile = initLocal()
             FileInputStream(sourceFile).use { stream ->
-                val input = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                val input = JSON.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
                 val output = buildJsonObject {
                     // Add all + the new entry
                     input.entries.forEach { entry ->
@@ -61,7 +64,7 @@ object ModJSONDiscovery {
     /**
      * Removes a source from the local DB and runtime DB
      */
-    fun remove(url: String, cacheFolderPath: String) {
+    fun remove(url: String) {
         // Remove from local
         database.forEach { (key, _) ->
             if (key == url) {
@@ -72,7 +75,7 @@ object ModJSONDiscovery {
         val sourceFile = initLocal()
 
         FileInputStream(sourceFile).use { stream ->
-            val input = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+            val input = JSON.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
             val output = buildJsonObject {
                 input.entries.forEach { entry ->
                     // Add all except for the deletion
@@ -89,7 +92,34 @@ object ModJSONDiscovery {
     }
 
     /**
-     * Initializes the local DB with sources
+     *
+     */
+    fun searchMods(search: String): List<Mod> {
+        val results = mutableListOf<Mod>()
+
+        // Cache mods if not already in cache
+        database.forEach { (_, source) ->
+            if (!ModJSONDiscovery.search.containsKey(source)) {
+                cacheMods(source)
+            }
+
+            // Read all caches for the source
+            ModJSONDiscovery.search[source]?.forEach { path ->
+                FileInputStream(path).use { stream ->
+                    // Decode the JSON and add to the results if matching
+                    val mod = JSON.decodeFromString(Mod.serializer(), stream.readBytes().decodeToString())
+                    if (mod.meta.name.contains(search, true)) {
+                        results += mod
+                    }
+                }
+            }
+        }
+
+        return results
+    }
+
+    /**
+     * Initializes the local storage
      */
     private fun initLocal(): File {
         // Check if the folder exists, create it
@@ -105,5 +135,26 @@ object ModJSONDiscovery {
             }
         }
         return sourceFile
+    }
+
+    /**
+     * Puts all mods from the source into cache
+     */
+    private fun cacheMods(source: DistributionSource) {
+        initLocal()
+
+        val paths = mutableListOf<String>()
+
+        source.mods.forEach { link ->
+            // Download
+            val path = "${Properties.cacheFolderField}/src_${Random.nextInt(Int.MAX_VALUE)}"
+            File(path).createNewFile()
+            ModInstaller.downloadFile(link.modJsonURL, path)
+            // Add to paths
+            paths.add(path)
+        }
+
+        // Add all to runtime search cache
+        search[source] = paths
     }
 }

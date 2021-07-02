@@ -5,6 +5,11 @@ import androidx.compose.ui.unit.IntSize
 import com.redgrapefruit.openmodinstaller.core.ModJSONDiscovery
 import com.redgrapefruit.openmodinstaller.ui.Properties
 import com.redgrapefruit.openmodinstaller.ui.createUI
+import kotlinx.serialization.json.Json
+
+val JSON = Json {
+    ignoreUnknownKeys = true
+}
 
 fun main() = Window(resizable = false, size = IntSize(850, 650)) {
     // Init discovery

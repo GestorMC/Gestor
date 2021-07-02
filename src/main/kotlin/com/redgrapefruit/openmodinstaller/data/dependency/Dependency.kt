@@ -1,5 +1,6 @@
 package com.redgrapefruit.openmodinstaller.data.dependency
 
+import com.redgrapefruit.openmodinstaller.data.mod.Link
 import kotlinx.serialization.Serializable
 
 /**
@@ -17,13 +18,9 @@ data class Dependency(
      */
     val id: String = "Unknown Mod ID",
     /**
-     * The CurseForge link of the dependency
+     * A list of external links to the dependency
      */
-    val curseforge: String = "CurseForge Not Provided",
-    /**
-     * The sources of the dependency, GitHub, GitLab or BitBucket
-     */
-    val sources: String = "Sources Not Provided",
+    val links: List<Link> = listOf(),
     /**
      * Is the dependency made by a third-party author
      */

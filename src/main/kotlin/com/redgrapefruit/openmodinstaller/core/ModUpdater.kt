@@ -1,10 +1,10 @@
 package com.redgrapefruit.openmodinstaller.core
 
+import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
 import com.redgrapefruit.openmodinstaller.ui.Properties
 import com.redgrapefruit.openmodinstaller.util.Hash
 import com.redgrapefruit.openmodinstaller.util.unjar
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
@@ -49,7 +49,7 @@ object ModUpdater {
         unjar(latestJarPath, unjarPath)
         // Extract the current version
         val currentVersionInput = FileInputStream("$unjarPath/fabric.mod.json")
-        val currentVersion = Json
+        val currentVersion = JSON
             .parseToJsonElement(currentVersionInput.readBytes().decodeToString())
             .jsonObject["version"]?.jsonPrimitive?.content!!
         currentVersionInput.close()

@@ -5,6 +5,4 @@ import androidx.compose.runtime.Composable
 @Composable
 fun createHome(enabled: Boolean) {
     if (!enabled) return
-
-    // WIP
 }

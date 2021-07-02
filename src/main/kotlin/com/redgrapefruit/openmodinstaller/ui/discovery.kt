@@ -82,11 +82,11 @@ fun createDiscovery(enabled: Boolean) {
                         )
                     },
                     colors = ButtonDefaults.textButtonColors(backgroundColor = Color.White),
-                    modifier = Modifier.padding(10.dp, 0.dp)
+                    modifier = Modifier.padding(10.dp, 0.dp).scale(0.8f)
                 )
                 Button(
                     onClick = {
-                        ModJSONDiscovery.remove(url, Properties.cacheFolderField)
+                        ModJSONDiscovery.remove(url)
                     },
                     content = {
                         Text("Remove")

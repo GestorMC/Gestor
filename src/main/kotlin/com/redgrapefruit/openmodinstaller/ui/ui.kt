@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 fun createUI() {
     var selectedTab by remember { mutableStateOf(0) }
     var homeEnabled by remember { mutableStateOf(true) }
+    var searchEnabled by remember { mutableStateOf(false) }
     var settingsEnabled by remember { mutableStateOf(false) }
     var discoveryEnabled by remember { mutableStateOf(false) }
 
@@ -30,10 +31,28 @@ fun createUI() {
                     onClick = {
                         selectedTab = 0
                         homeEnabled = true
+                        searchEnabled = false
                         settingsEnabled = false
                         discoveryEnabled = false
                     },
                     selected = selectedTab == 0
+                )
+                Tab(
+                    content = {
+                        Text(
+                            text = "Search",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    onClick = {
+                        selectedTab = 1
+                        homeEnabled = false
+                        searchEnabled = true
+                        settingsEnabled = false
+                        discoveryEnabled = false
+                    },
+                    selected = selectedTab == 1
                 )
                 Tab(
                     content = {
@@ -44,12 +63,13 @@ fun createUI() {
                         )
                     },
                     onClick = {
-                        selectedTab = 1
+                        selectedTab = 2
                         homeEnabled = false
+                        searchEnabled = false
                         settingsEnabled = true
                         discoveryEnabled = false
                     },
-                    selected = selectedTab == 1
+                    selected = selectedTab == 2
                 )
                 Tab(
                     content = {
@@ -60,18 +80,20 @@ fun createUI() {
                         )
                     },
                     onClick = {
-                        selectedTab = 2
+                        selectedTab = 3
                         homeEnabled = false
+                        searchEnabled = false
                         settingsEnabled = false
                         discoveryEnabled = true
                     },
-                    selected = selectedTab == 2
+                    selected = selectedTab == 3
                 )
             },
             modifier = Modifier.height(35.dp)
         )
 
         createHome(homeEnabled)
+        createSearch(searchEnabled)
         createSettings(settingsEnabled)
         createDiscovery(discoveryEnabled)
     }
