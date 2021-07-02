@@ -61,7 +61,7 @@ fun createDiscovery(enabled: Boolean) {
                 fontWeight = FontWeight.SemiBold
             )
         }
-        ModJSONDiscovery.database.forEach { (_, source) ->
+        ModJSONDiscovery.database.forEach { (url, source) ->
             var expanded by remember { mutableStateOf(false) }
 
             Row(modifier = Modifier.padding(0.dp, 10.dp)) {
@@ -86,7 +86,7 @@ fun createDiscovery(enabled: Boolean) {
                 )
                 Button(
                     onClick = {
-                        ModJSONDiscovery.remove(urlFieldText, Properties.cacheFolderField)
+                        ModJSONDiscovery.remove(url, Properties.cacheFolderField)
                     },
                     content = {
                         Text("Remove")
