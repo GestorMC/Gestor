@@ -11,9 +11,12 @@ val JSON = Json {
     ignoreUnknownKeys = true
 }
 
-fun main() = Window(resizable = false, size = IntSize(850, 650)) {
-    // Init discovery
+fun main() {
+    // Init discovery and settings
     ModJSONDiscovery.load(Settings.cacheFolderField)
-
-    createUI()
+    Settings.load()
+    // Launch Window
+    Window(resizable = false, size = IntSize(850, 650), onDismissRequest = { Settings.save() }) {
+        createUI()
+    }
 }
