@@ -3,7 +3,7 @@ package com.redgrapefruit.openmodinstaller.core
 import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
-import com.redgrapefruit.openmodinstaller.ui.Properties
+import com.redgrapefruit.openmodinstaller.util.Properties
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream

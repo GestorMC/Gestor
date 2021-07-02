@@ -1,4 +1,4 @@
-package com.redgrapefruit.openmodinstaller.ui
+package com.redgrapefruit.openmodinstaller.util
 
 import com.sun.security.auth.module.NTSystem
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource

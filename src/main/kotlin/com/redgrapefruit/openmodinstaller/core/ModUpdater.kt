@@ -2,7 +2,7 @@ package com.redgrapefruit.openmodinstaller.core
 
 import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
-import com.redgrapefruit.openmodinstaller.ui.Properties
+import com.redgrapefruit.openmodinstaller.util.Properties
 import com.redgrapefruit.openmodinstaller.util.Hash
 import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.jsonObject
