@@ -25,6 +25,9 @@ object ModJSONDiscovery {
         }
     }
 
+    /**
+     * Discovers a new source and adds it to the local DB if needed
+     */
     fun discover(url: String, cacheFolderPath: String, tryAdd: Boolean) {
         // Download the JSON
         val cachePath = "$cacheFolderPath/dsc_json_${Random.nextInt(Integer.MAX_VALUE)}"
@@ -53,9 +56,12 @@ object ModJSONDiscovery {
         }
     }
 
+    /**
+     * Initializes the local DB with sources
+     */
     private fun initLocal(): File {
         // Check if the folder exists, create it
-        val installerFolder = File("C:/Users/${Properties.nt.name}/.openmodinstaller")
+        val installerFolder = File(File(Properties.cacheFolderField).parent)
         if (!installerFolder.exists()) installerFolder.mkdirs()
         // Check if the source file exists, create it
         val sourceFile = File("$installerFolder/sources.json")
