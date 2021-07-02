@@ -9,7 +9,7 @@ import java.io.FileOutputStream
 import kotlin.random.Random
 
 object ModJSONDiscovery {
-    val database: MutableSet<DistributionSource> = mutableSetOf()
+    val database: MutableMap<String, DistributionSource> = mutableMapOf()
 
     /**
      * Loads all user-defined sources
@@ -36,7 +36,7 @@ object ModJSONDiscovery {
         // Deserialize and add into the database
         FileInputStream(cachePath).use {
             val source = Json.decodeFromString(DistributionSource.serializer(), it.readBytes().decodeToString())
-            database += source
+            database.put(url, source)
         }
         // Try to add to the local DB if needed
         if (tryAdd) {
@@ -44,14 +44,46 @@ object ModJSONDiscovery {
             FileInputStream(sourceFile).use { stream ->
                 val input = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
                 val output = buildJsonObject {
+                    // Add all + the new entry
                     input.entries.forEach { entry ->
                         put(entry.key, entry.value)
                     }
                     put(Random.nextInt(Int.MAX_VALUE).toString(), url)
                 }
+                // Rewrite
                 FileOutputStream(sourceFile).use { outStream ->
                     outStream.write(Json.encodeToString(JsonObject.serializer(), output).encodeToByteArray())
                 }
+            }
+        }
+    }
+
+    /**
+     * Removes a source from the local DB and runtime DB
+     */
+    fun remove(url: String, cacheFolderPath: String) {
+        // Remove from local
+        database.forEach { (key, _) ->
+            if (key == url) {
+                database.remove(key)
+            }
+        }
+
+        val sourceFile = initLocal()
+
+        FileInputStream(sourceFile).use { stream ->
+            val input = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+            val output = buildJsonObject {
+                input.entries.forEach { entry ->
+                    // Add all except for the deletion
+                    if (entry.value.jsonPrimitive.content != url) {
+                        put(entry.key, entry.value)
+                    }
+                }
+            }
+            // Rewrite
+            FileOutputStream(sourceFile).use { outStream ->
+                outStream.write(Json.encodeToString(JsonObject.serializer(), output).encodeToByteArray())
             }
         }
     }
