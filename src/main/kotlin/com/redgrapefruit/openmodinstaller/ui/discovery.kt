@@ -12,13 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.core.ModJSONDiscovery
+import com.redgrapefruit.openmodinstaller.util.Properties
 
 @Composable
 fun createDiscovery(enabled: Boolean) {

@@ -105,6 +105,10 @@ object ModJSONDiscovery {
 
             // Read all caches for the source
             ModJSONDiscovery.search[source]?.forEach { path ->
+                // Safety in case of cache deletion
+                val file = File(path)
+                if (!file.exists()) cacheMods(source)
+
                 FileInputStream(path).use { stream ->
                     // Decode the JSON and add to the results if matching
                     val mod = JSON.decodeFromString(Mod.serializer(), stream.readBytes().decodeToString())

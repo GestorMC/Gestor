@@ -11,6 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
+import com.redgrapefruit.openmodinstaller.util.Properties
 import com.sun.security.auth.module.NTSystem
 
 private val ntSystem = NTSystem()

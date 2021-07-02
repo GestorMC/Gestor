@@ -3,8 +3,6 @@ package com.redgrapefruit.openmodinstaller.core
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
-import com.redgrapefruit.openmodinstaller.util.Properties
-import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
