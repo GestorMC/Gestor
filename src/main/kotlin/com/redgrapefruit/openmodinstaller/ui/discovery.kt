@@ -46,7 +46,7 @@ fun createDiscovery(enabled: Boolean) {
             // Submit button
             Button(
                 onClick = {
-                    ModJSONDiscovery.discover(urlFieldText, Properties.cacheFolderField)
+                    ModJSONDiscovery.discover(urlFieldText, Properties.cacheFolderField, true)
                 },
                 content = {
                     Text("Submit")

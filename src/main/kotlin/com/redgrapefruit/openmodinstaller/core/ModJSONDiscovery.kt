@@ -2,9 +2,7 @@ package com.redgrapefruit.openmodinstaller.core
 
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.ui.Properties
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -17,28 +15,17 @@ object ModJSONDiscovery {
      * Loads all user-defined sources
      */
     fun load(cacheFolderPath: String) {
-        // Check if the folder exists, create it
-        val installerFolder = File("C:/Users/${Properties.nt.name}/.openmodinstaller")
-        if (!installerFolder.exists()) installerFolder.mkdirs()
-        // Check if the source file exists, create it
-        val sourceFile = File("$installerFolder/sources.json")
-        if (!sourceFile.exists()) {
-            sourceFile.createNewFile()
-            // Add a basic JSON structure
-            FileOutputStream(sourceFile).use {
-                it.write("{\n\t\n}".toByteArray())
-            }
-        }
+        val sourceFile = initLocal()
         // Read everything from the JSON
-        FileInputStream(sourceFile).use {
-            val json = Json.parseToJsonElement(it.readBytes().decodeToString())
+        FileInputStream(sourceFile).use { stream ->
+            val json = Json.parseToJsonElement(stream.readBytes().decodeToString())
             json.jsonObject.entries.forEach { entry ->
-                discover(entry.value.jsonPrimitive.content, cacheFolderPath)
+                discover(entry.value.jsonPrimitive.content, cacheFolderPath, false)
             }
         }
     }
 
-    fun discover(url: String, cacheFolderPath: String) {
+    fun discover(url: String, cacheFolderPath: String, tryAdd: Boolean) {
         // Download the JSON
         val cachePath = "$cacheFolderPath/dsc_json_${Random.nextInt(Integer.MAX_VALUE)}"
         File(cachePath).createNewFile()
@@ -48,5 +35,37 @@ object ModJSONDiscovery {
             val source = Json.decodeFromString(DistributionSource.serializer(), it.readBytes().decodeToString())
             database += source
         }
+        // Try to add to the local DB if needed
+        if (tryAdd) {
+            val sourceFile = initLocal()
+            FileInputStream(sourceFile).use { stream ->
+                val input = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                val output = buildJsonObject {
+                    input.entries.forEach { entry ->
+                        put(entry.key, entry.value)
+                    }
+                    put(Random.nextInt(Int.MAX_VALUE).toString(), url)
+                }
+                FileOutputStream(sourceFile).use { outStream ->
+                    outStream.write(Json.encodeToString(JsonObject.serializer(), output).encodeToByteArray())
+                }
+            }
+        }
+    }
+
+    private fun initLocal(): File {
+        // Check if the folder exists, create it
+        val installerFolder = File("C:/Users/${Properties.nt.name}/.openmodinstaller")
+        if (!installerFolder.exists()) installerFolder.mkdirs()
+        // Check if the source file exists, create it
+        val sourceFile = File("$installerFolder/sources.json")
+        if (!sourceFile.exists()) {
+            sourceFile.createNewFile()
+            // Add a basic JSON structure
+            FileOutputStream(sourceFile).use { stream ->
+                stream.write("{\n\t\n}".toByteArray())
+            }
+        }
+        return sourceFile
     }
 }
