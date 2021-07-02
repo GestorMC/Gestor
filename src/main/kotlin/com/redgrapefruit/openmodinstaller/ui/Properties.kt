@@ -5,7 +5,7 @@ import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
 
 object Properties {
-    private val nt = NTSystem()
+    val nt = NTSystem()
 
     /**
      * The target folder for downloading mods
