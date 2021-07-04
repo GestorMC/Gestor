@@ -1,13 +1,18 @@
 package com.redgrapefruit.openmodinstaller.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.ScrollbarAdapter
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,9 +56,34 @@ fun createSearch(enabled: Boolean) {
         }
     }
 
+    var padding = 0
+    var num = 1
+
+    ScrollbarAdapter(ScrollState(0))
+
     results.forEach { mod ->
-        Row(modifier = Modifier.padding(40.dp, 170.dp)) {
-            Text(mod.meta.name)
+        Row(modifier = Modifier.padding(40.dp, (170 + padding).dp)) {
+            Text(
+                text = "$num. ${mod.meta.name}",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 1.4.em
+            )
+
+            Button(
+                onClick = {
+                    enableModviewWith(mod)
+                },
+                content = {
+                    Text(
+                        text = "Open",
+                        color = Color.White
+                    )
+                },
+                modifier = Modifier.padding(20.dp, 0.dp)
+            )
         }
+
+        padding += 60
+        ++num
     }
 }

@@ -12,19 +12,16 @@ import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.redgrapefruit.openmodinstaller.util.createBitmapFromImageURL
+import com.redgrapefruit.openmodinstaller.util.BitmapFromImageURL
 import org.commonmark.node.*
 import org.commonmark.node.Paragraph
 
@@ -101,7 +98,7 @@ fun MDParagraph(paragraph: Paragraph, modifier: Modifier = Modifier) {
 fun MDImage(image: Image, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
         Image(
-            bitmap = createBitmapFromImageURL(image.destination),
+            bitmap = BitmapFromImageURL(image.destination),
             contentDescription = null,
             modifier = modifier
         )
@@ -275,7 +272,7 @@ fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = M
                 Placeholder(style.fontSize, style.fontSize, PlaceholderVerticalAlign.Bottom)
             ) {
                 Image(
-                    bitmap = createBitmapFromImageURL(it),
+                    bitmap = BitmapFromImageURL(it),
                     contentDescription = null,
                     modifier = modifier
                 )

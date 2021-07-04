@@ -1,11 +1,15 @@
+@file:Suppress("FunctionName")
+
 package com.redgrapefruit.openmodinstaller.util
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import com.redgrapefruit.openmodinstaller.core.ModInstaller
 import java.io.File
 
-fun createBitmapFromImageURL(url: String): ImageBitmap {
+@Composable
+fun BitmapFromImageURL(url: String): ImageBitmap {
     val path = "image_resource_$url"
     val file = resourceFile(path)
 

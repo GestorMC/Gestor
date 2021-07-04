@@ -15,6 +15,7 @@ fun createUI() {
     var searchEnabled by remember { mutableStateOf(false) }
     var settingsEnabled by remember { mutableStateOf(false) }
     var discoveryEnabled by remember { mutableStateOf(false) }
+    var modviewEnabled by remember { mutableStateOf(doModview) }
 
     MaterialTheme(colors = lightColors()) {
         TabRow(
@@ -34,6 +35,7 @@ fun createUI() {
                         searchEnabled = false
                         settingsEnabled = false
                         discoveryEnabled = false
+                        modviewEnabled = false
                     },
                     selected = selectedTab == 0
                 )
@@ -51,6 +53,7 @@ fun createUI() {
                         searchEnabled = true
                         settingsEnabled = false
                         discoveryEnabled = false
+                        modviewEnabled = false
                     },
                     selected = selectedTab == 1
                 )
@@ -68,6 +71,7 @@ fun createUI() {
                         searchEnabled = false
                         settingsEnabled = true
                         discoveryEnabled = false
+                        modviewEnabled = false
                     },
                     selected = selectedTab == 2
                 )
@@ -85,8 +89,27 @@ fun createUI() {
                         searchEnabled = false
                         settingsEnabled = false
                         discoveryEnabled = true
+                        modviewEnabled = false
                     },
                     selected = selectedTab == 3
+                )
+                Tab(
+                    content = {
+                        Text(
+                            text = "Modview",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    onClick = {
+                        selectedTab = 4
+                        homeEnabled = false
+                        searchEnabled = false
+                        settingsEnabled = false
+                        discoveryEnabled = false
+                        modviewEnabled = true
+                    },
+                    selected = selectedTab == 4
                 )
             },
             modifier = Modifier.height(35.dp)
@@ -96,6 +119,7 @@ fun createUI() {
         createSearch(searchEnabled)
         createSettings(settingsEnabled)
         createDiscovery(discoveryEnabled)
+        createModview(modviewEnabled)
     }
 }
 
