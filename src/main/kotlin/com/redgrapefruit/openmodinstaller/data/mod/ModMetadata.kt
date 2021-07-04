@@ -48,5 +48,9 @@ data class ModMetadata(
     /**
      * A list of [Dependency]s for this mod
      */
-    val dependencies: List<Dependency> = listOf()
+    val dependencies: List<Dependency> = listOf(),
+    /**
+     * A link to a Markdown file representing the full page for this mod
+     */
+    val page: String = ""
 )
