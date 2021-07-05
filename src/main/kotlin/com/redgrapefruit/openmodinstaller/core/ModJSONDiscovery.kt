@@ -33,6 +33,7 @@ object ModJSONDiscovery {
      */
     fun discover(url: String, cacheFolderPath: String, tryAdd: Boolean) {
         // Download the JSON
+        initLocal()
         val cachePath = "$cacheFolderPath/dsc_json_${Random.nextInt(Integer.MAX_VALUE)}"
         File(cachePath).createNewFile()
         ModInstaller.downloadFile(url, cachePath)
@@ -137,6 +138,11 @@ object ModJSONDiscovery {
             FileOutputStream(sourceFile).use { stream ->
                 stream.write("{\n\t\n}".toByteArray())
             }
+        }
+        // Check if caches folder exists, create it
+        val cachesFolder = File(Settings.cacheFolderField)
+        if (!cachesFolder.exists()) {
+            cachesFolder.mkdir()
         }
         return sourceFile
     }
