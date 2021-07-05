@@ -4,29 +4,30 @@ package com.redgrapefruit.openmodinstaller.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.graphics.asImageBitmap
 import com.redgrapefruit.openmodinstaller.core.ModInstaller
+import org.jetbrains.skija.Image
 import java.io.File
+import java.io.FileInputStream
+import kotlin.random.Random
 
 @Composable
 fun BitmapFromImageURL(url: String): ImageBitmap {
-    val path = "image_resource_$url"
-    val file = resourceFile(path)
+    val imageFolder = "${File(Settings.cacheFolderField).parent}/images/"
 
-    if (!file.exists()) {
-        file.createNewFile()
-        ModInstaller.downloadFile(url, file.absolutePath)
+    val imageFolderFile = File(imageFolder)
+    if (imageFolderFile.exists()) imageFolderFile.mkdirs()
+
+    // TODO: Make a JSON (image_codecs.json) that will contain the cache number -> URL map to avoid unnecessary downloading
+    val path = "$imageFolder/img_${Random.nextInt(Int.MAX_VALUE)}"
+    File(path).createNewFile()
+
+    ModInstaller.downloadFile(url, path)
+
+    val raw: ByteArray
+    FileInputStream(path).use { stream ->
+        raw = stream.readBytes()
     }
 
-    return imageResource(path).apply {
-        if (!Settings.storeCaches) {
-            file.delete()
-        }
-    }
-}
-
-private fun resourceFile(name: String): File {
-    val loader = ClassLoader.getSystemClassLoader()
-
-    return File(loader.getResource(name)!!.toURI())
+    return Image.makeFromEncoded(raw).asImageBitmap()
 }

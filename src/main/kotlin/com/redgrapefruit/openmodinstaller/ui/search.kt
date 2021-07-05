@@ -72,11 +72,11 @@ private fun NoResultsInSearch() {
 
 @Composable
 private fun SearchResults(results: List<Mod>) {
-    var searchResultIndex = 0
+    var searchResultIndex = 1
 
     Column(modifier = Modifier.padding(40.dp, 170.dp)) {
         results.forEach { mod ->
-            Row {
+            Row(modifier = Modifier.padding(0.dp, 10.dp)) {
                 Text(
                     text = "$searchResultIndex. ${mod.meta.name}",
                     fontWeight = FontWeight.SemiBold,
@@ -96,8 +96,8 @@ private fun SearchResults(results: List<Mod>) {
                     modifier = Modifier.padding(20.dp, 0.dp)
                 )
             }
-        }
 
-        ++searchResultIndex
+            ++searchResultIndex
+        }
     }
 }
