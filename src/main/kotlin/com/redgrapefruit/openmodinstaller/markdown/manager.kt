@@ -1,7 +1,7 @@
 package com.redgrapefruit.openmodinstaller.markdown
 
 import com.redgrapefruit.openmodinstaller.core.ModInstaller
-import com.redgrapefruit.openmodinstaller.core.ModJSONDiscovery
+import com.redgrapefruit.openmodinstaller.core.ModDiscovery
 import com.redgrapefruit.openmodinstaller.util.Settings
 import java.io.File
 import kotlin.random.Random
@@ -10,7 +10,7 @@ import kotlin.random.Random
  * Downloads a MD file from [url]
  */
 fun downloadMarkdown(url: String): File {
-    ModJSONDiscovery.initLocal()
+    ModDiscovery.initLocal()
     val installerFolder = File(Settings.cacheFolderField).parent
     val markdownFolder = File("$installerFolder/markdown")
 

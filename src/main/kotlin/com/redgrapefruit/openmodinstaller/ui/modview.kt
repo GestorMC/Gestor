@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.redgrapefruit.openmodinstaller.ui
 
 import androidx.compose.foundation.layout.padding
@@ -14,8 +16,14 @@ import org.commonmark.node.Document
 import org.commonmark.parser.Parser
 import java.io.FileInputStream
 
+/**
+ * Is the modview currently enabled
+ */
 var doModview: Boolean = false
 
+/**
+ * The target of the modview
+ */
 private var modviewMod: Mod? = null
 
 @Composable
@@ -23,14 +31,29 @@ fun createModview(enabled: Boolean) {
     if (!enabled) return
 
     if (!doModview && modviewMod == null) {
-        Text(
-            text = "No mods in the view",
-            fontSize = 1.8.em,
-            modifier = Modifier.padding(200.dp, 170.dp)
-        )
+        NoModsInTheView()
         return
     }
 
+    ModMarkdown()
+}
+
+fun enableModviewWith(mod: Mod) {
+    doModview = true
+    modviewMod = mod
+}
+
+@Composable
+private fun NoModsInTheView() {
+    Text(
+        text = "No mods in the view",
+        fontSize = 1.8.em,
+        modifier = Modifier.padding(200.dp, 170.dp)
+    )
+}
+
+@Composable
+private fun ModMarkdown() {
     // Download MD and read it. Also delete if needed
     val markdownFile = downloadMarkdown(modviewMod!!.meta.page)
     val markdownText: String
@@ -46,9 +69,4 @@ fun createModview(enabled: Boolean) {
     val root = parser.parse(markdownText) as Document
 
     MDDocument(root)
-}
-
-fun enableModviewWith(mod: Mod) {
-    doModview = true
-    modviewMod = mod
 }

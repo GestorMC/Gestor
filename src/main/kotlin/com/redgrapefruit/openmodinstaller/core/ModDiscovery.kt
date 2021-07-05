@@ -10,9 +10,9 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import kotlin.random.Random
 
-object ModJSONDiscovery {
+object ModDiscovery {
     val database: MutableMap<String, DistributionSource> = mutableMapOf()
-    val search: MutableMap<DistributionSource, MutableList<String>> = mutableMapOf()
+    private val search: MutableMap<DistributionSource, MutableList<String>> = mutableMapOf()
 
     /**
      * Loads all user-defined sources
@@ -97,19 +97,19 @@ object ModJSONDiscovery {
     }
 
     /**
-     *
+     * Search for mods using the pattern in the [search] argument
      */
     fun searchMods(search: String): List<Mod> {
         val results = mutableListOf<Mod>()
 
         // Cache mods if not already in cache
         database.forEach { (_, source) ->
-            if (!ModJSONDiscovery.search.containsKey(source)) {
+            if (!ModDiscovery.search.containsKey(source)) {
                 cacheMods(source)
             }
 
             // Read all caches for the source
-            ModJSONDiscovery.search[source]?.forEach { path ->
+            ModDiscovery.search[source]?.forEach { path ->
                 // Safety in case of cache deletion
                 val file = File(path)
                 if (!file.exists()) cacheMods(source)
