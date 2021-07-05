@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
 import com.redgrapefruit.openmodinstaller.markdown.MDDocument
 import com.redgrapefruit.openmodinstaller.markdown.downloadMarkdown
+import com.redgrapefruit.openmodinstaller.util.Settings
 import org.commonmark.node.Document
 import org.commonmark.parser.Parser
 import java.io.FileInputStream
@@ -30,11 +31,14 @@ fun createModview(enabled: Boolean) {
         return
     }
 
-    // Download MD and read it
+    // Download MD and read it. Also delete if needed
     val markdownFile = downloadMarkdown(modviewMod!!.meta.page)
     val markdownText: String
     FileInputStream(markdownFile).use { stream ->
         markdownText = stream.readBytes().decodeToString()
+    }
+    if (!Settings.storeCaches) {
+        markdownFile.delete()
     }
 
     // Render MD

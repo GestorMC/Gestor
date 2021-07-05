@@ -18,7 +18,11 @@ fun BitmapFromImageURL(url: String): ImageBitmap {
         ModInstaller.downloadFile(url, file.absolutePath)
     }
 
-    return imageResource(path)
+    return imageResource(path).apply {
+        if (!Settings.storeCaches) {
+            file.delete()
+        }
+    }
 }
 
 private fun resourceFile(name: String): File {
