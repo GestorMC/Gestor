@@ -60,6 +60,10 @@ object ModJSONDiscovery {
                 }
             }
         }
+        // Remove cache if needed
+        if (!Settings.storeCaches) {
+            File(cachePath).delete()
+        }
     }
 
     /**
