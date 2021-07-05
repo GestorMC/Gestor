@@ -60,7 +60,7 @@ Since the app is in early development, no downloads are available.
 You can compile the app to a native binary following these simple steps:
 
 1. Clone the repository on your device
-2. Make sure that you have [AdoptOpenJDK 11 HotSpot](https://adoptopenjdk.net/) installed
+2. Make sure that you have [AdoptOpenJDK 11 HotSpot](https://adoptopenjdk.net/) installed and added to the `JAVA_PATH` variable
 3. Open the command-line
 4. Run `gradlew package` and wait for a bit
 5. Go to the `$CLONED_FOLDER_PATH/build/compose/binaries` and the correct subfolder for
