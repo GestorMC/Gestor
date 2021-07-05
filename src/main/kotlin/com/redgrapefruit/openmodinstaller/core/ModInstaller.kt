@@ -5,12 +5,10 @@ import com.redgrapefruit.openmodinstaller.data.mod.Mod
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.net.MalformedURLException
+import java.net.HttpURLConnection
 import java.net.URL
-import java.nio.channels.Channels
-import java.nio.channels.ReadableByteChannel
 
+private const val BUFFER_SIZE = 512000
 
 /**
  * Installs mods from the [DistributionSource]
@@ -29,27 +27,17 @@ object ModInstaller {
          */
         output: String
     ) {
-        var readableBC: ReadableByteChannel? = null
-        var fileOS: FileOutputStream? = null
-        try {
-            val urlObj = URL(input)
-            readableBC = Channels.newChannel(urlObj.openStream())
-            fileOS = FileOutputStream(output)
-            fileOS.channel.transferFrom(readableBC, 0, Long.MAX_VALUE)
-        } catch (e: MalformedURLException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                fileOS?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            try {
-                readableBC?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
+        val httpConn = URL(input).openConnection() as HttpURLConnection
+        httpConn.requestMethod = "GET"
+
+        httpConn.inputStream.use { inputStream ->
+            FileOutputStream(output).use { outputStream ->
+                var bytesRead: Int
+                val buffer = ByteArray(BUFFER_SIZE)
+
+                while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                    outputStream.write(buffer, 0, bytesRead)
+                }
             }
         }
     }
