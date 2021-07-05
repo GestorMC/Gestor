@@ -3,6 +3,8 @@
 package com.redgrapefruit.openmodinstaller.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -74,7 +76,9 @@ private fun NoResultsInSearch() {
 private fun SearchResults(results: List<Mod>) {
     var searchResultIndex = 1
 
-    Column(modifier = Modifier.padding(40.dp, 170.dp)) {
+    val scrollState = rememberScrollState(0)
+
+    Column(modifier = Modifier.padding(40.dp, 170.dp).verticalScroll(scrollState)) {
         results.forEach { mod ->
             Row(modifier = Modifier.padding(0.dp, 10.dp)) {
                 Text(

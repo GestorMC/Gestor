@@ -4,6 +4,8 @@ package com.redgrapefruit.openmodinstaller.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
@@ -26,7 +28,9 @@ import com.redgrapefruit.openmodinstaller.util.Settings
 fun createDiscovery(enabled: Boolean) {
     if (!enabled) return
 
-    Column(modifier = Modifier.padding(40.dp, 75.dp)) {
+    val scrollState = rememberScrollState(0)
+
+    Column(modifier = Modifier.padding(40.dp, 75.dp).verticalScroll(scrollState)) {
         DiscoverViaURL()
         DistributionSourcesAvailable()
     }
