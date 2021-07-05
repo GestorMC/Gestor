@@ -46,13 +46,36 @@ import org.commonmark.node.Paragraph
 private const val TAG_URL = "url"
 private const val TAG_IMAGE_URL = "imageUrl"
 
+
+@Composable
+fun MDBlockChildren(parent: Node) {
+    var child = parent.firstChild
+    var padding = 20
+
+    while (child != null) {
+        when (child) {
+            is BlockQuote -> MDBlockQuote(child, padding)
+            is ThematicBreak -> MDThematicBreak(child, padding)
+            is Heading -> MDHeading(child, padding)
+            is Paragraph -> MDParagraph(child, padding)
+            is FencedCodeBlock -> MDFencedCodeBlock(child, padding)
+            is IndentedCodeBlock -> MDIndentedCodeBlock(child, padding)
+            is Image -> MDImage(child, padding)
+            is BulletList -> MDBulletList(child, padding)
+            is OrderedList -> MDOrderedList(child, padding)
+        }
+        child = child.next
+        padding += 20
+    }
+}
+
 @Composable
 fun MDDocument(document: Document) {
     MDBlockChildren(document)
 }
 
 @Composable
-fun MDHeading(heading: Heading, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDHeading(heading: Heading, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     val style = when (heading.level) {
         1 -> MaterialTheme.typography.h1
         2 -> MaterialTheme.typography.h2
@@ -72,30 +95,30 @@ fun MDHeading(heading: Heading, modifier: Modifier = Modifier.padding(10.dp, 20.
         val text = buildAnnotatedString {
             appendMarkdownChildren(heading, MaterialTheme.colors)
         }
-        MarkdownText(text, style)
+        MarkdownText(text, style, padding.value.toInt())
     }
 }
 
 @Composable
-fun MDParagraph(paragraph: Paragraph, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDParagraph(paragraph: Paragraph, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (20 + padding).dp)) {
     if (paragraph.firstChild is Image && paragraph.firstChild == paragraph.lastChild) {
         // Paragraph with single image
-        MDImage(paragraph.firstChild as Image, modifier)
+        MDImage(paragraph.firstChild as Image, padding, modifier)
     } else {
-        val padding = if (paragraph.parent is Document) 8.dp else 0.dp
-        Box(modifier = modifier.padding(0.dp, padding)) {
+        val pad = if (paragraph.parent is Document) 8.dp else 0.dp
+        Box(modifier = modifier.padding(0.dp, pad)) {
             val styledText = buildAnnotatedString {
                 pushStyle(MaterialTheme.typography.body1.toSpanStyle())
                 appendMarkdownChildren(paragraph, MaterialTheme.colors)
                 pop()
             }
-            MarkdownText(styledText, MaterialTheme.typography.body1)
+            MarkdownText(styledText, MaterialTheme.typography.body1, padding)
         }
     }
 }
 
 @Composable
-fun MDImage(image: Image, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDImage(image: Image, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     Box(modifier = modifier.fillMaxWidth()) {
         Image(
             bitmap = BitmapFromImageURL(image.destination),
@@ -106,38 +129,39 @@ fun MDImage(image: Image, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
 }
 
 @Composable
-fun MDBulletList(bulletList: BulletList, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDBulletList(bulletList: BulletList, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     val marker = bulletList.bulletMarker
-    MDListItems(bulletList, modifier = modifier) {
+    MDListItems(bulletList, padding, modifier = modifier) {
         val text = buildAnnotatedString {
             pushStyle(MaterialTheme.typography.body1.toSpanStyle())
             append("$marker ")
             appendMarkdownChildren(it, MaterialTheme.colors)
             pop()
         }
-        MarkdownText(text, MaterialTheme.typography.body1, modifier)
+        MarkdownText(text, MaterialTheme.typography.body1, padding, modifier)
     }
 }
 
 @Composable
-fun MDOrderedList(orderedList: OrderedList, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDOrderedList(orderedList: OrderedList, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     var number = orderedList.startNumber
     val delimiter = orderedList.delimiter
-    MDListItems(orderedList, modifier) {
+    MDListItems(orderedList, padding, modifier) {
         val text = buildAnnotatedString {
             pushStyle(MaterialTheme.typography.body1.toSpanStyle())
             append("${number++}$delimiter ")
             appendMarkdownChildren(it, MaterialTheme.colors)
             pop()
         }
-        MarkdownText(text, MaterialTheme.typography.body1, modifier)
+        MarkdownText(text, MaterialTheme.typography.body1, padding, modifier)
     }
 }
 
 @Composable
 fun MDListItems(
     listBlock: ListBlock,
-    modifier: Modifier = Modifier.padding(10.dp, 20.dp),
+    padding: Int,
+    modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp),
     item: @Composable (node: Node) -> Unit
 ) {
     val bottom = if (listBlock.parent is Document) 8.dp else 0.dp
@@ -148,8 +172,8 @@ fun MDListItems(
             var child = listItem.firstChild
             while (child != null) {
                 when (child) {
-                    is BulletList -> MDBulletList(child, modifier)
-                    is OrderedList -> MDOrderedList(child, modifier)
+                    is BulletList -> MDBulletList(child, padding, modifier)
+                    is OrderedList -> MDOrderedList(child, padding, modifier)
                     else -> item(child)
                 }
                 child = child.next
@@ -160,7 +184,7 @@ fun MDListItems(
 }
 
 @Composable
-fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDBlockQuote(blockQuote: BlockQuote, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     val color = MaterialTheme.colors.onBackground
     Box(modifier = modifier.drawBehind {
         drawLine(
@@ -183,7 +207,7 @@ fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier.padding(1
 }
 
 @Composable
-fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     val padding = if (fencedCodeBlock.parent is Document) 8.dp else 0.dp
     Box(modifier = modifier.padding(bottom = padding, start = 8.dp)) {
         Text(
@@ -195,32 +219,13 @@ fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Mod
 }
 
 @Composable
-fun MDIndentedCodeBlock(indentedCodeBlock: IndentedCodeBlock, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDIndentedCodeBlock(indentedCodeBlock: IndentedCodeBlock, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     // Ignored
 }
 
 @Composable
-fun MDThematicBreak(thematicBreak: ThematicBreak, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MDThematicBreak(thematicBreak: ThematicBreak, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     //Ignored
-}
-
-@Composable
-fun MDBlockChildren(parent: Node) {
-    var child = parent.firstChild
-    while (child != null) {
-        when (child) {
-            is BlockQuote -> MDBlockQuote(child)
-            is ThematicBreak -> MDThematicBreak(child)
-            is Heading -> MDHeading(child)
-            is Paragraph -> MDParagraph(child)
-            is FencedCodeBlock -> MDFencedCodeBlock(child)
-            is IndentedCodeBlock -> MDIndentedCodeBlock(child)
-            is Image -> MDImage(child)
-            is BulletList -> MDBulletList(child)
-            is OrderedList -> MDOrderedList(child)
-        }
-        child = child.next
-    }
 }
 
 fun AnnotatedString.Builder.appendMarkdownChildren(
@@ -264,7 +269,7 @@ fun AnnotatedString.Builder.appendMarkdownChildren(
 }
 
 @Composable
-fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
+fun MarkdownText(text: AnnotatedString, style: TextStyle, padding: Int, modifier: Modifier = Modifier.padding(10.dp, (padding + 20).dp)) {
     Text(text = text,
         style = style,
         inlineContent = mapOf(
