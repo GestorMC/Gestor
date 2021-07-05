@@ -5,7 +5,12 @@ import java.io.FileInputStream
 import java.security.MessageDigest
 
 enum class Hash(private val hashName: String) {
-    MD5("MD5"), SHA1("SHA1"), SHA256("SHA-256"), SHA512("SHA-512");
+    // MD5 and SHA1 will be removed in further releases
+    MD5("MD5"),
+    SHA1("SHA1"),
+    // SHA256 is supported, but not used
+    SHA256("SHA-256"),
+    SHA512("SHA-512");
 
     fun checksum(inPath: String): ByteArray {
         val input = File(inPath)
