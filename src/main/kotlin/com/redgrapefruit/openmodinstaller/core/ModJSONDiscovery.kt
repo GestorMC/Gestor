@@ -125,7 +125,7 @@ object ModJSONDiscovery {
     /**
      * Initializes the local storage
      */
-    private fun initLocal(): File {
+    fun initLocal(): File {
         // Check if the folder exists, create it
         val installerFolder = File(File(Settings.cacheFolderField).parent)
         if (!installerFolder.exists()) installerFolder.mkdirs()

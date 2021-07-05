@@ -52,7 +52,7 @@ fun MDDocument(document: Document) {
 }
 
 @Composable
-fun MDHeading(heading: Heading, modifier: Modifier = Modifier) {
+fun MDHeading(heading: Heading, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     val style = when (heading.level) {
         1 -> MaterialTheme.typography.h1
         2 -> MaterialTheme.typography.h2
@@ -77,7 +77,7 @@ fun MDHeading(heading: Heading, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MDParagraph(paragraph: Paragraph, modifier: Modifier = Modifier) {
+fun MDParagraph(paragraph: Paragraph, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     if (paragraph.firstChild is Image && paragraph.firstChild == paragraph.lastChild) {
         // Paragraph with single image
         MDImage(paragraph.firstChild as Image, modifier)
@@ -95,7 +95,7 @@ fun MDParagraph(paragraph: Paragraph, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MDImage(image: Image, modifier: Modifier = Modifier) {
+fun MDImage(image: Image, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     Box(modifier = modifier.fillMaxWidth()) {
         Image(
             bitmap = BitmapFromImageURL(image.destination),
@@ -106,7 +106,7 @@ fun MDImage(image: Image, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MDBulletList(bulletList: BulletList, modifier: Modifier = Modifier) {
+fun MDBulletList(bulletList: BulletList, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     val marker = bulletList.bulletMarker
     MDListItems(bulletList, modifier = modifier) {
         val text = buildAnnotatedString {
@@ -120,7 +120,7 @@ fun MDBulletList(bulletList: BulletList, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MDOrderedList(orderedList: OrderedList, modifier: Modifier = Modifier) {
+fun MDOrderedList(orderedList: OrderedList, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     var number = orderedList.startNumber
     val delimiter = orderedList.delimiter
     MDListItems(orderedList, modifier) {
@@ -137,7 +137,7 @@ fun MDOrderedList(orderedList: OrderedList, modifier: Modifier = Modifier) {
 @Composable
 fun MDListItems(
     listBlock: ListBlock,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.padding(10.dp, 20.dp),
     item: @Composable (node: Node) -> Unit
 ) {
     val bottom = if (listBlock.parent is Document) 8.dp else 0.dp
@@ -160,7 +160,7 @@ fun MDListItems(
 }
 
 @Composable
-fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier) {
+fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     val color = MaterialTheme.colors.onBackground
     Box(modifier = modifier.drawBehind {
         drawLine(
@@ -183,7 +183,7 @@ fun MDBlockQuote(blockQuote: BlockQuote, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Modifier) {
+fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     val padding = if (fencedCodeBlock.parent is Document) 8.dp else 0.dp
     Box(modifier = modifier.padding(bottom = padding, start = 8.dp)) {
         Text(
@@ -195,12 +195,12 @@ fun MDFencedCodeBlock(fencedCodeBlock: FencedCodeBlock, modifier: Modifier = Mod
 }
 
 @Composable
-fun MDIndentedCodeBlock(indentedCodeBlock: IndentedCodeBlock, modifier: Modifier = Modifier) {
+fun MDIndentedCodeBlock(indentedCodeBlock: IndentedCodeBlock, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     // Ignored
 }
 
 @Composable
-fun MDThematicBreak(thematicBreak: ThematicBreak, modifier: Modifier = Modifier) {
+fun MDThematicBreak(thematicBreak: ThematicBreak, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     //Ignored
 }
 
@@ -264,7 +264,7 @@ fun AnnotatedString.Builder.appendMarkdownChildren(
 }
 
 @Composable
-fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = Modifier) {
+fun MarkdownText(text: AnnotatedString, style: TextStyle, modifier: Modifier = Modifier.padding(10.dp, 20.dp)) {
     Text(text = text,
         style = style,
         inlineContent = mapOf(
