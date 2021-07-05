@@ -90,8 +90,10 @@ object ModUpdater {
         val file = File(jarPath)
 
         // Recreate the file
-        if (file.exists()) file.delete()
-        file.createNewFile()
+        if (file.exists()) {
+            file.delete()
+            file.createNewFile()
+        }
 
         // Redownload the mod
         ModInstaller.downloadFile(entry.url, "$modsFolder/$id.jar")
