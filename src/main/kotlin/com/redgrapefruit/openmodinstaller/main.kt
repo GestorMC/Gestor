@@ -16,7 +16,7 @@ fun main() {
     ModDiscovery.load(Settings.cacheFolderField)
     Settings.load()
     // Launch Window
-    Window(resizable = false, size = IntSize(850, 650), onDismissRequest = { Settings.save() }) {
+    Window(resizable = false, size = IntSize(850, 650), onDismissRequest = Settings::save) {
         createUI()
     }
 }
