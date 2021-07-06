@@ -33,10 +33,10 @@ and the status of their development:
   - [ ] Mod updating (coming soon)
   - [ ] Mod removing (coming soon)
 - [ ] Mod hosting
-  - [ ] Markdown pages for mods (coming soon)
+  - [x] Markdown pages for mods
   - [ ] Metadata display for mods
   - [ ] Release display for mods
-  - [ ] Integration of mod downloading, updating and removing
+  - [ ] Integration of mod downloading, updating and removing (coming soon)
 - [ ] Mod suggestions
   - [ ] Calculating downloads for mods to display popularity
   - [ ] Recommending mods
