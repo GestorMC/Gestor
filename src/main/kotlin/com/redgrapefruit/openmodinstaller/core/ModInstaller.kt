@@ -1,7 +1,9 @@
 package com.redgrapefruit.openmodinstaller.core
 
+import androidx.compose.ui.text.toLowerCase
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
+import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
 import java.io.File
 import java.io.FileOutputStream
@@ -76,13 +78,9 @@ object ModInstaller {
          */
         modsFolder: String,
         /**
-         * The serialized [Mod] structure
+         * The linked [ReleaseEntry]
          */
-        mod: Mod,
-        /**
-         * The target [ReleaseType]
-         */
-        releaseType: ReleaseType,
+        entry: ReleaseEntry,
         /**
          * Is the installed mod main or dependency
          */
@@ -96,8 +94,30 @@ object ModInstaller {
          */
         depId: String = ""
     ) {
-        val entry = releaseType.getEntry(isMain, mod, depId)
-
         downloadMod(entry.url, "$modsFolder/${if (isMain) mainId else depId}.jar")
+    }
+
+    /**
+     * Downloads the mod **and** its dependencies
+     */
+    fun downloadAllFromJSON(
+        modsFolder: String,
+        mod: Mod,
+        releaseType: ReleaseType
+    ) {
+        // Download main
+        val mainEntry = releaseType.getEntry(isMain = true, mod)
+        downloadFromJSON(modsFolder, mainEntry, isMain = true, mainId = mod.meta.name.lowercase())
+        // Download dependencies
+        mod.dependencies.forEach { wrapper ->
+            // TODO: Support different release types for dependencies
+            val depEntry: ReleaseEntry
+            if (wrapper.id == "croptopia") {
+                depEntry = ReleaseType.Stable.getEntry(isMain = false, mod, wrapper.id)
+            } else {
+                depEntry = ReleaseType.Snapshot.getEntry(isMain = false, mod, wrapper.id)
+            }
+            downloadFromJSON(modsFolder, depEntry, isMain = false, depId = wrapper.id)
+        }
     }
 }
