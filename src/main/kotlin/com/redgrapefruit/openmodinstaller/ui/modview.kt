@@ -2,10 +2,14 @@
 
 package com.redgrapefruit.openmodinstaller.ui
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
@@ -35,12 +39,39 @@ fun createModview(enabled: Boolean) {
         return
     }
 
+    Column {
+        ActionButtons()
+    }
     ModMarkdown()
 }
 
 fun enableModviewWith(mod: Mod) {
     doModview = true
     modviewMod = mod
+}
+
+@Composable
+private fun ActionButtons() {
+    DownloadModButton()
+}
+
+@Composable
+private fun DownloadModButton() {
+    Row(modifier = Modifier.padding(20.dp, 50.dp)) {
+        Button(
+            onClick = {
+                // TODO: Download code
+            },
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green, contentColor = Color.White),
+            content = {
+                Text(
+                    text = "Download",
+                    fontSize = 1.1.em,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        )
+    }
 }
 
 @Composable

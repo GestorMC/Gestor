@@ -52,7 +52,7 @@ fun MDBlockChildren(parent: Node) {
 
     val scrollState = rememberScrollState(0)
 
-    Column(modifier = Modifier.padding(0.dp, 40.dp).verticalScroll(state = scrollState)) {
+    Column(modifier = Modifier.padding(20.dp, 95.dp).verticalScroll(state = scrollState)) {
         while (child != null) {
             Row {
                 when (child) {
