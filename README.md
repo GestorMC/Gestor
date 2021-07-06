@@ -27,6 +27,7 @@ and the status of their development:
   - [x] Universal JSON format for developers
   - [x] Manual URL discovery
   - [x] Search from discovered
+  - [ ] Reusable cache (coming soon)
   - [ ] Autocomplete discovery
 - [ ] Mod management
   - [ ] Mod downloading (coming soon)
