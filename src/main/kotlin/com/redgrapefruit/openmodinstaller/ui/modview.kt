@@ -53,43 +53,34 @@ fun enableModviewWith(mod: Mod) {
 @Composable
 private fun ActionButtons() {
     Row(modifier = Modifier.padding(20.dp, 50.dp)) {
-        DownloadModButton()
-        UpdateModButton()
+        ModButton(true, "Download", Color.Green) {
+            // TODO: Download code
+        }
+        ModButton(false, "Update", Color.Blue) {
+            // TODO: Update code
+        }
+        ModButton(false, "Check for updates", Color(173, 216, 230)) {
+            // TODO: Update checking code
+        }
+        ModButton(false, "Remove", Color.Red) {
+            // TODO: Removal code
+        }
     }
 }
 
 @Composable
-private fun DownloadModButton() {
+private fun ModButton(first: Boolean, text: String, color: Color, clickAction: () -> Unit) {
     Button(
-        onClick = {
-            // TODO: Download code
-        },
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Green, contentColor = Color.White),
+        onClick = clickAction,
+        colors = ButtonDefaults.buttonColors(backgroundColor = color, contentColor = Color.White),
         content = {
             Text(
-                text = "Download",
-                fontSize = 1.1.em,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-    )
-}
-
-@Composable
-private fun UpdateModButton() {
-    Button(
-        onClick = {
-            // TODO: Update code
-        },
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Blue, contentColor = Color.White),
-        content = {
-            Text(
-                text = "Update",
+                text = text,
                 fontSize = 1.1.em,
                 fontWeight = FontWeight.SemiBold
             )
         },
-        modifier = Modifier.padding(30.dp, 0.dp)
+        modifier = if (first) Modifier else Modifier.padding(30.dp, 0.dp)
     )
 }
 
