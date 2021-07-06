@@ -1,6 +1,5 @@
 package com.redgrapefruit.openmodinstaller.core
 
-import androidx.compose.ui.text.toLowerCase
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
@@ -111,11 +110,10 @@ object ModInstaller {
         // Download dependencies
         mod.dependencies.forEach { wrapper ->
             // TODO: Support different release types for dependencies
-            val depEntry: ReleaseEntry
-            if (wrapper.id == "croptopia") {
-                depEntry = ReleaseType.Stable.getEntry(isMain = false, mod, wrapper.id)
+            val depEntry: ReleaseEntry = if (wrapper.id == "croptopia") {
+                ReleaseType.Stable.getEntry(isMain = false, mod, wrapper.id)
             } else {
-                depEntry = ReleaseType.Snapshot.getEntry(isMain = false, mod, wrapper.id)
+                ReleaseType.Snapshot.getEntry(isMain = false, mod, wrapper.id)
             }
             downloadFromJSON(modsFolder, depEntry, isMain = false, depId = wrapper.id)
         }

@@ -178,10 +178,11 @@ private fun ReleaseTypeDropdown() {
 
 @Composable
 private inline fun ReleaseTypeDropdownItem(
-            releaseType: ReleaseType,
-            text: String,
-            crossinline indexSetter: () -> Unit,
-            crossinline fontWeightSelector: () -> FontWeight) {
+    releaseType: ReleaseType,
+    text: String,
+    crossinline indexSetter: () -> Unit,
+    crossinline fontWeightSelector: () -> FontWeight
+) {
     DropdownMenuItem(
         onClick = {
             Settings.chosenReleaseType = releaseType

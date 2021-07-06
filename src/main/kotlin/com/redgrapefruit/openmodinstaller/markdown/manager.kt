@@ -1,7 +1,7 @@
 package com.redgrapefruit.openmodinstaller.markdown
 
-import com.redgrapefruit.openmodinstaller.core.ModInstaller
 import com.redgrapefruit.openmodinstaller.core.ModDiscovery
+import com.redgrapefruit.openmodinstaller.core.ModInstaller
 import com.redgrapefruit.openmodinstaller.util.Settings
 import java.io.File
 import kotlin.random.Random

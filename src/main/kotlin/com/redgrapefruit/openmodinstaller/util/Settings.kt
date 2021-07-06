@@ -1,9 +1,9 @@
 package com.redgrapefruit.openmodinstaller.util
 
 import com.redgrapefruit.openmodinstaller.JSON
-import com.sun.security.auth.module.NTSystem
 import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
+import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
