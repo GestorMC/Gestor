@@ -10,6 +10,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import kotlin.random.Random
 
+@Deprecated("This system is deprecated. Currently being migrated to the Task architecture")
 object ModDiscovery {
     val database: MutableMap<String, DistributionSource> = mutableMapOf()
     private val search: MutableMap<DistributionSource, MutableList<String>> = mutableMapOf()

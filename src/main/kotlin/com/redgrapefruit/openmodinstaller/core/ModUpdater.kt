@@ -8,6 +8,7 @@ import kotlin.random.Random
 /**
  * Updates your mods
  */
+@Deprecated("This system is deprecated. Currently being migrated to the Task architecture")
 object ModUpdater {
     /**
      * Checks if the mod has updates
