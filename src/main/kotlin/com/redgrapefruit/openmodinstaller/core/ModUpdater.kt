@@ -1,14 +1,8 @@
 package com.redgrapefruit.openmodinstaller.core
 
-import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
 import com.redgrapefruit.openmodinstaller.util.Hash
-import com.redgrapefruit.openmodinstaller.util.Settings
-import com.redgrapefruit.openmodinstaller.util.unjar
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
-import java.io.FileInputStream
 import kotlin.random.Random
 
 /**
@@ -40,30 +34,8 @@ object ModUpdater {
         // Perform a checksum check (SHA512)
         val currentChecksum = Hash.SHA512.checksum(jarPath).decodeToString()
         val latestChecksum = Hash.SHA512.checksum(latestJarPath).decodeToString()
-        val areChecksumsDifferent = currentChecksum == latestChecksum
 
-        // Perform a version check
-        // Unjar
-        val unjarPath = "$cacheFolderPath/upd_unjar_${Random.nextInt(Int.MAX_VALUE)}"
-        File(unjarPath).mkdir()
-        unjar(latestJarPath, unjarPath)
-        // Extract the current version
-        val currentVersionInput = FileInputStream("$unjarPath/fabric.mod.json")
-        val currentVersion = JSON
-            .parseToJsonElement(currentVersionInput.readBytes().decodeToString())
-            .jsonObject["version"]?.jsonPrimitive?.content!!
-        currentVersionInput.close()
-        // Compare
-        val areVersionsDifferent = currentVersion == entry.version
-
-        // Delete caches if that option is enabled in the settings
-        if (!Settings.storeCaches) {
-            File(latestJarPath).delete()
-            File(unjarPath).deleteRecursively()
-        }
-
-        // If any of these comparisons is successful, updates are available
-        return areChecksumsDifferent || areVersionsDifferent
+        return currentChecksum == latestChecksum
     }
 
     /**
