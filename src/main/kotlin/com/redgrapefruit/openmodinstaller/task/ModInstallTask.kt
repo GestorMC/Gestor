@@ -12,7 +12,10 @@ import java.nio.channels.Channels
 object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContext, DefaultPostLaunchTaskContext> {
     override fun launch(context: ModInstallLaunchContext) {
         context.apply {
-            downloadFile(entry.url, "$modsFolder/${jarName}.jar")
+            val path = "$modsFolder/$jarName.jar"
+            if (File(path).exists())
+
+            downloadFile(entry.url, path)
         }
     }
 }
