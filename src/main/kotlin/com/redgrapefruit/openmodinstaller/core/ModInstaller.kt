@@ -108,14 +108,14 @@ object ModInstaller {
         val mainEntry = releaseType.getEntry(isMain = true, mod)
         downloadFromJSON(modsFolder, mainEntry, isMain = true, mainId = mod.meta.name.lowercase())
         // Download dependencies
-        mod.dependencies.forEach { wrapper ->
-            // TODO: Support different release types for dependencies
-            val depEntry: ReleaseEntry = if (wrapper.id == "croptopia") {
-                ReleaseType.Stable.getEntry(isMain = false, mod, wrapper.id)
-            } else {
-                ReleaseType.Snapshot.getEntry(isMain = false, mod, wrapper.id)
-            }
-            downloadFromJSON(modsFolder, depEntry, isMain = false, depId = wrapper.id)
-        }
+//        mod.dependencies.forEach { wrapper ->
+//            // TODO: Support different release types for dependencies
+//            val depEntry: ReleaseEntry = if (wrapper.id == "croptopia") {
+//                ReleaseType.Stable.getEntry(isMain = false, mod, wrapper.id)
+//            } else {
+//                ReleaseType.Snapshot.getEntry(isMain = false, mod, wrapper.id)
+//            }
+//            downloadFromJSON(modsFolder, depEntry, isMain = false, depId = wrapper.id)
+//        }
     }
 }
