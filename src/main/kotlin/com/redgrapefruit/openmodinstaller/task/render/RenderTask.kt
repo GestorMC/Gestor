@@ -38,6 +38,9 @@ object RenderTaskManager {
      */
     @Composable
     fun executeSchedule() {
-        schedule.forEach(RenderTask::execute)
+        schedule.forEach { task ->
+            task.execute()
+            removeFromSchedule(task)
+        }
     }
 }
