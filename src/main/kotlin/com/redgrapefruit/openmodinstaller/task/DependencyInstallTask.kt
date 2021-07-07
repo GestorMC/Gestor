@@ -2,6 +2,7 @@ package com.redgrapefruit.openmodinstaller.task
 
 import com.redgrapefruit.openmodinstaller.data.mod.Mod
 import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
+import java.io.File
 
 /**
  * A [Task] for automatic dependency installation.
@@ -10,7 +11,24 @@ import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
  */
 object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInstallLaunchContext, DefaultPostLaunchTaskContext> {
     override fun launch(context: DependencyInstallLaunchContext) {
-        
+        context.apply {
+            if (releaseTypes.size != jarNames.size && jarNames.size != mod.dependencies.size) {
+                // TODO: Handle with a popup RenderTask
+                return
+            }
+            // This is a "solution"
+            releaseTypes.forEach { type -> jarNames.forEach { jarName -> mod.dependencies.forEach { wrapper ->
+                val entry = type.getEntry(false, mod, wrapper.id)
+
+                val path = "$modsFolder/$jarName.jar"
+                val file = File(path)
+
+                // Avoid rewrites completely
+                if (file.exists()) file.delete()
+
+                downloadFile(entry.url, path, true)
+            }}}
+        }
     }
 }
 
@@ -19,9 +37,13 @@ object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInsta
  */
 class DependencyInstallLaunchContext(
     /**
+     * The target mods folder
+     */
+    val modsFolder: String,
+    /**
      * The targeted [ReleaseType]s for **each** dependency
      */
-    val releaseType: List<ReleaseType>,
+    val releaseTypes: List<ReleaseType>,
     /**
      * The names for **each** dependency JAR file
      */

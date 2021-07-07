@@ -15,7 +15,11 @@ object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContex
             val path = "$modsFolder/$jarName.jar"
             if (File(path).exists())
 
-            downloadFile(entry.url, path)
+            try {
+                downloadFile(entry.url, path, true)
+            } catch (exception: Exception) {
+                // TODO: Handle with a popup RenderTask
+            }
         }
     }
 }
