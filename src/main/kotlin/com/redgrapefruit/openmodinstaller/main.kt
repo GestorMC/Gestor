@@ -2,6 +2,7 @@ package com.redgrapefruit.openmodinstaller
 
 import androidx.compose.desktop.Window
 import androidx.compose.ui.unit.IntSize
+import com.mcgoodtime.gjmlc.core.GJMLC
 import com.redgrapefruit.openmodinstaller.core.ModDiscovery
 import com.redgrapefruit.openmodinstaller.util.Settings
 import kotlinx.serialization.json.Json

@@ -132,7 +132,6 @@ public class GJMLC {
         read(process.getErrorStream(), System.err);
     }
 
-    // 读取输入流
     private static void read(InputStream inputStream, PrintStream out) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));

@@ -98,13 +98,11 @@ public class LibrariesManager {
             ZipEntry entry = (ZipEntry)entries.nextElement();
             String zipEntryName = entry.getName();
             InputStream in = zip.getInputStream(entry);
-            String outPath = (descDir+zipEntryName).replaceAll("\\*", "/");;
-            //判断路径是否存在,不存在则创建文件路径
+            String outPath = (descDir+zipEntryName).replaceAll("\\*", "/");
             File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
             if(!file.exists()){
                 file.mkdirs();
             }
-            //判断文件全路径是否为文件夹,如果是上面已经上传,不需要解压
             if(new File(outPath).isDirectory()){
                 continue;
             }
