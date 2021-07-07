@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.commons.lang3.SystemUtils;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -11,23 +12,15 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-/**
- * Created by suhao on 2015-6-11-0011.
- *
- * @author suhao
- */
 public class LibrariesManager {
-    private static List<String> missingLib = new ArrayList<>();
-    private static List<String> nativesLib = new ArrayList<>();
-    /**
-     *
-     * @return Missing Libraries Files List.
-     */
-    protected static List<String> checkLibraries() {
+    private static final List<String> missingLib = new ArrayList<>();
+    private static final List<String> nativesLib = new ArrayList<>();
+
+    protected static void checkLibraries() {
 
         if (GJMLC.verInfoObject.has("inheritsFrom")) {
             String parentText = GJMLC.loadVersionInfoFile(GJMLC.verInfoObject.get("inheritsFrom").getAsString());
-            JsonObject parentVerInfoObj = new JsonParser().parse(parentText).getAsJsonObject();
+            JsonObject parentVerInfoObj = JsonParser.parseString(parentText).getAsJsonObject();
             JsonArray parentLibArray = (JsonArray) parentVerInfoObj.get("libraries");
             check(parentLibArray);
         }
@@ -49,7 +42,6 @@ public class LibrariesManager {
             }
         }
 
-        return missingLib;
     }
 
     private static void check(JsonArray jsonArray) {
@@ -62,7 +54,7 @@ public class LibrariesManager {
             String libs = "./.minecraft/libraries/" + a + "/" + b + "/" + c + ".jar";
             File fileLib = new File(libs);
             if (!fileLib.exists()) {
-                if (arrayObject.has("natives")) {;
+                if (arrayObject.has("natives")) {
                     JsonObject nativesObject = (JsonObject) arrayObject.get("natives");
                     String natives = null;
                     if (SystemUtils.IS_OS_WINDOWS) {
@@ -88,22 +80,22 @@ public class LibrariesManager {
         }
     }
 
-    private static void unZipFiles(File zipFile, String descDir)throws IOException{
+    private static void unZipFiles(File zipFile, String descDir) throws IOException {
         File pathFile = new File(descDir);
-        if(!pathFile.exists()){
+        if (!pathFile.exists()) {
             pathFile.mkdirs();
         }
         ZipFile zip = new ZipFile(zipFile);
-        for(Enumeration entries = zip.entries(); entries.hasMoreElements();){
-            ZipEntry entry = (ZipEntry)entries.nextElement();
+        for (Enumeration<? extends ZipEntry> entries = zip.entries(); entries.hasMoreElements(); ) {
+            ZipEntry entry = entries.nextElement();
             String zipEntryName = entry.getName();
             InputStream in = zip.getInputStream(entry);
-            String outPath = (descDir+zipEntryName).replaceAll("\\*", "/");
+            String outPath = (descDir + zipEntryName).replaceAll("\\*", "/");
             File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.mkdirs();
             }
-            if(new File(outPath).isDirectory()){
+            if (new File(outPath).isDirectory()) {
                 continue;
             }
 
@@ -117,7 +109,7 @@ public class LibrariesManager {
             }
             byte[] buf1 = new byte[1024];
             int len;
-            while((len = in.read(buf1)) > 0){
+            while ((len = in.read(buf1)) > 0) {
                 if (out != null) {
                     try {
                         out.write(buf1, 0, len);

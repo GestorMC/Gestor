@@ -3,29 +3,26 @@ package com.mcgoodtime.gjmlc.core;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.io.*;
 
-
-/**
- * Created by suhao on 2015-6-8-0008.
- *
- * @author suhao
- */
 public class GJMLC {
 
     public static JsonObject verInfoObject;
     public static JsonArray libArray;
-
-    private static String text;
-
-    private static JsonParser parser = new JsonParser();
-
     protected static String versionPath = "./.minecraft/versions/";
-    private static String versionInfoJson;
     protected static String nativesPath;
-
-    private String version;
+    private static String text;
+    private final String version;
     private String parentVer;
+
+    public GJMLC(String version) {
+        text = loadVersionInfoFile(version);
+        verInfoObject = JsonParser.parseString(text).getAsJsonObject();
+        libArray = (JsonArray) verInfoObject.get("libraries");
+        nativesPath = versionPath + version + "/" + version + "-" + "Natives" + "/";
+        this.version = version;
+    }
 
     /*
      * Demo.
@@ -36,18 +33,60 @@ public class GJMLC {
         launcher.launch("GJMLC", 1024, null);
     }
 
-    public GJMLC(String version) {
-        text = loadVersionInfoFile(version);
-        verInfoObject = parser.parse(text).getAsJsonObject();
-        libArray = (JsonArray) verInfoObject.get("libraries");
-        nativesPath =  versionPath + version + "/" + version + "-" + "Natives" + "/";
-        this.version = version;
+    private static void readProcessOutput(Process process) {
+        read(process.getInputStream(), System.out);
+        read(process.getErrorStream(), System.err);
+    }
+
+    private static void read(InputStream inputStream, PrintStream out) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                out.println(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Load version info from json file
+     *
+     * @param version Launch Minecraft version.
+     * @return Minecraft version info file text.
+     */
+    protected static String loadVersionInfoFile(String version) {
+        String versionInfoJson = versionPath + version + "/" + version + ".json";
+        System.out.println("Version Info Json Path:" + versionInfoJson);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(versionInfoJson));
+            while ((line = br.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
     }
 
     /**
      * Before you launch, you must run the libraries checker.
      *
-     * @param username Minecraft username.
+     * @param username  Minecraft username.
      * @param maxMemory Java VM max use memory.
      */
     public void launch(String username, int maxMemory, String jvmArgs) {
@@ -60,16 +99,16 @@ public class GJMLC {
         String assets = getVersionInfo("assets");
 
         String libraries;
-        Boolean isInherits;
+        boolean isInherits;
         if (verInfoObject.has("inheritsFrom")) {
             libraries = getLibraries(text);
 
             parentVer = getVersionInfo("inheritsFrom");
             String parentText = loadVersionInfoFile(parentVer);
-            JsonObject parentVerInfoObj = parser.parse(parentText).getAsJsonObject();
+            JsonObject parentVerInfoObj = JsonParser.parseString(parentText).getAsJsonObject();
             JsonArray parentLibArray = (JsonArray) parentVerInfoObj.get("libraries");
 
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < parentLibArray.size(); i++) {
                 JsonObject arrayObject = (JsonObject) parentLibArray.get(i);
                 String lib = arrayObject.get("name").toString();
@@ -77,10 +116,10 @@ public class GJMLC {
                 String b = lib.substring(lib.lastIndexOf(":") + 1);
                 String c = lib.substring(lib.indexOf(":") + 1).replace(":", "-");
                 String libs = "\"" + "./.minecraft/libraries/" + a + "/" + b + "/" + c + ".jar" + "\"" + ";";
-                stringBuffer.append(libs);
+                stringBuilder.append(libs);
             }
             isInherits = true;
-            libraries = libraries + stringBuffer.toString();
+            libraries = libraries + stringBuilder;
         } else {
             isInherits = false;
             libraries = getLibraries(text);
@@ -120,36 +159,8 @@ public class GJMLC {
             Process process = Runtime.getRuntime().exec(cmd);
             readProcessOutput(process);
             process.waitFor();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void readProcessOutput(Process process) {
-        read(process.getInputStream(), System.out);
-        read(process.getErrorStream(), System.err);
-    }
-
-    private static void read(InputStream inputStream, PrintStream out) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                out.println(line);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -167,34 +178,8 @@ public class GJMLC {
         return verInfoObject.get(key).getAsInt();
     }
 
-    /**
-     * Load version info from json file
-     * @param version Launch Minecraft version.
-     * @return Minecraft version info file text.
-     */
-    protected static String loadVersionInfoFile(String version) {
-        versionInfoJson = versionPath + version + "/" + version + ".json";
-        System.out.println("Version Info Json Path:" + versionInfoJson);
-
-        StringBuffer stringBuffer = new StringBuffer();
-        String line = null;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(new File(versionInfoJson)));
-            while( (line = br.readLine())!= null ){
-                stringBuffer.append(line);
-            }
-            br.close();
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stringBuffer.toString();
-    }
-
-    protected String  getLibraries(String text) {
-        StringBuffer stringBuffer = new StringBuffer();
+    protected String getLibraries(String text) {
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < libArray.size(); i++) {
             JsonObject arrayObject = (JsonObject) libArray.get(i);
             String lib = arrayObject.get("name").toString();
@@ -202,9 +187,9 @@ public class GJMLC {
             String b = lib.substring(lib.lastIndexOf(":") + 1);
             String c = lib.substring(lib.indexOf(":") + 1).replace(":", "-");
             String libs = "\"" + "./.minecraft/libraries/" + a + "/" + b + "/" + c + ".jar" + "\"" + ";";
-            stringBuffer.append(libs);
+            stringBuilder.append(libs);
         }
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     public void checkLibs() {
