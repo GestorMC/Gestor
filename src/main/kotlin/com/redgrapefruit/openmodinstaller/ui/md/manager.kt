@@ -1,4 +1,4 @@
-package com.redgrapefruit.openmodinstaller.markdown
+package com.redgrapefruit.openmodinstaller.ui.md
 
 import com.redgrapefruit.openmodinstaller.core.ModDiscovery
 import com.redgrapefruit.openmodinstaller.core.ModInstaller
