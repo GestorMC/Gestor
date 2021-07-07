@@ -13,6 +13,51 @@ interface Task<
     fun postLaunch(context: TPostLaunchContext) = Unit
 }
 
+/**
+ * A launcher for [Task]s accepting all possible variations of used [TaskContext]s
+ */
+object TaskLauncher {
+    fun <
+            TPreLaunch : PreLaunchTaskContext,
+            TLaunch : LaunchTaskContext,
+            TPostLaunch : PostLaunchTaskContext,
+            TTask : Task<TPreLaunch, TLaunch, TPostLaunch>>
+            launch(task: TTask, preCtx: TPreLaunch, mainCtx: TLaunch, postCtx: TPostLaunch) {
+
+        task.preLaunch(preCtx)
+        task.launch(mainCtx)
+        task.postLaunch(postCtx)
+    }
+
+    fun <
+            TPreLaunch : PreLaunchTaskContext,
+            TLaunch : LaunchTaskContext,
+            TTask : Task<TPreLaunch, TLaunch, DefaultPostLaunchTaskContext>>
+            launch(task: TTask, preCtx: TPreLaunch, mainCtx: TLaunch) {
+
+        task.preLaunch(preCtx)
+        task.launch(mainCtx)
+    }
+
+    fun <
+            TLaunch : LaunchTaskContext,
+            TPostLaunch : PostLaunchTaskContext,
+            TTask : Task<DefaultPreLaunchTaskContext, TLaunch, TPostLaunch>>
+            launch(task: TTask, mainCtx: TLaunch, postCtx: TPostLaunch) {
+
+        task.launch(mainCtx)
+        task.postLaunch(postCtx)
+    }
+
+    fun <
+            TLaunch : LaunchTaskContext,
+            TTask : Task<DefaultPreLaunchTaskContext, TLaunch, DefaultPostLaunchTaskContext>>
+            launch(task: TTask, mainCtx: TLaunch) {
+
+        task.launch(mainCtx)
+    }
+}
+
 // Contexts
 
 sealed interface TaskContext
