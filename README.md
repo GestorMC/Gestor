@@ -49,7 +49,7 @@ and the status of their development:
   - [ ] Viewing modpacks
   - [ ] Installing modpacks
 - [ ] Launching Minecraft
-  - [ ] Launching via the [GJLMC](https://github.com/GoodTimeStudio/GoodTime-Java-Minecraft-Launcher-Core) core
+  - [ ] Launching via the [GJMLC](https://github.com/GoodTimeStudio/GoodTime-Java-Minecraft-Launcher-Core) core
   - [ ] Multiple profiles
   - [ ] Multiple modloaders (Forge, Fabric and Quilt)
   - [ ] Launching modpacks
