@@ -28,7 +28,7 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
 
             if (file.exists()) file.delete()
 
-            downloadFile(entry.url, file.absolutePath)
+            downloadFile(entry.url, file.absolutePath, createFile = true)
         }
     }
 

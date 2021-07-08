@@ -51,7 +51,7 @@ fun downloadFile(
     }
 
     // Make URL
-    val url: URL = URL(input)
+    val url = URL(input)
 
     // Open a channel for the URL and a stream for the output file
     val channel = Channels.newChannel(url.openStream())
