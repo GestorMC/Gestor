@@ -23,7 +23,13 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
     override fun launch(context: ModUpdateLaunchContext) {
         if (!hasUpdates) return
 
+        context.apply {
+            val file = File("$modsFolder/$jarName.jar")
 
+            if (file.exists()) file.delete()
+
+            downloadFile(entry.url, file.absolutePath)
+        }
     }
 
     override fun postLaunch(context: DefaultPostLaunchTaskContext) {
