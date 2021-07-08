@@ -1,9 +1,10 @@
 package com.redgrapefruit.openmodinstaller
 
 import androidx.compose.desktop.Window
+import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.unit.IntSize
-import com.mcgoodtime.gjmlc.core.GJMLC
-import com.redgrapefruit.openmodinstaller.core.ModDiscovery
+import com.redgrapefruit.openmodinstaller.ui.darkColors
+import com.redgrapefruit.openmodinstaller.ui.renderHomepage
 import com.redgrapefruit.openmodinstaller.util.Settings
 import kotlinx.serialization.json.Json
 
@@ -12,11 +13,13 @@ val JSON = Json {
 }
 
 fun main() {
-    // Init discovery and settings
-    ModDiscovery.load(Settings.cacheFolderField)
-    Settings.load()
+//    // Init discovery and settings
+//    ModDiscovery.load(Settings.cacheFolderField)
+//    Settings.load()
     // Launch Window
-    Window(resizable = false, size = IntSize(850, 650), onDismissRequest = Settings::save) {
-
+    Window(size = IntSize(1440, 1024), onDismissRequest = Settings::save) {
+        MaterialTheme(colors = darkColors) {
+            renderHomepage()
+        }
     }
 }
