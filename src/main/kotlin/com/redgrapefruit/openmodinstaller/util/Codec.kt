@@ -94,6 +94,15 @@ object CodecManager {
     }
 
     /**
+     * Checks if the appropriate codec for [cacheFolderPath] contains entry with [index] and [url]
+     */
+    fun hasEntry(cacheFolderPath: String, index: String, url: String): Boolean {
+        val codec = getOrCreate(cacheFolderPath)
+
+        return codec.indexes.contains(index) && codec.urls.contains(url)
+    }
+
+    /**
      * Clears the entire appropriate codec for [cacheFolderPath]
      */
     fun clear(cacheFolderPath: String) {
