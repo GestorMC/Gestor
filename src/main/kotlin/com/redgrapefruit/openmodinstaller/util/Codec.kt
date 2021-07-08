@@ -26,36 +26,6 @@ data class Codec(
  */
 object CodecManager {
     /**
-     * Gets the appropriate codec for [cacheFolderPath] or creates it with default values
-     */
-    fun getOrCreate(cacheFolderPath: String): Codec {
-        val codecPath = "$cacheFolderPath/codec.json"
-        val codecFile = File(codecPath)
-
-        // Create codec if not exists
-        if (!codecFile.exists()) {
-            codecFile.createNewFile()
-
-            val default = Codec(listOf(), listOf())
-            val out = Json.encodeToString(Codec.serializer(), default)
-
-            FileOutputStream(codecFile).use { stream ->
-                stream.write(out.encodeToByteArray())
-            }
-
-            return default
-        }
-
-        // Here if exists
-        // Read codec
-        val codec: Codec
-        FileInputStream(codecFile).use { stream ->
-            codec = Json.decodeFromString(Codec.serializer(), stream.readBytes().decodeToString())
-        }
-        return codec
-    }
-
-    /**
      * Writes an entry to the appropriate codec for [cacheFolderPath] with [index] and [url]
      */
     fun addEntry(cacheFolderPath: String, index: String, url: String) {
@@ -94,12 +64,31 @@ object CodecManager {
     }
 
     /**
-     * Checks if the appropriate codec for [cacheFolderPath] contains entry with [index] and [url]
+     * Checks if the appropriate codec for [cacheFolderPath] contains entry with [url]
      */
-    fun hasEntry(cacheFolderPath: String, index: String, url: String): Boolean {
+    fun hasEntry(cacheFolderPath: String, url: String): Boolean {
         val codec = getOrCreate(cacheFolderPath)
 
-        return codec.indexes.contains(index) && codec.urls.contains(url)
+        return codec.urls.contains(url)
+    }
+
+    /**
+     * Returns an entry from the appropriate codec for [cacheFolderPath] with [url].
+     *
+     * If entry not found, throws [RuntimeException]
+     */
+    fun getEntry(cacheFolderPath: String, url: String): String {
+        val codec = getOrCreate(cacheFolderPath)
+
+        codec.indexes.forEach { index ->
+            codec.urls.forEach { foundUrl ->
+                if (foundUrl == url) {
+                    return index
+                }
+            }
+        }
+
+        throw RuntimeException("Couldn't find entry. Please run hasEntry beforehand to debug the issue")
     }
 
     /**
@@ -110,6 +99,36 @@ object CodecManager {
 
         // Rewrite with empty lists
         rewrite(cacheFolderPath, Codec(listOf(), listOf()))
+    }
+
+    /**
+     * Gets the appropriate codec for [cacheFolderPath] or creates it with default values
+     */
+    private fun getOrCreate(cacheFolderPath: String): Codec {
+        val codecPath = "$cacheFolderPath/codec.json"
+        val codecFile = File(codecPath)
+
+        // Create codec if not exists
+        if (!codecFile.exists()) {
+            codecFile.createNewFile()
+
+            val default = Codec(listOf(), listOf())
+            val out = Json.encodeToString(Codec.serializer(), default)
+
+            FileOutputStream(codecFile).use { stream ->
+                stream.write(out.encodeToByteArray())
+            }
+
+            return default
+        }
+
+        // Here if exists
+        // Read codec
+        val codec: Codec
+        FileInputStream(codecFile).use { stream ->
+            codec = Json.decodeFromString(Codec.serializer(), stream.readBytes().decodeToString())
+        }
+        return codec
     }
 
     /**
