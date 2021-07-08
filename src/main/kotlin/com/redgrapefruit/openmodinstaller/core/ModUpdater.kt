@@ -33,8 +33,8 @@ object ModUpdater {
         ModInstaller.downloadFile(entry.url, latestJarPath)
 
         // Perform a checksum check (SHA512)
-        val currentChecksum = Hash.SHA512.checksum(jarPath).decodeToString()
-        val latestChecksum = Hash.SHA512.checksum(latestJarPath).decodeToString()
+        val currentChecksum = Hash.checksum(jarPath).decodeToString()
+        val latestChecksum = Hash.checksum(latestJarPath).decodeToString()
 
         return currentChecksum == latestChecksum
     }

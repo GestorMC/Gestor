@@ -68,7 +68,7 @@ fun downloadFile(
 /**
  * The [LaunchTaskContext] for [ModInstallTask]
  */
-class ModInstallLaunchContext(
+data class ModInstallLaunchContext(
     /**
      * The target mods folder
      */

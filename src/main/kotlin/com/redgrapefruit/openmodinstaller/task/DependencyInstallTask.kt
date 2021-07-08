@@ -35,7 +35,7 @@ object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInsta
 /**
  * The [LaunchTaskContext] for the [DependencyInstallTask]
  */
-class DependencyInstallLaunchContext(
+data class DependencyInstallLaunchContext(
     /**
      * The target mods folder
      */
