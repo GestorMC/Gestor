@@ -18,9 +18,6 @@ fun unjar(input: String, output: String) {
         // Get the entry and the File
         val entry = entries.nextElement()
 
-        // Only read the fabric.mod.json file
-        if (entry.name != "fabric.mod.json") continue
-
         var file = File(output, entry.name)
 
         // Check if the target is a file or a directory
