@@ -3,7 +3,15 @@ package com.redgrapefruit.openmodinstaller.task.render
 import androidx.compose.runtime.Composable
 
 /**
- * A task for rendering dynamic elements
+ * A task for rendering dynamic elements.
+ *
+ * `RenderTask`s are mostly fired like events and executed on the next rendercall.
+ *
+ * Basically, you schedule the `RenderTask` from your `Task`'s code:
+ * ```kotlin
+ * RenderTaskManager.addToSchedule(MyRenderTask)
+ * ```
+ * And your `RenderTask` will occur on the next rendercall.
  */
 interface RenderTask {
     /**
