@@ -70,3 +70,21 @@ interface PostLaunchTaskContext : TaskContext
 object DefaultPreLaunchTaskContext : PreLaunchTaskContext
 object DefaultLaunchTaskContext : LaunchTaskContext
 object DefaultPostLaunchTaskContext : PostLaunchTaskContext
+
+/**
+ * A [BlockingValue] determines whether a stage of a [Task] should be cancelled.
+ *
+ * Always has to be a [Boolean] property.
+ *
+ * If `false`, the stage is cancelled.
+ *
+ * The cancellation itself must be managed by the [Task]'s implementation code.
+ *
+ * `postLaunch` must be implemented by the [Task] in order to reset the [BlockingValue] to `false` for later usage.
+ *
+ * The annotation is decorative.
+ */
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.PROPERTY)
+@MustBeDocumented
+annotation class BlockingValue
