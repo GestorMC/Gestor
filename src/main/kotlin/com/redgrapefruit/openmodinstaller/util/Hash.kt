@@ -4,6 +4,11 @@ import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
 
+/**
+ * A utility for getting a `SHA-512` checksum of a file in a `ByteArray`.
+ *
+ * To convert the resulting `ByteArray` into a readable string, use the `.decodeToString()` extension
+ */
 object Hash {
     fun checksum(inPath: String): ByteArray {
         val input = File(inPath)
@@ -16,7 +21,7 @@ object Hash {
                 while (inputStream.read(block).also { length = it } > 0) {
                     digest.update(block, 0, length)
                 }
-                return digest.digest()
+                return digest.digest().also { digest.reset() }
             }
         } catch (e: Exception) {
             e.printStackTrace()
