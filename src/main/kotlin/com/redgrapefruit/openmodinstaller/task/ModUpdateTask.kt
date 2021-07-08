@@ -17,40 +17,46 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
     private var hasUpdates: Boolean = false
 
     override fun preLaunch(context: ModUpdatePreLaunchContext) {
-        context.apply {
-            val latestJarPath: String
-
-            // Check codec for latest JAR
-            if (CodecManager.hasEntry(cacheFolderPath, entry.url)) {
-                // Retrieve cached
-                val index = CodecManager.getEntry(cacheFolderPath, entry.url)
-                latestJarPath = "$cacheFolderPath/cache_$index"
-            } else {
-                // Download and add to codec
-                val index = Random.nextInt(Int.MAX_VALUE).toString()
-                latestJarPath = "$cacheFolderPath/cache_$index"
-                CodecManager.addEntry(cacheFolderPath, index, entry.url)
-
-                File(latestJarPath).createNewFile()
-                downloadFile(entry.url, latestJarPath)
-            }
-
-            // Compare checksums
-            val currentChecksum = Hash.checksum(jarPath).decodeToString()
-            val latestChecksum = Hash.checksum(latestJarPath).decodeToString()
-
-            // Set blocking value to the result of the comparison
-            hasUpdates = currentChecksum == latestChecksum
-        }
+        context.apply { hasUpdates = checkUpdates(cacheFolderPath, entry, jarPath) }
     }
 
     override fun launch(context: ModUpdateLaunchContext) {
         if (!hasUpdates) return
+
+
     }
 
     override fun postLaunch(context: DefaultPostLaunchTaskContext) {
         hasUpdates = false
     }
+}
+
+/**
+ * Checks for updates
+ */
+fun checkUpdates(cacheFolderPath: String, entry: ReleaseEntry, jarPath: String): Boolean {
+    val latestJarPath: String
+
+    // Check codec for latest JAR
+    if (CodecManager.hasEntry(cacheFolderPath, entry.url)) {
+        // Retrieve cached
+        val index = CodecManager.getEntry(cacheFolderPath, entry.url)
+        latestJarPath = "$cacheFolderPath/cache_$index"
+    } else {
+        // Download and add to codec
+        val index = Random.nextInt(Int.MAX_VALUE).toString()
+        latestJarPath = "$cacheFolderPath/cache_$index"
+        CodecManager.addEntry(cacheFolderPath, index, entry.url)
+
+        File(latestJarPath).createNewFile()
+        downloadFile(entry.url, latestJarPath)
+    }
+
+    // Compare checksums
+    val currentChecksum = Hash.checksum(jarPath).decodeToString()
+    val latestChecksum = Hash.checksum(latestJarPath).decodeToString()
+
+    return currentChecksum == latestChecksum
 }
 
 data class ModUpdatePreLaunchContext(
