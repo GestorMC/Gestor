@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package com.redgrapefruit.openmodinstaller.ui.md
+package com.redgrapefruit.openmodinstaller.md
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*

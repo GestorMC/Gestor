@@ -1,4 +1,4 @@
-package com.redgrapefruit.openmodinstaller.ui.md
+package com.redgrapefruit.openmodinstaller.md
 
 import com.redgrapefruit.openmodinstaller.core.ModDiscovery
 import com.redgrapefruit.openmodinstaller.core.ModInstaller

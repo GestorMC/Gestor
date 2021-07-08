@@ -1,4 +1,4 @@
-package com.redgrapefruit.openmodinstaller.task.render
+package com.redgrapefruit.openmodinstaller.rendertask
 
 import androidx.compose.runtime.Composable
 
