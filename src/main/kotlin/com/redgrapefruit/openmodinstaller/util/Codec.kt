@@ -7,10 +7,14 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 /**
- * Cache codec format
+ * Cache codec format.
+ *
+ * No direct access to [Codec] instances can be made.
+ *
+ * For that, please use methods in the [CodecManager].
  */
 @Serializable
-data class Codec(
+internal data class Codec(
     /**
      * List of cache indexed names
      */
