@@ -18,7 +18,10 @@ import androidx.compose.ui.unit.em
 @Composable
 fun renderHomepage() {
     discoverButton(currentColors)
-    Column(modifier = Modifier.padding(77.dp, 244.dp)) { Row { modImage() } }
+    modImage(0, 0)
+    modImage(1, 0)
+    modImage(0, 1)
+    modImage(1, 1)
 }
 
 /**
@@ -42,11 +45,15 @@ fun discoverButton(colors: Colors) {
 }
 
 @Composable
-fun modImage() {
+fun modImage(x: Int, y: Int) {
+    val padX = (77 + x * 388).dp
+    val padY = (244 + y * 232).dp
+
     Image(
         bitmap = imageResource("unknown_img.png"),
-        contentDescription = "indeed",
+        contentDescription = null,
         modifier = Modifier
+            .padding(padX, padY)
             .width(350.dp)
             .height(200.dp)
             .clip(RoundedCornerShape(20))
