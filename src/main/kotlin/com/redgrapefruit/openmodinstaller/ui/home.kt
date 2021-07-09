@@ -19,16 +19,14 @@ import androidx.compose.ui.unit.em
 fun renderHomepage() {
     discoverButton(currentColors)
     modImage(0, 0)
-    modImage(1, 0)
     modImage(0, 1)
-    modImage(1, 1)
 }
 
 /**
  *
  */
 @Composable
-fun discoverButton(colors: Colors) {
+private fun discoverButton(colors: Colors) {
     Column(modifier = Modifier.padding(77.dp, 137.dp)) {
         Row {
             Text(
@@ -46,16 +44,24 @@ fun discoverButton(colors: Colors) {
 
 @Composable
 fun modImage(x: Int, y: Int) {
-    val padX = (77 + x * 388).dp
-    val padY = (244 + y * 232).dp
+    @Composable
+    fun modImageInternal() {
+        Image(
+            bitmap = imageResource("unknown_img.png"),
+            contentDescription = null,
+            modifier = Modifier
+                .width(350.dp)
+                .height(200.dp)
+                .clip(RoundedCornerShape(20))
+        )
+    }
 
-    Image(
-        bitmap = imageResource("unknown_img.png"),
-        contentDescription = null,
-        modifier = Modifier
-            .padding(padX, padY)
-            .width(350.dp)
-            .height(200.dp)
-            .clip(RoundedCornerShape(20))
-    )
+    val makeColumn = y == 0
+    val makeRow = x == 0
+
+    Column {
+        Row {
+            modImageInternal()
+        }
+    }
 }

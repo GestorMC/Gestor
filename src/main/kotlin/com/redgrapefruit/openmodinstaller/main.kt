@@ -16,7 +16,7 @@ fun main() {
 //    ModDiscovery.load(Settings.cacheFolderField)
 //    Settings.load()
     // Launch Window
-    Window(size = IntSize(1440, 1024), onDismissRequest = Settings::save) {
+    Window(size = IntSize(1440, 1024), onDismissRequest = Settings::save, resizable = false) {
         MaterialTheme {
             renderHomepage()
         }
