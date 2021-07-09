@@ -12,22 +12,18 @@ group = "com.redgrapefruit"
 version = "1.0"
 
 repositories {
+    jcenter()
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
     implementation(compose.desktop.currentOs)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
     implementation("org.commonmark:commonmark:0.18.0")
     implementation(group = "com.google.code.gson", name = "gson", version = "2.8.7")
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
 
-}
-
-tasks.test {
-    useJUnitPlatform()
 }
 
 tasks.withType<KotlinCompile>() {
