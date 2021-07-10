@@ -6,7 +6,7 @@ import java.io.File
 /**
  * Removes your mods
  */
-@Deprecated("This system is deprecated. Currently being migrated to the Task architecture")
+@Deprecated("Use RemoveTask")
 object ModRemover {
     /**
      * Removes the given mod

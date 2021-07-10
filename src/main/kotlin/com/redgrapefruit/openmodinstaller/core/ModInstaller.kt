@@ -8,13 +8,13 @@ import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-private const val BUFFER_SIZE = 512000
-
 /**
  * Installs mods from the [DistributionSource]
  */
-@Deprecated("This system is deprecated. Currently being migrated to the Task architecture")
+@Deprecated("Use ModInstallTask and DependencyInstallTask")
 object ModInstaller {
+    private const val BUFFER_SIZE = 512000
+
     /**
      * Downloads a file from the Internet using the built-in `java.nio` API
      */
