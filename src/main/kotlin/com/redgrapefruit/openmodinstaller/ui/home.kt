@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.em
 
 @Composable
 fun renderHomepage() {
-    discoverButton(currentColors)
     modImage(0, 0)
     modImage(0, 1)
+    discoverButton(currentColors)
 }
 
 /**
