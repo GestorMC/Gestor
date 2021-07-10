@@ -1,6 +1,6 @@
 package com.redgrapefruit.openmodinstaller.core
 
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
 import java.io.File
 
 /**

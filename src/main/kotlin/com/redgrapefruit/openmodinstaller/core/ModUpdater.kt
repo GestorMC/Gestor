@@ -1,6 +1,6 @@
 package com.redgrapefruit.openmodinstaller.core
 
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
 import com.redgrapefruit.openmodinstaller.util.Hash
 import java.io.File
 import kotlin.random.Random

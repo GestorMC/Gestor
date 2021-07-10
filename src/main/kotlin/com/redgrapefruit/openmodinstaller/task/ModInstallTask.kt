@@ -1,6 +1,6 @@
 package com.redgrapefruit.openmodinstaller.task
 
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
@@ -18,7 +18,7 @@ object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContex
             try {
                 downloadFile(entry.url, path, true)
             } catch (exception: Exception) {
-                // TODO: Handle with a popup RenderTask
+                // TODO: Handle with a popup RenderTask (lucsoft)
             }
         }
     }
