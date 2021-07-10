@@ -18,7 +18,7 @@ object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContex
             try {
                 downloadFile(entry.url, path, true)
             } catch (exception: Exception) {
-                // TODO: Handle with a popup RenderTask
+                // TODO: Handle with a popup RenderTask (lucsoft)
             }
         }
     }

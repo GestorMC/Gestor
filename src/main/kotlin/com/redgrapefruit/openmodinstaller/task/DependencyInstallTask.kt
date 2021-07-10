@@ -13,7 +13,7 @@ object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInsta
     override fun launch(context: DependencyInstallLaunchContext) {
         context.apply {
             if (releaseTypes.size != jarNames.size && jarNames.size != mod.dependencies.size) {
-                // TODO: Handle with a popup RenderTask
+                // TODO: Handle with a popup RenderTask (lucsoft)
                 return
             }
             // This is a "solution"
