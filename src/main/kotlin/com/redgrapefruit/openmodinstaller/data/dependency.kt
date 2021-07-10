@@ -1,6 +1,5 @@
 package com.redgrapefruit.openmodinstaller.data
 
-import com.redgrapefruit.openmodinstaller.data.mod.Link
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
