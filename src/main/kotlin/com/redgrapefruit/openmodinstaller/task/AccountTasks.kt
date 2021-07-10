@@ -33,6 +33,15 @@ object AccountLogInTask : Task<AccountLogInCacheContext, AccountLogInLaunchConte
     }
 }
 
+/**
+ * A [Task] for logging you out of the auth system
+ */
+object AccountLogOutTask : Task<DefaultPreLaunchTaskContext, AccountLogOutLaunchContext, DefaultPostLaunchTaskContext> {
+    override fun launch(context: AccountLogOutLaunchContext) {
+        context.userAuth.logOut()
+    }
+}
+
 data class AccountLogInCacheContext(
     /**
      * An instance of [YggdrasilUserAuthentication]
@@ -57,4 +66,11 @@ data class AccountLogInLaunchContext(
      * The password of the account
      */
     val password: String
+) : LaunchTaskContext
+
+data class AccountLogOutLaunchContext(
+    /**
+     * An instance of [YggdrasilUserAuthentication]
+     */
+    val userAuth: YggdrasilUserAuthentication
 ) : LaunchTaskContext
