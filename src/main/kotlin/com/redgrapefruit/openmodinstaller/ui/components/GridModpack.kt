@@ -10,9 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.redgrapefruit.openmodinstaller.data.ModpackData
 
 @Composable
-fun GridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
+fun GridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array<ModpackData>) {
     val (value, setValue) = remember { mutableStateOf(IntSize.Zero) }
 
     Column (Modifier.onSizeChanged { coordinates -> setValue(coordinates) }) {
@@ -23,7 +24,7 @@ fun GridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SmallGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
+fun SmallGridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array<ModpackData>) {
     Column {
         Column(Modifier.padding(top = 21.dp)) {
             ModPackListTitle("My Modpacks")
@@ -32,8 +33,8 @@ fun SmallGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
                 contentPadding = PaddingValues(bottom = 21.dp, start = 21.dp, end = 21.dp),
                 modifier = Modifier.height((120 + 21).dp)
             ) {
-                items(myModpacksArray) {
-                    Modpack()
+                items(myModpacksArray) { data ->
+                    Modpack(data)
                 }
             }
         }
@@ -43,9 +44,9 @@ fun SmallGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
                 cells = GridCells.Adaptive((240 + 21 + 5).dp),
                 contentPadding = PaddingValues(start = 21.dp, bottom = 8.dp, end = 8.dp)
             ) {
-                items(discoverArray) {
+                items(discoverArray) { data ->
                     Row(Modifier.padding(end = 13.dp, bottom = 13.dp)) {
-                        Modpack()
+                        Modpack(data)
                     }
                 }
             }
@@ -55,7 +56,7 @@ fun SmallGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BigGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
+fun BigGridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array<ModpackData>) {
     Row(
         modifier = Modifier
             .padding(horizontal = 21.dp)
@@ -68,9 +69,9 @@ fun BigGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
                 cells = GridCells.Adaptive(240.dp),
                 contentPadding = PaddingValues(bottom = 13.dp)
             ) {
-                items(discoverArray) {
+                items(discoverArray) { data ->
                     Row(Modifier.padding(end = 13.dp, bottom = 13.dp)) {
-                        Modpack()
+                        Modpack(data)
                     }
                 }
             }
@@ -81,8 +82,8 @@ fun BigGridModpackList(discoverArray: Array<*>, myModpacksArray: Array<*>) {
                 verticalArrangement = Arrangement.spacedBy(13.dp),
                 contentPadding = PaddingValues(bottom = 13.dp)
             ) {
-                items(myModpacksArray) {
-                    Modpack()
+                items(myModpacksArray) { data ->
+                    Modpack(data)
                 }
             }
         }

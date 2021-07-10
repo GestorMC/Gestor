@@ -12,15 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
+import com.redgrapefruit.openmodinstaller.data.ModpackData
+import com.redgrapefruit.openmodinstaller.ui.helper.getBackgroundImageFromVersion
 
 @Composable
-fun Modpack() {
+fun Modpack(data: ModpackData) {
     Box(Modifier
         .clip(RoundedCornerShape(10.dp))
         .fillMaxWidth()
     ) {
         Image(
-            imageResource("drawable/minecraft_1.17.png"),
+            getBackgroundImageFromVersion(data.loader.second.split('+')[0]),
             "",
             Modifier
                 .aspectRatio(2f)
