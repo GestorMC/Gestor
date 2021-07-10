@@ -1,6 +1,6 @@
 package com.redgrapefruit.openmodinstaller.task
 
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
 import com.redgrapefruit.openmodinstaller.util.CodecManager
 import com.redgrapefruit.openmodinstaller.util.Hash
 import java.io.File

@@ -1,7 +1,7 @@
 package com.redgrapefruit.openmodinstaller.task
 
-import com.redgrapefruit.openmodinstaller.data.mod.Mod
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
+import com.redgrapefruit.openmodinstaller.data.Mod
+import com.redgrapefruit.openmodinstaller.data.ReleaseType
 import java.io.File
 
 /**
@@ -13,7 +13,7 @@ object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInsta
     override fun launch(context: DependencyInstallLaunchContext) {
         context.apply {
             if (releaseTypes.size != jarNames.size && jarNames.size != mod.dependencies.size) {
-                // TODO: Handle with a popup RenderTask
+                // TODO: Handle with a popup RenderTask (lucsoft)
                 return
             }
             // This is a "solution"

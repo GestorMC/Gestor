@@ -1,11 +1,31 @@
-package com.redgrapefruit.openmodinstaller.data.minecraft
+package com.redgrapefruit.openmodinstaller.data
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+
+/**
+ * The [MinecraftVersionSupport] describes all details about the mod supporting a certain Minecraft version
+ */
+@Serializable
+data class MinecraftVersionSupport(
+    /**
+     * The actual version of Minecraft.
+     */
+    val version: String = "1.17",
+    /**
+     * The [ReleaseType] of that Minecraft release.
+     */
+    val releaseType: ReleaseType = ReleaseType.Stable,
+    /**
+     * The [MinecraftVersionSupportState] for this release.
+     */
+    val support: MinecraftVersionSupportState = MinecraftVersionSupportState.Active
+)
 
 /**
  * A [MinecraftVersionSupportState] determines how much attention a certain MC release is receiving from the developers
@@ -43,6 +63,40 @@ enum class MinecraftVersionSupportState : KSerializer<MinecraftVersionSupportSta
     }
 
     override fun serialize(encoder: Encoder, value: MinecraftVersionSupportState) {
+        encoder.encodeString(value.name)
+    }
+}
+
+/**
+ * A modloader used by the mod.
+ */
+enum class ModLoader : KSerializer<ModLoader> {
+    /**
+     * The biggest and most famous modloader - Forge.
+     */
+    MinecraftForge,
+
+    /**
+     * A lightweight, powerful and modern modloader - Fabric.
+     */
+    FabricMC,
+
+    /**
+     * A fork of Fabric highly work-in-progress with lots of future promises.
+     */
+    QuiltMC;
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ModLoader", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): ModLoader {
+        val modLoader = decoder.decodeString()
+        values().forEach {
+            if (it.name.equals(modLoader, true)) return it
+        }
+        return MinecraftForge
+    }
+
+    override fun serialize(encoder: Encoder, value: ModLoader) {
         encoder.encodeString(value.name)
     }
 }

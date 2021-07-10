@@ -1,9 +1,8 @@
 package com.redgrapefruit.openmodinstaller.core
 
-import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
-import com.redgrapefruit.openmodinstaller.data.mod.Mod
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
+import com.redgrapefruit.openmodinstaller.data.Mod
+import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.data.ReleaseType
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
@@ -108,7 +107,7 @@ object ModInstaller {
         // Download main
         val mainEntry = releaseType.getEntry(isMain = true, mod)
         downloadFromJSON(modsFolder, mainEntry, isMain = true, mainId = mod.meta.name.lowercase())
-        // Download dependencies
+        // Download dependencies (legacy)
 //        mod.dependencies.forEach { wrapper ->
 //            // TODO: Support different release types for dependencies
 //            val depEntry: ReleaseEntry = if (wrapper.id == "croptopia") {
