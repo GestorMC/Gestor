@@ -1,67 +1,28 @@
 package com.redgrapefruit.openmodinstaller.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
-
-// UI for the homepage
+import com.redgrapefruit.openmodinstaller.ui.components.Modpack
 
 @Composable
-fun renderHomepage() {
-    modImage(0, 0)
-    modImage(0, 1)
-    discoverButton(currentColors)
-}
-
-/**
- *
- */
-@Composable
-private fun discoverButton(colors: Colors) {
-    Column(modifier = Modifier.padding(77.dp, 137.dp)) {
-        Row {
-            Text(
-                text = "Discover",
-                fontSize = 2.1.em,
-                fontWeight = FontWeight.Bold,
-                color = colors.onSurface,
-                modifier = Modifier
-                    .width(196.dp)
-                    .height(59.dp)
-            )
+fun Dashboard() {
+    Row(modifier = Modifier.padding(23.dp).fillMaxSize(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Column {
+            Row {
+                Text("Discover", fontSize = 1.7.em, fontWeight = FontWeight.Black)
+            }
         }
-    }
-}
-
-@Composable
-fun modImage(x: Int, y: Int) {
-    @Composable
-    fun modImageInternal() {
-        Image(
-            bitmap = imageResource("unknown_img.png"),
-            contentDescription = null,
-            modifier = Modifier
-                .width(350.dp)
-                .height(200.dp)
-                .clip(RoundedCornerShape(20))
-        )
-    }
-
-    val makeColumn = y == 0
-    val makeRow = x == 0
-
-    Column {
-        Row {
-            modImageInternal()
+        Spacer(Modifier.width(13.dp))
+        Column(Modifier.requiredWidth(240.dp)) {
+            Row {
+                Text("My Modpacks", fontSize = 1.7.em, fontWeight = FontWeight.Black)
+            }
+            
         }
     }
 }
