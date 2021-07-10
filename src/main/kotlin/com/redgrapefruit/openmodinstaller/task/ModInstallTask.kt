@@ -1,6 +1,6 @@
 package com.redgrapefruit.openmodinstaller.task
 
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseEntry
+import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL

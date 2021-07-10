@@ -1,9 +1,5 @@
 package com.redgrapefruit.openmodinstaller.data
 
-import com.redgrapefruit.openmodinstaller.data.distribution.DistributedModLink
-import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
-import com.redgrapefruit.openmodinstaller.data.minecraft.MinecraftVersionSupport
-import com.redgrapefruit.openmodinstaller.data.minecraft.ModLoader
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind

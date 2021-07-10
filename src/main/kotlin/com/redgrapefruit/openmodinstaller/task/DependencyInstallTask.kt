@@ -1,7 +1,7 @@
 package com.redgrapefruit.openmodinstaller.task
 
-import com.redgrapefruit.openmodinstaller.data.mod.Mod
-import com.redgrapefruit.openmodinstaller.data.mod.ReleaseType
+import com.redgrapefruit.openmodinstaller.data.Mod
+import com.redgrapefruit.openmodinstaller.data.ReleaseType
 import java.io.File
 
 /**

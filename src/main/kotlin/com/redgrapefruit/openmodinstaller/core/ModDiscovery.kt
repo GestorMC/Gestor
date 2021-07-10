@@ -1,8 +1,9 @@
 package com.redgrapefruit.openmodinstaller.core
 
 import com.redgrapefruit.openmodinstaller.JSON
-import com.redgrapefruit.openmodinstaller.data.distribution.DistributionSource
-import com.redgrapefruit.openmodinstaller.data.mod.Mod
+import com.redgrapefruit.openmodinstaller.data.DistributionSource
+import com.redgrapefruit.openmodinstaller.data.Mod
+
 import com.redgrapefruit.openmodinstaller.util.Settings
 import kotlinx.serialization.json.*
 import java.io.File
