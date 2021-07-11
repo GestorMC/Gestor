@@ -35,9 +35,7 @@ fun unjar(input: String, output: String) {
         val inputStream = jarfile.getInputStream(entry)
         val outputStream = FileOutputStream(file)
 
-        while (inputStream.available() > 0) {
-            outputStream.write(inputStream.read())
-        }
+        outputStream.write(inputStream.readBytes())
 
         inputStream.close()
         outputStream.close()

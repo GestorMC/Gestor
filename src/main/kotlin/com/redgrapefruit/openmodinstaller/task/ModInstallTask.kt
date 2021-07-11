@@ -15,11 +15,11 @@ object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContex
             val path = "$modsFolder/$jarName.jar"
             if (File(path).exists())
 
-            try {
-                downloadFile(entry.url, path, true)
-            } catch (exception: Exception) {
-                // TODO: Handle with a popup RenderTask (lucsoft)
-            }
+                try {
+                    downloadFile(entry.url, path, true)
+                } catch (exception: Exception) {
+                    // TODO: Handle with a popup RenderTask (lucsoft)
+                }
         }
     }
 }
@@ -39,7 +39,8 @@ fun downloadFile(
     /**
      * If the file at the [output] URI doesn't exist, should the utility create it
      */
-    createFile: Boolean = false) {
+    createFile: Boolean = false
+) {
 
     // Create file if needed & requested
     if (createFile) {

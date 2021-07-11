@@ -6,7 +6,8 @@ import java.io.File
 /**
  * A [Task] for handling mod dependency updating
  */
-object DependencyUpdateTask : Task<DependencyUpdatePreLaunchContext, DependencyUpdateLaunchContext, DefaultPostLaunchTaskContext> {
+object DependencyUpdateTask :
+    Task<DependencyUpdatePreLaunchContext, DependencyUpdateLaunchContext, DefaultPostLaunchTaskContext> {
     /**
      * [BlockingValue] for when **any** dependency has updates.
      *
@@ -69,7 +70,7 @@ data class DependencyUpdatePreLaunchContext(
      * The path to the cache folder
      */
     val cacheFolderPath: String
-    ) : PreLaunchTaskContext
+) : PreLaunchTaskContext
 
 data class DependencyUpdateLaunchContext(
     /**
