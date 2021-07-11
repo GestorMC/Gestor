@@ -35,16 +35,12 @@ object CodecManager {
     fun addEntry(cacheFolderPath: String, index: String, url: String) {
         val codec = getOrCreate(cacheFolderPath)
 
-        // Create mutables
-        val mutableIndexes = mutableFromImmutable(codec.indexes)
-        val mutableUrls = mutableFromImmutable(codec.urls)
-
         // Add
-        mutableIndexes += index
-        mutableUrls += url
+        val indexes = mutate(codec.indexes) { this += index }
+        val urls = mutate(codec.urls) { this += url }
 
         // Rewrite
-        rewrite(cacheFolderPath, Codec(mutableIndexes, mutableUrls))
+        rewrite(cacheFolderPath, Codec(indexes, urls))
     }
 
     /**
@@ -55,16 +51,12 @@ object CodecManager {
     fun removeEntry(cacheFolderPath: String, index: String, url: String) {
         val codec = getOrCreate(cacheFolderPath)
 
-        // Create mutables
-        val mutableIndexes = mutableFromImmutable(codec.indexes)
-        val mutableUrls = mutableFromImmutable(codec.urls)
-
         // Remove
-        if (mutableIndexes.contains(index)) mutableIndexes -= index
-        if (mutableUrls.contains(url)) mutableUrls -= url
+        val indexes = mutate(codec.indexes) { this -= index }
+        val urls = mutate(codec.indexes) { this -= url }
 
         // Rewrite
-        rewrite(cacheFolderPath, Codec(mutableIndexes, mutableUrls))
+        rewrite(cacheFolderPath, Codec(indexes, urls))
     }
 
     /**
@@ -153,9 +145,28 @@ object CodecManager {
     }
 
     /**
-     * Creates a [MutableList] out of an immutable [List]
+     * Allows you to mutate (perform [MutableList] operations) an immutable [List].
+     *
+     * It's not the most performant or efficient solution to this problem, but it does the job for
+     * the scope of this application.
+     *
+     * Example:
+     * ```kotlin
+     * val immutable = listOf(1, 2, 3, 4)
+     *
+     * immutable = mutate {
+     *     add(4)
+     *     add(5)
+     * }
+     * ```
      */
-    private fun <T> mutableFromImmutable(immutable: List<T>): MutableList<T> {
-        return mutableListOf<T>().apply { addAll(immutable) }
+    @OptIn(ExperimentalStdlibApi::class)
+    private inline fun <T> mutate(immutable: List<T>, operation: MutableList<T>.() -> Unit): List<T> {
+        // List -> MutableList
+        val mutable = mutableListOf<T>().apply { addAll(immutable) }
+        // Invoke operation
+        operation.invoke(mutable)
+        // MutableList -> List
+        return buildList { addAll(mutable) }
     }
 }
