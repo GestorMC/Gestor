@@ -5,16 +5,15 @@ import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
-import java.lang.RuntimeException
 
 /**
  * Checks and installs Minecraft's libraries
  */
 object LibraryManager {
     // Variants for natives names in different version.json formats
-    val NATIVES_WINDOWS_VARIANTS = listOf("natives_windows", "natives-windows")
-    val NATIVES_LINUX_VARIANTS = listOf("natives_linux", "natives-linux")
-    val NATIVES_OSX_VARIANTS = listOf("natives_macos", "natives_mac", "natives_osx", "natives-osx")
+    private val NATIVES_WINDOWS_VARIANTS = listOf("natives_windows", "natives-windows")
+    private val NATIVES_LINUX_VARIANTS = listOf("natives_linux", "natives-linux")
+    private val NATIVES_OSX_VARIANTS = listOf("natives_macos", "natives_mac", "natives_osx", "natives-osx")
 
     /**
      * A [MutableList] of every current missing library's path
@@ -50,7 +49,8 @@ object LibraryManager {
         /**
          * The path to natives of the game
          */
-        nativesPath: String) {
+        nativesPath: String
+    ) {
 
         // Save game path for later
         this.gamePath = gamePath
@@ -69,19 +69,12 @@ object LibraryManager {
         // Check the main libraries array
         checkAndDownload(librariesArray)
 
-        // Download all missing libs
-
-
         // Delete current natives if they exist
         val nativesFile = File(nativesPath)
         if (nativesFile.exists()) nativesFile.deleteRecursively()
 
-
-
-        // Unzip all natives
+        // Unjar all natives
         nativeLibraries.forEach { native -> unjar(native, nativesPath) }
-
-
     }
 
     /**
@@ -91,7 +84,8 @@ object LibraryManager {
         /**
          * The checked libraries [JsonArray]
          */
-        librariesArray: JsonArray): Unit = librariesArray.forEach { library ->
+        librariesArray: JsonArray
+    ): Unit = librariesArray.forEach { library ->
 
         // Extract the JsonObject
         val libraryObject = library.jsonObject
@@ -178,7 +172,8 @@ object LibraryManager {
         /**
          * A JSONObject for the downloads
          */
-        downloadsObject: JsonObject): String {
+        downloadsObject: JsonObject
+    ): String {
 
         val classifiersObject = downloadsObject["classifiers"]!!.jsonObject
 
