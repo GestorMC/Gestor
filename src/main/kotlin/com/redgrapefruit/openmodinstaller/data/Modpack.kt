@@ -22,17 +22,24 @@ enum class ModpackState {
     Available
 }
 
+typealias ModID = String
+typealias VersionID = String
+typealias MinecraftVersion = String
+typealias LoaderVersion = String?
+typealias LayerTwoLocation = String?
+
 @Serializable
 data class ModpackData(
     val packageVersion: Int,
     val version: String,
     val state: ModpackState,
-    val loader: Pair<LoaderType, String>,
+    val image: Pair<String, LayerTwoLocation>?,
+    val loader: Triple<LoaderType, MinecraftVersion, LoaderVersion>,
     val displayName: String,
     val creator: String,
     val date: Long,
     val description: String,
-    val mods: Array<Pair<ModSource, String>>
+    val mods: Array<Triple<ModSource, ModID, VersionID>>
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
