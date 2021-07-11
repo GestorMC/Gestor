@@ -3,8 +3,10 @@ package com.redgrapefruit.openmodinstaller.task
 import com.redgrapefruit.openmodinstaller.consts.assetCache
 import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
 import okhttp3.*
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 /**
  * A [Task] which handles automatic installation of mods
@@ -49,17 +51,17 @@ private class Event(
 
 
 /**
- * Raw [downloadFile] that returns a [ByteArray], not decoded to a [String]
+ * Raw [downloadFile] that returns a raw HTTP [ResponseBody]
  */
-fun downloadFileInBytes(
+fun downloadFileRaw(
     input: String,
-): ByteArray {
+): ResponseBody? {
     // Init OkHttp client
     val client = OkHttpClient.Builder().cache(assetCache).eventListener(Event(input)).build()
     // Make request
     val request = Request.Builder().url(input).build()
     // Call
-    return client.newCall(request).execute().body!!.bytes()
+    return client.newCall(request).execute().body
 }
 
 /**
@@ -74,15 +76,7 @@ fun downloadFile(
      * The output URI
      */
     output: String,
-) {
-    val content = downloadFileInBytes(input)
-
-    File(output).createNewFile()
-
-    FileOutputStream(output).use { stream ->
-        stream.write(content)
-    }
-}
+) = Files.copy(downloadFileRaw(input)!!.byteStream(), Path.of(output), StandardCopyOption.REPLACE_EXISTING)
 
 /**
  * The [LaunchTaskContext] for [ModInstallTask]
