@@ -31,9 +31,10 @@ dependencies {
     // Miscellaneous utilities
     implementation(group = "com.google.code.gson", name = "gson", version = "2.8.7")
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
+    implementation(group = "org.apache.commons", name = "commons-compress", version = "1.20")
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 
