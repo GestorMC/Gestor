@@ -5,11 +5,21 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 
 @Composable
-fun getBackgroundImageFromVersion(version: String): ImageBitmap {
-    if (version.startsWith("1.17"))
-        return imageResource("drawable/mc_1.17.png")
+fun getImageFromVersion(version: String): ImageBitmap {
+    return if (version.startsWith("1.17"))
+        imageResource("drawable/mc_1.17.png")
     else if (version.startsWith("1.16"))
-        return imageResource("drawable/mc_1.16.png")
+        imageResource("drawable/mc_1.16.png")
     else
-        return imageResource("drawable/mc.png")
+        imageResource("drawable/mc.png")
+}
+
+@Composable
+fun getLayerTwoImageFromVersion(version: String): ImageBitmap {
+    return if (version.startsWith("1.17"))
+        imageResource("drawable/layerTwo/mc_1.17.png")
+    else if (version.startsWith("1.16"))
+        imageResource("drawable/layerTwo/mc_1.16.png")
+    else
+        imageResource("drawable/layerTwo/mc.png")
 }
