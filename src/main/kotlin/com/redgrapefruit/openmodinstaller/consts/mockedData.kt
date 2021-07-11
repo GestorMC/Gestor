@@ -17,6 +17,18 @@ val exampleModPack = ModpackData(
     arrayOf()
 )
 
+val exampleModPackWithCustomBackground = ModpackData(
+    packageVersion = 0,
+    "1.0.0",
+    ModpackState.Available,
+    Pair("https://raw.githubusercontent.com/OpenModInstaller/OpenModInstaller/745e6de46602fc1033976470e312ae65dcd732a0/src/main/resources/drawable/ExampleModpack.png", null),
+    Triple(LoaderType.Fabric, "1.17.1", "0.11.6"),
+    "EXAMPLE MODPACK",
+    "lucsoft",
+    System.currentTimeMillis(),
+    "Example Modpack description",
+    arrayOf()
+)
 
 val exampleModPackTwo = ModpackData(
     0,
