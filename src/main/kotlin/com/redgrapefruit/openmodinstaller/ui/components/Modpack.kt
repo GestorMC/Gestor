@@ -2,32 +2,20 @@
 
 package com.redgrapefruit.openmodinstaller.ui.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import com.redgrapefruit.openmodinstaller.data.ModpackData
-import com.redgrapefruit.openmodinstaller.data.ModpackState
+import androidx.compose.ui.unit.*
+import com.redgrapefruit.openmodinstaller.data.*
 import com.redgrapefruit.openmodinstaller.ui.helper.getBackgroundImageFromVersion
-import org.jetbrains.skija.FilterBlurMode
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
