@@ -4,7 +4,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.jar.JarFile
 
-// Utils for Un-JAR-ing Minecraft mod JARs
+// Utils for Un-JAR-ing Minecraft JARs
 
 /**
  * Un-jars the [input] JAR to the [output] directory

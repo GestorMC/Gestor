@@ -1,5 +1,6 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
+import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
@@ -10,6 +11,11 @@ import java.lang.RuntimeException
  * Checks and installs Minecraft's libraries
  */
 object LibraryManager {
+    // Variants for natives names in different version.json formats
+    val NATIVES_WINDOWS_VARIANTS = listOf("natives_windows", "natives-windows")
+    val NATIVES_LINUX_VARIANTS = listOf("natives_linux", "natives-linux")
+    val NATIVES_OSX_VARIANTS = listOf("natives_macos", "natives_mac", "natives_osx", "natives-osx")
+
     /**
      * A [MutableList] of every current missing library's path
      */
@@ -52,17 +58,16 @@ object LibraryManager {
         // If the version info JSON inherits from another version info JSON,
         // check all the libraries from the parent version info JSON
         if (versionInfoObject.contains("inheritsFrom")) {
-            // TODO: Implement downloading (redgrapefruit09)
             val parentText = "{\n\t\n}"
 
             // Parse into JSON, then extract the JsonArray of libraries and perform the check
             val parentObject = Json.decodeFromString(JsonObject.serializer(), parentText)
             val parentLibrariesArray = parentObject["libraries"]!!
-            check(parentLibrariesArray.jsonArray)
+            checkAndDownload(parentLibrariesArray.jsonArray)
         }
 
         // Check the main libraries array
-        check(librariesArray)
+        checkAndDownload(librariesArray)
 
         // Download all missing libs
 
@@ -80,9 +85,9 @@ object LibraryManager {
     }
 
     /**
-     * Checks a separate [JsonArray] of Minecraft libraries
+     * Checks a separate [JsonArray] of Minecraft libraries and downloads some/all of them if necessary
      */
-    private fun check(
+    private fun checkAndDownload(
         /**
          * The checked libraries [JsonArray]
          */
@@ -118,27 +123,69 @@ object LibraryManager {
             val downloadsObject = libraryObject["downloads"]!!.jsonObject
 
             if (downloadsObject.contains("classifiers")) {
-                val nativeObjectName = when {
-                    SystemUtils.IS_OS_WINDOWS -> "natives_windows"
-                    SystemUtils.IS_OS_LINUX -> "natives_linux"
-                    SystemUtils.IS_OS_MAC_OSX -> "macos"
-                    else -> throw RuntimeException("App running not on Windows, Linux or MacOS")
+                val nativeObjectNames = when {
+                    // Compat with multiple format versions
+                    SystemUtils.IS_OS_WINDOWS -> NATIVES_WINDOWS_VARIANTS
+                    SystemUtils.IS_OS_LINUX -> NATIVES_LINUX_VARIANTS
+                    SystemUtils.IS_OS_MAC_OSX -> NATIVES_OSX_VARIANTS
+                    else -> throw RuntimeException("App running not on Windows, Linux or MacOS. This is not allowed for Java Edition")
                 }
+                val nativeObjectName = getNativeKeyName(nativeObjectNames, downloadsObject)
 
                 val nativePath = "$gamePath/libraries/$cut1/$cut2/$cut3-$nativeObjectName.jar"
                 val nativeFile = File(nativePath)
 
                 if (!nativeFile.exists()) {
                     // Missing native libraries still have to be installed
-                    missingLibraries += name
+                    downloadFile(
+                        input =
+                            // /classifiers
+                            downloadsObject["classifiers"]!!
+                            // /classifiers/natives_XXX
+                            .jsonObject[nativeObjectName]!!
+                            // /classifiers/natives_XXX/url
+                            .jsonObject["url"]!!.jsonPrimitive.content,
+                        output = nativePath
+                    )
                 } else {
-                    nativeLibraries += name
+                    // Add to list of native libs
+                    nativeLibraries += nativePath
                 }
             }
 
-            if (downloadsObject.contains("manifest")) {
-                nativeLibraries += name
+            if (downloadsObject.contains("artifact")) {
+                // Just download the lib
+                downloadFile(
+                    input =
+                        // /artifact
+                        downloadsObject["artifact"]!!
+                        // /artifact/url
+                        .jsonObject["url"]!!.jsonPrimitive.content,
+                    output = libraryPath
+                )
             }
         }
+    }
+
+    /**
+     * Tries out multiple variant keys and returns the right one
+     */
+    private fun getNativeKeyName(
+        /**
+         * All possible variants
+         */
+        variants: List<String>,
+        /**
+         * A JSONObject for the downloads
+         */
+        downloadsObject: JsonObject): String {
+
+        val classifiersObject = downloadsObject["classifiers"]!!.jsonObject
+
+        variants.forEach { variant ->
+            if (classifiersObject.contains(variant)) return variant
+        }
+
+        return variants[variants.lastIndex]
     }
 }
