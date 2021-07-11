@@ -1,5 +1,6 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
+import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
@@ -73,7 +74,7 @@ object LibraryManager {
 
 
         // Unzip all natives
-        nativeLibraries.forEach { native -> unzip(native, nativesPath) }
+        nativeLibraries.forEach { native -> unjar(native, nativesPath) }
 
 
     }
@@ -139,21 +140,5 @@ object LibraryManager {
                 nativeLibraries += name
             }
         }
-    }
-
-    /**
-     * Unzips files
-     */
-    private fun unzip(
-        /**
-         * Path to the input ZIP file
-         */
-        input: String,
-        /**
-         * Path to the output directory
-         */
-        output: String) {
-
-
     }
 }

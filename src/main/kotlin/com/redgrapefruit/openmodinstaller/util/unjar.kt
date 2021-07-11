@@ -32,12 +32,10 @@ fun unjar(input: String, output: String) {
         }
 
         // Read-write
-        val inputStream = jarfile.getInputStream(entry)
-        val outputStream = FileOutputStream(file)
-
-        outputStream.write(inputStream.readBytes())
-
-        inputStream.close()
-        outputStream.close()
+        jarfile.getInputStream(entry).use { inputStream ->
+            FileOutputStream(file).use { outputStream ->
+                outputStream.write(inputStream.readBytes())
+            }
+        }
     }
 }
