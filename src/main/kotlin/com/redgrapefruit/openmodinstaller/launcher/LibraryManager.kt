@@ -31,9 +31,11 @@ object LibraryManager {
     private lateinit var gamePath: String
 
     /**
-     * Checks all libraries and installs missing ones
+     * Checks all libraries and installs missing ones.
+     *
+     * Internal. Can be run via [SetupManager]
      */
-    fun checkLibraries(
+    internal fun checkLibraries(
         /**
          * The path to the game folder root
          */
