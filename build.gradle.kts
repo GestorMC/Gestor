@@ -24,6 +24,7 @@ dependencies {
     implementation("com.mojang:authlib:2.3.31")  // Mojang Authlib. Verification of accounts
 
     // --- Miscellaneous utilities ---
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation(group = "com.google.code.gson", name = "gson", version = "2.8.7")
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
 }
