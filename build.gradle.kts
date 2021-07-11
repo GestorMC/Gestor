@@ -14,20 +14,16 @@ version = "1.0"
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-
-    // libraries.minecraft.net has Authlib
-    maven { url = uri("https://libraries.minecraft.net/") }
+    maven { url = uri("https://libraries.minecraft.net/") } // libraries.minecraft.net has Authlib
 }
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    // KotlinX Serialization. JSON support
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-    // CommonMark3. Markdown -> HTML rendering
-    implementation("org.commonmark:commonmark:0.18.0")
-    // Mojang Authlib. Verification of accounts
-    implementation("com.mojang:authlib:2.3.31")
-    // Miscellaneous utilities
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2") // KotlinX Serialization. JSON support
+    implementation("org.commonmark:commonmark:0.18.0") // CommonMark3. Markdown -> HTML rendering
+    implementation("com.mojang:authlib:2.3.31")  // Mojang Authlib. Verification of accounts
+
+    // --- Miscellaneous utilities ---
     implementation(group = "com.google.code.gson", name = "gson", version = "2.8.7")
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
 }

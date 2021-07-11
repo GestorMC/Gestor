@@ -8,13 +8,9 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +25,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import com.redgrapefruit.openmodinstaller.data.ModpackData
+import com.redgrapefruit.openmodinstaller.data.ModpackState
 import com.redgrapefruit.openmodinstaller.ui.helper.getBackgroundImageFromVersion
+import org.jetbrains.skija.FilterBlurMode
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -50,17 +48,30 @@ fun Modpack(data: ModpackData) {
             Modifier
                 .aspectRatio(2f)
                 .fillMaxWidth()
+
         )
+        if(data.state == ModpackState.Installing)
+            CircularProgressIndicator(Modifier.align(Alignment.Center).width(35.dp))
+
         if (value) {
-            Image(imageResource("drawable/overlay.png"), "", Modifier
+            // This is currently a somewhat hacky way to add the inside shadows
+            // TODO CHANGE THIS TO A RUNTIME SHADOW
+            Image(imageResource(if (data.state == ModpackState.Installing) "drawable/overlay_onlytop.png" else "drawable/overlay.png"), "", Modifier
                     .aspectRatio(2f)
                     .fillMaxWidth())
-            Button(onClick = {
 
-            }, Modifier.align(Alignment.BottomStart).padding(11.dp)) {
-                Text("Install")
+            Row(Modifier.align(Alignment.BottomStart).padding(10.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                if (data.state == ModpackState.Available) {
+                    Button(onClick = { }, elevation = null) { Text("GET") }
+                } else if (data.state == ModpackState.Installed) {
+                    Button(onClick = { }, elevation = null) { Text("PLAY NOW") }
+                    Button(onClick = { }, elevation = null, colors = ButtonDefaults.textButtonColors()) {
+                        Text("EDIT")
+                    }
+                }
             }
-            Text(data.displayName, Modifier.padding(11.dp), color = Color.White, fontWeight = FontWeight.Bold, fontSize = .88.em)
+
+            Text(data.displayName, Modifier.padding(10.dp), color = MaterialTheme.colors.primary, fontWeight = FontWeight.Medium, fontSize = .9.em)
         }
 
     }

@@ -16,11 +16,17 @@ enum class ModSource {
     URL,
 }
 
+enum class ModpackState {
+    Installed,
+    Installing,
+    Available
+}
 
 @Serializable
 data class ModpackData(
     val packageVersion: Int,
     val version: String,
+    val state: ModpackState,
     val loader: Pair<LoaderType, String>,
     val displayName: String,
     val creator: String,
