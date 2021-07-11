@@ -19,15 +19,10 @@ fun CachedImage(
 
     val bitmapImage = getCachedBitmap(imageUrl)
     if (!loading && bitmapImage == null) {
-        println("Loading");
         LaunchedEffect(true) {
             getBitmapFromURL(imageUrl)
             setLoading(true);
         }
     }
-    if (bitmapImage == null) {
-        Image(imageResource("drawable/mc.png"), "", modifier)
-    } else {
-        Image(bitmapImage, "", modifier)
-    }
+    if (bitmapImage != null) Image(bitmapImage, "", modifier)
 }

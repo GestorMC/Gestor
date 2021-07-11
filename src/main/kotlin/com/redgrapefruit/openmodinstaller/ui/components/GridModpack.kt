@@ -17,7 +17,7 @@ fun GridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array<Mo
     val (value, setValue) = remember { mutableStateOf(IntSize.Zero) }
 
     Column (Modifier.onSizeChanged { coordinates -> setValue(coordinates) }) {
-        if (value.width <= 1550) SmallGridModpackList(discoverArray, myModpacksArray)
+        if (value.width <= 1550 && value.width != 0) SmallGridModpackList(discoverArray, myModpacksArray)
         else BigGridModpackList(discoverArray, myModpacksArray)
     }
 }

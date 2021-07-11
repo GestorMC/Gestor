@@ -4,14 +4,12 @@ package com.redgrapefruit.openmodinstaller.ui.components
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerMoveFilter
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +30,11 @@ fun Modpack(data: ModpackData) {
         .clip(RoundedCornerShape(10.dp))
         .fillMaxWidth(),
     ) {
-        Image(getImageFromVersion(data.loader.second), "", Modifier.aspectRatio(2f).fillMaxWidth())
+
+        if(data.image != null)
+            CachedImage(data.image.first, Modifier.aspectRatio(2f).fillMaxWidth())
+        else
+            Image(getImageFromVersion(data.loader.second), "", Modifier.aspectRatio(2f).fillMaxWidth())
 
         // This is currently a somewhat hacky way to add the inside shadows
         // TODO CHANGE THIS TO A RUNTIME SHADOW
@@ -74,7 +76,8 @@ private fun LayerTwoRender(
         ) {
             if (data.state != ModpackState.Installing)
                 AnimatedVisibility(value) { Spacer(Modifier.fillMaxWidth().aspectRatio(240f / 10f)) }
-            Image(getLayerTwoImageFromVersion(data.loader.second), "", Modifier.aspectRatio(240f / 54f))
+            if(data.image?.second != null) CachedImage(data.image.second!!, Modifier.aspectRatio(240f / 54f))
+            else Image(getLayerTwoImageFromVersion(data.loader.second), "", Modifier.aspectRatio(240f / 54f))
             ButtonBar(data, value)
         }
 }
