@@ -9,7 +9,8 @@ import java.io.File
  *
  * Can be cancelled if dependencies are already in place.
  */
-object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInstallLaunchContext, DefaultPostLaunchTaskContext> {
+object DependencyInstallTask :
+    Task<DefaultPreLaunchTaskContext, DependencyInstallLaunchContext, DefaultPostLaunchTaskContext> {
     override fun launch(context: DependencyInstallLaunchContext) {
         context.apply {
             if (releaseTypes.size != jarNames.size && jarNames.size != mod.dependencies.size) {
@@ -17,17 +18,21 @@ object DependencyInstallTask : Task<DefaultPreLaunchTaskContext, DependencyInsta
                 return
             }
             // This is a "solution"
-            releaseTypes.forEach { type -> jarNames.forEach { jarName -> mod.dependencies.forEach { wrapper ->
-                val entry = type.getEntry(false, mod, wrapper.id)
+            releaseTypes.forEach { type ->
+                jarNames.forEach { jarName ->
+                    mod.dependencies.forEach { wrapper ->
+                        val entry = type.getEntry(false, mod, wrapper.id)
 
-                val path = "$modsFolder/$jarName.jar"
-                val file = File(path)
+                        val path = "$modsFolder/$jarName.jar"
+                        val file = File(path)
 
-                // Avoid rewrites completely
-                if (file.exists()) file.delete()
+                        // Avoid rewrites completely
+                        if (file.exists()) file.delete()
 
-                downloadFile(entry.url, path, true)
-            }}}
+                        downloadFile(entry.url, path, true)
+                    }
+                }
+            }
         }
     }
 }
