@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Deprecated
 public class LibrariesManager {
     private static final List<String> missingLib = new ArrayList<>();
     private static final List<String> nativesLib = new ArrayList<>();

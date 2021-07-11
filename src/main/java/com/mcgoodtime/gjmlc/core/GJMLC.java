@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 
 import java.io.*;
 
+@Deprecated
 public class GJMLC {
 
     public static JsonObject verInfoObject;
