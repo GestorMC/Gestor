@@ -4,6 +4,8 @@ package com.redgrapefruit.openmodinstaller.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -40,9 +42,10 @@ fun Modpack(data: ModpackData) {
                 .fillMaxWidth()
 
         )
-        if (value && data.state != ModpackState.Installing) {
-            // This is currently a somewhat hacky way to add the inside shadows
-            // TODO CHANGE THIS TO A RUNTIME SHADOW
+
+        // This is currently a somewhat hacky way to add the inside shadows
+        // TODO CHANGE THIS TO A RUNTIME SHADOW
+        AnimatedVisibility(value && data.state != ModpackState.Installing, enter = fadeIn(), exit = fadeOut()) {
             if(data.image != null && data.image.second == null)
                 Image(imageResource("drawable/overlay_top.png"), "", Modifier.aspectRatio(2f).fillMaxWidth())
             Image(imageResource("drawable/overlay_bottom.png"), "", Modifier.aspectRatio(2f).fillMaxWidth())
