@@ -59,9 +59,7 @@ object Settings {
             return
         }
         // Replace current with serialized
-        FileInputStream(settingsFile).use { stream ->
-            read(settingsFile)
-        }
+        read(settingsFile)
     }
 
     /**
@@ -73,9 +71,7 @@ object Settings {
         if (!installerFolder.exists()) installerFolder.mkdirs()
         // Save current into the file
         val settingsFile = File("$installerFolder/settings.json")
-        FileOutputStream(settingsFile).use { stream ->
-            write(settingsFile)
-        }
+        write(settingsFile)
     }
 
     private fun read(settingsFile: File) {

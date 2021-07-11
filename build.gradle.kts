@@ -29,6 +29,7 @@ dependencies {
     // Mojang Authlib. Verification of accounts
     implementation("com.mojang:authlib:2.3.31")
     // Miscellaneous utilities
+    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1")
     implementation(group = "com.google.code.gson", name = "gson", version = "2.8.7")
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
     implementation(group = "org.apache.commons", name = "commons-compress", version = "1.20")

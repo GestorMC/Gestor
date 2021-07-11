@@ -141,8 +141,7 @@ object LibraryManager {
                             .jsonObject[nativeObjectName]!!
                             // /classifiers/natives_XXX/url
                             .jsonObject["url"]!!.jsonPrimitive.content,
-                        output = nativePath,
-                        createFile = true
+                        output = nativePath
                     )
                 } else {
                     // Add to list of native libs
@@ -158,8 +157,7 @@ object LibraryManager {
                         downloadsObject["artifact"]!!
                         // /artifact/url
                         .jsonObject["url"]!!.jsonPrimitive.content,
-                    output = libraryPath,
-                    createFile = true
+                    output = libraryPath
                 )
             }
         }

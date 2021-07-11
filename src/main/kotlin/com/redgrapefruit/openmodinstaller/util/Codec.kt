@@ -14,6 +14,7 @@ import java.io.FileOutputStream
  * For that, please use methods in the [CodecManager].
  */
 @Serializable
+@Deprecated("The codec system is deprecated in favor of using the OkHttp client with caching")
 internal data class Codec(
     /**
      * List of cache indexed names
@@ -28,6 +29,7 @@ internal data class Codec(
 /**
  * Easy [Codec] management utils
  */
+@Deprecated("The codec system is deprecated in favor of using the OkHttp client with caching")
 object CodecManager {
     /**
      * Writes an entry to the appropriate codec for [cacheFolderPath] with [index] and [url]

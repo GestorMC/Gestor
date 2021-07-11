@@ -46,7 +46,7 @@ object DependencyUpdateTask :
 
                 if (file.exists()) file.delete()
 
-                downloadFile(entry.url, depPath, createFile = true)
+                downloadFile(entry.url, depPath)
             }
         }
     }

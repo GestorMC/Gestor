@@ -1,7 +1,6 @@
 package com.redgrapefruit.openmodinstaller.task
 
 import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
-import com.redgrapefruit.openmodinstaller.util.CodecManager
 import com.redgrapefruit.openmodinstaller.util.Hash
 import java.io.File
 import kotlin.random.Random
@@ -28,7 +27,7 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
 
             if (file.exists()) file.delete()
 
-            downloadFile(entry.url, file.absolutePath, createFile = true)
+            downloadFile(entry.url, file.absolutePath)
         }
     }
 
@@ -41,22 +40,11 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
  * Checks for updates
  */
 fun checkUpdates(cacheFolderPath: String, entry: ReleaseEntry, jarPath: String): Boolean {
-    val latestJarPath: String
+    // Download latest JAR file
+    val latestJarPath = "./cache/dedicated/updater_${Random.nextInt(Int.MAX_VALUE)}"
 
-    // Check codec for latest JAR
-    if (CodecManager.hasEntry(cacheFolderPath, entry.url)) {
-        // Retrieve cached
-        val index = CodecManager.getEntry(cacheFolderPath, entry.url)
-        latestJarPath = "$cacheFolderPath/cache_$index"
-    } else {
-        // Download and add to codec
-        val index = Random.nextInt(Int.MAX_VALUE).toString()
-        latestJarPath = "$cacheFolderPath/cache_$index"
-        CodecManager.addEntry(cacheFolderPath, index, entry.url)
-
-        File(latestJarPath).createNewFile()
-        downloadFile(entry.url, latestJarPath)
-    }
+    File(latestJarPath).createNewFile()
+    downloadFile(entry.url, latestJarPath)
 
     // Compare checksums
     val currentChecksum = Hash.checksum(jarPath).decodeToString()
