@@ -93,7 +93,7 @@ object LibraryManager {
             // Join the pieces together into an absolute path
             val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
 
-            builder += "\"$libraryPath"
+            builder += "$libraryPath;"
         }
 
         return builder.toString()

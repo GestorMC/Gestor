@@ -131,7 +131,6 @@ object ArgumentManager {
         if (SystemUtils.OS_ARCH == "x86") {
             builder += " -Xss1M"
         }
-        builder += " -Djava.library.path=$root/versions/$version/$version-Natives/"
         builder += " -Dminecraft.launcher.brand=$LAUNCHER_BRAND"
 
         return builder.toString().mcFillCustomArguments(maxMemory, jvmArgs, root, version)
@@ -166,12 +165,7 @@ object ArgumentManager {
 
         // Fill custom parameters
         val builder = StringBuilder(this)
-
-        builder += " -Xmx${maxMemory}M"
-        builder += " $jvmArgs"
-
         // Fill classpath with the main JAR and all libraries' JARs
-        builder += " -cp ${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
 
         return builder.toString()
     }

@@ -91,7 +91,10 @@ class OpenLauncher private constructor(private val root: String) {
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
-        val command = "java -classpath ${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}\"\"$root/versions/$version/$version.jar\" $mainClass $arguments"
+        //val command = "java -classpath ${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}\"\"$root/versions/$version/$version.jar\" $mainClass $arguments"
+        val javaFile = File("./java/adoptopenjre16/jdk-16.0.1+9-jre/bin/java.exe")
+
+        val command = "${javaFile.absolutePath} -classpath .;$root/versions/$version/$version.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass $arguments"
 
         println(command)
 
