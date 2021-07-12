@@ -16,6 +16,7 @@ fun main() = Window(title = "OpenModInstaller") {
     SetupManager.setupVersionInfo(gamePath, "1.17")
     SetupManager.setupJAR(gamePath, "1.17")
     SetupManager.setupLibraries(gamePath, "1.17")
+    SetupManager.setupJava()
 //    MaterialTheme {
 //        renderHomepage()
 //    }

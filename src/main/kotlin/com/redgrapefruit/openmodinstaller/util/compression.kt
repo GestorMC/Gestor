@@ -1,14 +1,19 @@
 package com.redgrapefruit.openmodinstaller.util
 
+import org.apache.commons.compress.archivers.ArchiveEntry
+import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
 import org.apache.commons.io.IOUtils
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
+
 
 // Apache Commons Compress abstractions
 
@@ -45,31 +50,36 @@ private inline fun <reified TStreamType : ArchiveInputStream> unarchive(
      * A factory for archive input streams which vary depending on the archive type
      */
     factory: String) {
-    // Construct an InputStream
-    val inputStream =  ARCHIVE_STREAM_FACTORY
-        .createArchiveInputStream(factory, FileInputStream(input)) as TStreamType
-
-    while (true) {
-        // Iterate through entries
-        val entry = inputStream.nextEntry ?: break
-
-        if (!inputStream.canReadEntryData(entry)) {
-            // TODO: Display a popup notifying the user that the app couldn't extract the contents of an archive (lucsoft)
-            continue
-        }
-
-        val path = Paths.get(output, entry.name)
-        val file = path.toFile()
-
-        if (entry.isDirectory && !file.isDirectory) {
-            file.mkdirs()
-        } else {
-            val parentFile = file.parentFile
-            if (!parentFile.isDirectory) parentFile.mkdirs()
-
-            FileOutputStream(parentFile).use { stream ->
-                IOUtils.copy(inputStream, stream)
+    val inputStream: InputStream?
+    try {
+        val filePath: Path = Paths.get(input)
+        inputStream = Files.newInputStream(filePath)
+        val archiveStreamFactory = ArchiveStreamFactory()
+        val archiveInputStream = archiveStreamFactory.createArchiveInputStream(factory, inputStream) as TStreamType
+        var archiveEntry: ArchiveEntry?
+        while (archiveInputStream.nextEntry.also { archiveEntry = it } != null) {
+            val path = Paths.get(output, archiveEntry!!.name)
+            val file = path.toFile()
+            if (archiveEntry!!.isDirectory) {
+                if (!file.isDirectory) {
+                    file.mkdirs()
+                }
+            } else {
+                val parent = file.parentFile
+                if (!parent.isDirectory) {
+                    parent.mkdirs()
+                }
+                Files.newOutputStream(path).use { outputStream ->
+                    IOUtils.copy(
+                        archiveInputStream,
+                        outputStream
+                    )
+                }
             }
         }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } catch (e: ArchiveException) {
+        e.printStackTrace()
     }
 }

@@ -161,11 +161,9 @@ object SetupManager {
         val javaTargetPath = "./java/${if (optInLegacyJava) "adoptopenjre8" else "adoptopenjre16"}"
         val javaTargetFile = File(javaTargetPath)
 
-        if (javaTargetFile.exists()) {
-            return
-        } else {
-            javaTargetFile.mkdirs()
-        }
+        javaTargetFile.mkdirs()
+
+        if (javaTargetFile.listFiles()!!.isNotEmpty()) return
 
         val javaURL = if (optInLegacyJava) {
             when {
@@ -187,7 +185,7 @@ object SetupManager {
 
         // Download into dedicated cache
         val javaArchivePath = "./cache/dedicated/cache_${Random.nextInt(Int.MAX_VALUE)}"
-        File(javaArchivePath).createNewFile()
+        File(javaArchivePath).mkdirs()
         downloadFile(javaURL, javaArchivePath)
 
         // UnZIP or UnTAR
