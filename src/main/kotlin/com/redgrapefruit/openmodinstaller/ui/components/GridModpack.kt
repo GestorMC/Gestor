@@ -26,7 +26,7 @@ fun GridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array<Mo
 @Composable
 fun SmallGridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array<ModpackData>) {
     Column {
-        Column(Modifier.padding(top = 21.dp)) {
+        Column(Modifier.padding(top = 10.dp)) {
             ModPackListTitle("My Modpacks")
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(13.dp),
@@ -60,7 +60,7 @@ fun BigGridModpackList(discoverArray: Array<ModpackData>, myModpacksArray: Array
     Row(
         modifier = Modifier
             .padding(horizontal = 21.dp)
-            .padding(top = 21.dp),
+            .padding(top = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column(Modifier.weight(2.108f)) {

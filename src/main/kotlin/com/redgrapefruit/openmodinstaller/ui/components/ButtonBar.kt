@@ -22,7 +22,7 @@ fun ColumnScope.ButtonBar(
 ) {
     if (data.state != ModpackState.Installing)
         AnimatedVisibility(value) {
-            Column(Modifier.fillMaxWidth().aspectRatio(240f / 56f), verticalArrangement = Arrangement.SpaceBetween) {
+            Column(Modifier.fillMaxWidth().aspectRatio(240f / 54f), verticalArrangement = Arrangement.SpaceBetween) {
                 Spacer(Modifier.size(1.dp))
                 Row(
                     Modifier.padding(10.dp).fillMaxWidth(),

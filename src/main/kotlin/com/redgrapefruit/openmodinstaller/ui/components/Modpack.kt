@@ -75,7 +75,7 @@ private fun LayerTwoRender(
             horizontalAlignment = Alignment.End
         ) {
             if (data.state != ModpackState.Installing)
-                AnimatedVisibility(value) { Spacer(Modifier.fillMaxWidth().aspectRatio(240f / 10f)) }
+                AnimatedVisibility(value) { Spacer(Modifier.fillMaxWidth().aspectRatio(240f / 12f)) }
             if(data.image?.second != null) CachedImage(data.image.second!!, Modifier.aspectRatio(240f / 54f))
             else Image(getLayerTwoImageFromVersion(data.loader.second), "", Modifier.aspectRatio(240f / 54f))
             ButtonBar(data, value)

@@ -7,7 +7,6 @@ val lightColors = lightColors(
     background = Color(0xF3F4F7),
     primary = Color.White,
     primaryVariant = Color.White,
-
     secondary = Color(0xFF03DAC6),
     secondaryVariant = Color(0xFF018786),
     surface = Color.White,
