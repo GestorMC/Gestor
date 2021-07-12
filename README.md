@@ -9,7 +9,7 @@ It combines three types of tools into a single app:
 2. Automatic mod installing/updating/removing
 3. Launching Minecraft (Forge, Fabric and Quilt) with multiple profiles
 
-The app is powered by the [Kotlin language](https://kotlinlang.org/) and [JetPack Compose Desktop](https://www.jetbrains.com/lp/compose/).
+The app is powered by the [Kotlin language](https://kotlinlang.org/), [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html) and [JetPack Compose Desktop](https://www.jetbrains.com/lp/compose/).
 
 # Development
 
@@ -20,39 +20,7 @@ Alpha releases are expected to be available in the middle of July 2021.
 # Features
 
 Here's an exhaustive list of features coming into the 1.0 release
-and the status of their development:
-
-- [x] Settings
-- [ ] JSON
-  - [x] Universal JSON format for developers
-  - [x] Manual URL discovery
-  - [x] Search from discovered
-  - [ ] Reusable cache (coming soon)
-  - [ ] Autocomplete discovery
-- [ ] Mod management
-  - [ ] Mod downloading (coming soon)
-  - [ ] Mod updating (coming soon)
-  - [ ] Mod removing (coming soon)
-- [ ] Mod hosting
-  - [x] Markdown pages for mods
-  - [ ] Metadata display for mods
-  - [ ] Release display for mods
-  - [ ] Integration of mod downloading, updating and removing (coming soon)
-- [ ] Mod suggestions
-  - [ ] Calculating downloads for mods to display popularity
-  - [ ] Recommending mods
-  - [ ] Starring mods
-  - [ ] Following mods
-  - [ ] Advanced search
-- [ ] Modpacks
-  - [ ] Creating modpacks
-  - [ ] Viewing modpacks
-  - [ ] Installing modpacks
-- [ ] Launching Minecraft
-  - [ ] Launching via the [GJMLC](https://github.com/GoodTimeStudio/GoodTime-Java-Minecraft-Launcher-Core) core
-  - [ ] Multiple profiles
-  - [ ] Multiple modloaders (Forge, Fabric and Quilt)
-  - [ ] Launching modpacks
+and the status of their development: [Github Projects](https://github.com/OpenModInstaller/OpenModInstaller/projects/2)
 
 # Download
 
