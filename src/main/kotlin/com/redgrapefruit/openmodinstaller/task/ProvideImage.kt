@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import com.redgrapefruit.openmodinstaller.consts.assetCache
 import kotlinx.coroutines.*
 import okhttp3.*
-import java.util.concurrent.TimeUnit
+import okhttp3.EventListener
 
 class Event(val url: String): EventListener() {
     override fun cacheHit(call: Call, response: Response) {
@@ -30,16 +30,25 @@ var cache = mutableMapOf<String, ImageBitmap>()
 fun getCachedBitmap(url: String): ImageBitmap? = cache[url]
 
 @OptIn(DelicateCoroutinesApi::class)
-suspend fun getBitmapFromURL(url: String): ImageBitmap {
+suspend fun getBitmapFromURL(url: String): ImageBitmap? {
     if (cache.contains(url))
         return cache[url]!!
 
     val data = GlobalScope.async {
-        return@async org.jetbrains.skija.Image.makeFromEncoded(
-            DownloadFile(url)!!.bytes()
-        ).asImageBitmap()
+        try {
+            return@async org.jetbrains.skija.Image.makeFromEncoded(
+                DownloadFile(url)!!.bytes()
+            ).asImageBitmap()
+
+        } catch (e: Exception) {
+            println("Failed to Download file $url")
+            println(e)
+            return@async null
+        }
     }
 
-    cache[url] = data.await()
-    return cache[url]!!
+    val optionalImage = data.await();
+
+    if(optionalImage !== null) cache[url] = optionalImage
+    return optionalImage
 }

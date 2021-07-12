@@ -30,13 +30,14 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "15"
 }
 
 compose.desktop {
     application {
         mainClass = "com.redgrapefruit.openmodinstaller.MainKt"
         nativeDistributions {
+            modules("jdk.crypto.ec")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "OpenModInstaller"
             packageVersion = "1.0.0"
