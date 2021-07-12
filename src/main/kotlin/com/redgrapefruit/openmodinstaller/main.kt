@@ -2,18 +2,13 @@ package com.redgrapefruit.openmodinstaller
 
 import androidx.compose.desktop.ComposePanel
 import androidx.compose.desktop.DesktopTheme
-import androidx.compose.desktop.Window
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.RectangleShape
 import com.redgrapefruit.openmodinstaller.ui.Dashboard
 import com.redgrapefruit.openmodinstaller.ui.lightColors
-
 import kotlinx.serialization.json.Json
 import org.apache.commons.lang3.SystemUtils
 import java.awt.BorderLayout
@@ -56,7 +51,9 @@ fun main() {
     CWindow(title = "OpenModInstaller") {
         MaterialTheme(colors = lightColors) {
             DesktopTheme {
-                Dashboard()
+                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+                    Dashboard()
+                }
             }
         }
     }
