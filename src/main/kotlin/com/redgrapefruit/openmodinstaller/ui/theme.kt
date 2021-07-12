@@ -4,7 +4,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
 val lightColors = lightColors(
-    background = Color(0xF3F4F7),
+    background = Color(241,242,244),
     primary = Color.White,
     primaryVariant = Color.White,
     secondary = Color(0xFF03DAC6),
