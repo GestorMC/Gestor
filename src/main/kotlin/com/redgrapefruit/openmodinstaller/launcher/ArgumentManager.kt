@@ -165,7 +165,7 @@ object ArgumentManager {
 
         // Fill custom parameters
         val builder = StringBuilder(this)
-        // Fill classpath with the main JAR and all libraries' JARs
+        builder += " -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump"
 
         return builder.toString()
     }

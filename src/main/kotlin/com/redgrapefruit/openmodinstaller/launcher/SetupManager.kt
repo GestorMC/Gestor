@@ -137,7 +137,7 @@ object SetupManager {
         }
 
         // Determine native libraries path and clear it beforehand
-        val nativesFile = File("$gamePath/versions/$targetVersion/$targetVersion-Natives/")
+        val nativesFile = File("$gamePath/natives/")
         nativesFile.deleteRecursively()
         nativesFile.mkdirs()
 
