@@ -1,6 +1,7 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
 import com.redgrapefruit.openmodinstaller.task.downloadFile
+import com.redgrapefruit.openmodinstaller.util.plusAssign
 import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
@@ -52,17 +53,6 @@ object LibraryManager {
         // Save game path for later
         this.gamePath = gamePath
 
-        // If the version info JSON inherits from another version info JSON,
-        // check all the libraries from the parent version info JSON
-        if (versionInfoObject.contains("inheritsFrom")) {
-            val parentText = "{\n\t\n}"
-
-            // Parse into JSON, then extract the JsonArray of libraries and perform the check
-            val parentObject = Json.decodeFromString(JsonObject.serializer(), parentText)
-            val parentLibrariesArray = parentObject["libraries"]!!
-            checkAndDownload(parentLibrariesArray.jsonArray)
-        }
-
         // Check the main libraries array
         checkAndDownload(librariesArray)
 
@@ -72,6 +62,41 @@ object LibraryManager {
 
         // Unjar all natives
         nativeLibraries.forEach { native -> unjar(native, nativesPath) }
+    }
+
+    /**
+     * Scans and returns all Minecraft libraries currently in place
+     */
+    internal fun getLibrariesFormatted(
+        /**
+         * Root game path
+         */
+        gamePath: String,
+        /**
+         * [JsonObject] for the Mojang version info JSON
+         */
+        versionInfoObject: JsonObject): String {
+
+        val librariesArray = versionInfoObject["libraries"]!!.jsonArray
+        val builder = StringBuilder()
+
+        for (library in librariesArray) {
+            val libraryObject = library.jsonObject
+
+            // Get the name and cut it into pieces for making an absolute path for the library
+            val name = libraryObject["name"]!!.jsonPrimitive.content
+
+            val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
+            val cut2: String = name.substring(name.lastIndexOf(":") + 1)
+            val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
+
+            // Join the pieces together into an absolute path
+            val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
+
+            builder += "\"$libraryPath"
+        }
+
+        return builder.toString()
     }
 
     /**

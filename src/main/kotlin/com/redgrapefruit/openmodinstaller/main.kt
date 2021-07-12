@@ -11,13 +11,9 @@ val JSON = Json {
     ignoreUnknownKeys = true
 }
 
-fun main() = Window(title = "OpenModInstaller") {
-    val gamePath = "C:/Users/karpo/AppData/Roaming/.minecraft"
-
+fun main() {
     val launcher = OpenLauncher.create()
+    launcher.clear()
     launcher.setup("1.17")
-
-//    MaterialTheme {
-//        renderHomepage()
-//    }
+    launcher.launch("Player432", 2000, "", "1.17", "auth_uuid", "auth_access_token", "release")
 }

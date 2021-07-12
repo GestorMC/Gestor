@@ -1,13 +1,10 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
-import com.mcgoodtime.gjmlc.core.JavaArgumentHack
-import com.mojang.authlib.UserType
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import java.io.File
-import java.io.FileInputStream
+import java.io.*
 
 /**
  * The main class for launching the game
@@ -48,7 +45,15 @@ class OpenLauncher private constructor(private val root: String) {
         rootFile.mkdir()
     }
 
-    fun launch(username: String, maxMemory: Int, jvmArgs: String = "", version: String) {
+    fun launch(
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String = "",
+        version: String,
+        authUuid: String,
+        authAccessToken: String,
+        versionType: String = "release") {
+
         val versionInfoPath = "$root/versions/$version/$version.json"
 
         // Make sure version info is set up
@@ -60,30 +65,81 @@ class OpenLauncher private constructor(private val root: String) {
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
 
-        // Check if the legacy argument format is used
+        // Generate arguments
         val arguments = if (versionInfoObject.contains("minecraftArguments")) {
-            generateLegacyArguments(
+            ArgumentManager.generateLegacyArguments(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
+                root = root,
                 version = version,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content)
+                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
+                authUuid = authUuid,
+                authAccessToken = authAccessToken,
+                maxMemory = maxMemory,
+                jvmArgs = jvmArgs)
         } else {
-            generateModernArguments()
+            ArgumentManager.generateModernArguments(
+                version = version,
+                root = root,
+                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
+                username = username,
+                authUuid = authUuid,
+                authAccessToken = authAccessToken,
+                versionType = versionType,
+                maxMemory = maxMemory,
+                jvmArgs = jvmArgs)
+        }
+
+        // Launch the Minecraft process
+        try {
+            val process = Runtime.getRuntime().exec("java -jar $root/versions/$version/$version.jar $arguments")
+            observeProcessOutput(process)
+            process.waitFor()
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 
-    private fun generateLegacyArguments(raw: String, version: String, assetsIndexName: String): String {
-        return raw
-            .replace(JavaArgumentHack.VERSION_NAME, version)
-            .replace(JavaArgumentHack.GAME_DIRECTORY, root)
-            .replace(JavaArgumentHack.ASSETS_ROOT, "$root/assets")
-            .replace(JavaArgumentHack.ASSETS_INDEX_NAME, assetsIndexName)
-            .replace(JavaArgumentHack.AUTH_UUID, "auth_uuid")
-            .replace(JavaArgumentHack.AUTH_ACCESS_TOKEN, "auth_access_token")
-            .replace(JavaArgumentHack.USER_PROPERTIES, "{}")
-            .replace(JavaArgumentHack.USER_TYPE, "legacy")
-    }
+    /**
+     * Observes the out and err outputs of a [Process]
+     */
+    private fun observeProcessOutput(
+        /**
+         * Observed [Process]
+         */
+        process: Process) {
 
-    private fun generateModernArguments(): String = ""
+        /**
+         * Observes some output
+         */
+        fun observe(
+            /**
+             * [InputStream] of the process
+             */
+            inputStream: InputStream,
+            /**
+             * Output [PrintStream]
+             */
+            printStream: PrintStream) {
+            try {
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    printStream.println(line)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    inputStream.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        observe(process.inputStream, System.out)
+        observe(process.errorStream, System.err)
+    }
 
     companion object {
         /**
