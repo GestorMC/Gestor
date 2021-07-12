@@ -1,9 +1,9 @@
 package com.redgrapefruit.openmodinstaller.util
 
+import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
-import org.apache.commons.compress.archivers.jar.JarArchiveEntry
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
 import org.apache.commons.io.IOUtils
 import java.io.FileInputStream
@@ -25,9 +25,14 @@ fun unjar(input: String, output: String) = unarchive<JarArchiveInputStream>(inpu
 fun unzip(input: String, output: String) = unarchive<ZipArchiveInputStream>(input, output, ArchiveStreamFactory.ZIP)
 
 /**
+ * Un-TARs the [input] TAR.GZ to the [output] directory
+ */
+fun untar(input: String, output: String) = unarchive<TarArchiveInputStream>(input, output, ArchiveStreamFactory.TAR)
+
+/**
  * Un-archives some type of an archive since Compress uses a more-or-less unified API for all of the archive types
  */
-private inline fun <reified TStreamType : ZipArchiveInputStream> unarchive(
+private inline fun <reified TStreamType : ArchiveInputStream> unarchive(
     /**
      * URI path to the archive file
      */
@@ -49,7 +54,7 @@ private inline fun <reified TStreamType : ZipArchiveInputStream> unarchive(
         val entry = inputStream.nextEntry ?: break
 
         if (!inputStream.canReadEntryData(entry)) {
-            // TODO: Display a popup notifying the user that the app couldn't extract the contents of a JAR file (lucsoft)
+            // TODO: Display a popup notifying the user that the app couldn't extract the contents of an archive (lucsoft)
             continue
         }
 

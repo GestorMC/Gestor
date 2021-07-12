@@ -3,7 +3,10 @@ package com.redgrapefruit.openmodinstaller.launcher
 import com.redgrapefruit.openmodinstaller.data.ManifestReleaseEntry
 import com.redgrapefruit.openmodinstaller.data.VersionManifest
 import com.redgrapefruit.openmodinstaller.task.downloadFile
+import com.redgrapefruit.openmodinstaller.util.untar
+import com.redgrapefruit.openmodinstaller.util.unzip
 import kotlinx.serialization.json.*
+import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileInputStream
 import kotlin.random.Random
@@ -12,7 +15,18 @@ import kotlin.random.Random
  * Manages the code required to setup a plausible environment for running Minecraft.
  */
 object SetupManager {
+    // Manifest with MC versions
     private const val MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
+
+    // AdoptOpenJRE 8 downloads (legacy, opt-in for older versions)
+    private const val JRE_8_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_windows_hotspot_8u292b10.zip"
+    private const val JRE_8_LINUX = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_linux_hotspot_8u292b10.tar.gz"
+    private const val JRE_8_OSX = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_mac_hotspot_8u292b10.tar.gz"
+
+    // AdoptOpenJRE 16 downloads (default)
+    private const val JRE_16_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_windows_hotspot_16.0.1_9.zip"
+    private const val JRE_16_LINUX = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz"
+    private const val JRE_16_OSX = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_mac_hotspot_16.0.1_9.tar.gz"
 
     /**
      * Sets up the necessary `${VERSION}.info` file.
@@ -136,17 +150,51 @@ object SetupManager {
 
     /**
      * Sets up a local Java install, not reusable anywhere outside of the launcher.
-     *
-     * If [targetVersion] is below 1.17, JRE 8 is installed.
-     *
-     * If [targetVersion] is 1.17 or higher, JDK 16 is installed.
      */
     fun setupJava(
         /**
-         * The targeted Minecraft version
+         * Use AdoptOpenJRE 8 legacy version instead of 16 for older versions
          */
-        targetVersion: String) {
+        optInLegacyJava: Boolean = false) {
 
+        // Check if Java is already installed
+        val javaTargetPath = "./java/${if (optInLegacyJava) "adoptopenjre8" else "adoptopenjre16"}"
+        val javaTargetFile = File(javaTargetPath)
 
+        if (javaTargetFile.exists()) {
+            return
+        } else {
+            javaTargetFile.mkdirs()
+        }
+
+        val javaURL = if (optInLegacyJava) {
+            when {
+                SystemUtils.IS_OS_WINDOWS -> JRE_8_WINDOWS
+                SystemUtils.IS_OS_LINUX -> JRE_8_LINUX
+                SystemUtils.IS_OS_MAC_OSX -> JRE_8_OSX
+                else -> throw RuntimeException("App not run on Windows, Linux or OSX")
+            }
+        } else {
+            when {
+                SystemUtils.IS_OS_WINDOWS -> JRE_16_WINDOWS
+                SystemUtils.IS_OS_LINUX -> JRE_16_LINUX
+                SystemUtils.IS_OS_MAC -> JRE_16_OSX
+                else -> throw RuntimeException("App not run on Windows, Linux or OSX")
+            }
+        }
+
+        val useTarGZ = SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX
+
+        // Download into dedicated cache
+        val javaArchivePath = "./cache/dedicated/cache_${Random.nextInt(Int.MAX_VALUE)}"
+        File(javaArchivePath).createNewFile()
+        downloadFile(javaURL, javaArchivePath)
+
+        // UnZIP or UnTAR
+        if (useTarGZ) {
+            untar(javaArchivePath, javaTargetPath)
+        } else {
+            unzip(javaArchivePath, javaTargetPath)
+        }
     }
 }
