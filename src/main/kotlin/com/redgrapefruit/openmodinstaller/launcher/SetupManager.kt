@@ -43,7 +43,7 @@ object SetupManager {
          */
         targetVersion: String
         ) {
-        var game = File(gamePath)
+        val game = File(gamePath)
 
         if (!game.exists()) game.mkdirs()
 
