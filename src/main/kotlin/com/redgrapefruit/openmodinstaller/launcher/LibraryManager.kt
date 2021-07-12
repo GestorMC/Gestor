@@ -16,11 +16,6 @@ object LibraryManager {
     private val NATIVES_OSX_VARIANTS = listOf("natives_macos", "natives_mac", "natives_osx", "natives-osx")
 
     /**
-     * A [MutableList] of every current missing library's path
-     */
-    private val missingLibraries: MutableList<String> = mutableListOf()
-
-    /**
      * A [MutableList] of all natives
      */
     private val nativeLibraries: MutableList<String> = mutableListOf()

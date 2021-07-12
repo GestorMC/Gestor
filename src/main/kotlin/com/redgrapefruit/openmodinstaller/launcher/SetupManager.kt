@@ -3,10 +3,7 @@ package com.redgrapefruit.openmodinstaller.launcher
 import com.redgrapefruit.openmodinstaller.data.ManifestReleaseEntry
 import com.redgrapefruit.openmodinstaller.data.VersionManifest
 import com.redgrapefruit.openmodinstaller.task.downloadFile
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
 import kotlin.random.Random
@@ -102,6 +99,39 @@ object SetupManager {
 
         // This is a quite heavy process and always takes a while if not in OkHttp cache
         downloadFile(jarURL, jarPath)
+    }
+
+    /**
+     * Sets up Minecraft libraries, downloads missing and unzips natives
+     */
+    fun setupLibraries(
+        /**
+         * The URI to the game's root directory
+         */
+        gamePath: String,
+        /**
+         * The targeted Minecraft version for this launch
+         */
+        targetVersion: String) {
+
+        val versionInfoPath = "$gamePath/versions/$targetVersion/$targetVersion.json"
+
+        // Load version info JsonObject
+        val versionInfoObject: JsonObject
+        FileInputStream(versionInfoPath).use { stream ->
+            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString()).jsonObject
+        }
+
+        // Determine native libraries path and clear it beforehand
+        val nativesFile = File("$gamePath/versions/$targetVersion/$targetVersion-Natives/")
+        nativesFile.deleteRecursively()
+        nativesFile.mkdirs()
+
+        // Get libraries JsonArray from the JsonObject
+        val librariesArray = versionInfoObject["libraries"]!!.jsonArray
+
+        // Launch LibraryManager
+        LibraryManager.checkLibraries(gamePath, versionInfoObject, librariesArray, nativesFile.absolutePath)
     }
 
     /**
