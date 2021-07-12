@@ -81,79 +81,80 @@ object LibraryManager {
         /**
          * The checked libraries [JsonArray]
          */
-        librariesArray: JsonArray
-    ): Unit = librariesArray.forEach { library ->
+        librariesArray: JsonArray) {
 
-        // Extract the JsonObject
-        val libraryObject = library.jsonObject
+        for (library in librariesArray) {
+            // Extract the JsonObject
+            val libraryObject = library.jsonObject
 
-        // Get the name and cut it into pieces for making an absolute path for the library
-        val name = libraryObject["name"]!!.jsonPrimitive.content
+            // Get the name and cut it into pieces for making an absolute path for the library
+            val name = libraryObject["name"]!!.jsonPrimitive.content
 
-        val cut1 = name
-            .substring(0, name.lastIndexOf(":") + 1)
-            .replace(".", "/")
-            .replace(":", "/")
-        val cut2 = name
-            .substring(name.lastIndexOf(":"))
-        val cut3 = name
-            .substring(name.indexOf(":") + 1)
-            .replace(":", "-")
+            val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
+            val cut2: String = name.substring(name.lastIndexOf(":") + 1)
+            val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
 
-        // Join the pieces together into an absolute path
-        val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
+            // Join the pieces together into an absolute path
+            val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
 
-        // Check if the library doesn't exist
-        val libraryFile = File(libraryPath)
-        if (!libraryFile.exists()) {
-            // Group into natives or missing
-            // If has classifiers -> native
-            // If has artifact -> regular
-            // Else isn't used since some libraries have both classifiers and artifact (they have both regular and native versions)
+            // Check if the library doesn't exist
+            val libraryFile = File(libraryPath)
+            if (!libraryFile.exists()) {
+                // Group into natives or missing
+                // If has classifiers -> native
+                // If has artifact -> regular
+                // Else isn't used since some libraries have both classifiers and artifact (they have both regular and native versions)
 
-            val downloadsObject = libraryObject["downloads"]!!.jsonObject
+                val downloadsObject = libraryObject["downloads"]!!.jsonObject
 
-            if (downloadsObject.contains("classifiers")) {
-                val nativeObjectNames = when {
-                    // Compat with multiple format versions
-                    SystemUtils.IS_OS_WINDOWS -> NATIVES_WINDOWS_VARIANTS
-                    SystemUtils.IS_OS_LINUX -> NATIVES_LINUX_VARIANTS
-                    SystemUtils.IS_OS_MAC_OSX -> NATIVES_OSX_VARIANTS
-                    else -> throw RuntimeException("App running not on Windows, Linux or MacOS. This is not allowed for Java Edition")
-                }
-                val nativeObjectName = getNativeKeyName(nativeObjectNames, downloadsObject)
+                if (downloadsObject.contains("classifiers")) {
+                    val nativeObjectNames = when {
+                        // Compat with multiple format versions
+                        SystemUtils.IS_OS_WINDOWS -> NATIVES_WINDOWS_VARIANTS
+                        SystemUtils.IS_OS_LINUX -> NATIVES_LINUX_VARIANTS
+                        SystemUtils.IS_OS_MAC_OSX -> NATIVES_OSX_VARIANTS
+                        else -> throw RuntimeException("App running not on Windows, Linux or MacOS. This is not allowed for Java Edition")
+                    }
+                    val nativeObjectName = getNativeKeyName(nativeObjectNames, downloadsObject)
 
-                val nativePath = "$gamePath/libraries/$cut1/$cut2/$cut3-$nativeObjectName.jar"
-                val nativeFile = File(nativePath)
+                    val nativePath = "$gamePath/libraries/$cut1/$cut2/$cut3-$nativeObjectName.jar"
+                    val nativeFile = File(nativePath)
 
-                if (!nativeFile.exists()) {
-                    // Missing native libraries still have to be installed
-                    downloadFile(
-                        input =
+                    // Some libraries, like Java-ObjC-Bridge do not support natives for some OSs, so check for that
+                    if (!downloadsObject["classifiers"]!!.jsonObject.contains(nativeObjectName)) {
+                        println("Natives library $cut3 is not supported on the current OS")
+                        continue
+                    }
+
+                    if (!nativeFile.exists()) {
+                        // Missing native libraries still have to be installed
+                        downloadFile(
+                            input =
                             // /classifiers
                             downloadsObject["classifiers"]!!
-                            // /classifiers/natives_XXX
-                            .jsonObject[nativeObjectName]!!
-                            // /classifiers/natives_XXX/url
-                            .jsonObject["url"]!!.jsonPrimitive.content,
-                        output = nativePath
-                    )
-                } else {
-                    // Add to list of native libs
-                    nativeLibraries += nativePath
+                                // /classifiers/natives_XXX
+                                .jsonObject[nativeObjectName]!!
+                                // /classifiers/natives_XXX/url
+                                .jsonObject["url"]!!.jsonPrimitive.content,
+                            output = nativePath
+                        )
+                    } else {
+                        // Add to list of native libs
+                        nativeLibraries += nativePath
+                    }
                 }
-            }
 
-            if (downloadsObject.contains("artifact")) {
-                // Just download the lib
-                downloadFile(
-                    input =
+                if (downloadsObject.contains("artifact")) {
+                    // Just download the lib
+                    downloadFile(
+                        input =
                         // /artifact
                         downloadsObject["artifact"]!!
-                        // /artifact/url
-                        .jsonObject["url"]!!.jsonPrimitive.content,
-                    output = libraryPath
-                )
+                            // /artifact/url
+                            .jsonObject["url"]!!.jsonPrimitive.content,
+                        output = libraryPath
+                    )
+                }
             }
         }
     }
