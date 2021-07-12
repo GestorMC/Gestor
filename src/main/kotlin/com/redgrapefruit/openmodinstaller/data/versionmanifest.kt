@@ -65,26 +65,27 @@ data class ManifestReleaseEntry(
 /**
  * An official release type by Mojang presented in the version manifest
  */
+@Suppress("EnumEntryName")
 enum class ManifestReleaseType : KSerializer<ManifestReleaseType> {
     /**
      * An official approved and tested Minecraft release
      */
-    Release,
+    release,
 
     /**
      * A development snapshot for a release
      */
-    Snapshot,
+    snapshot,
 
     /**
      * Old beta version of the game from 2011
      */
-    Old_Beta,
+    old_beta,
 
     /**
      * Old alpha version of the game from 2009 and 2010
      */
-    Old_Alpha;
+    old_alpha;
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("ManifestReleaseType", PrimitiveKind.STRING)
 
@@ -93,7 +94,7 @@ enum class ManifestReleaseType : KSerializer<ManifestReleaseType> {
         values().forEach {
             if (it.name.equals(type, true)) return it
         }
-        return Release
+        return release
     }
 
     override fun serialize(encoder: Encoder, value: ManifestReleaseType) {

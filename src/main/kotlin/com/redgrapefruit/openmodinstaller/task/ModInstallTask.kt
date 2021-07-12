@@ -76,7 +76,13 @@ fun downloadFile(
      * The output URI
      */
     output: String,
-) = Files.copy(downloadFileRaw(input)!!.byteStream(), Path.of(output), StandardCopyOption.REPLACE_EXISTING)
+) {
+    val outputFile = File(output)
+
+    outputFile.mkdirs()
+
+    Files.copy(downloadFileRaw(input)!!.byteStream(), Path.of(output), StandardCopyOption.REPLACE_EXISTING)
+}
 
 /**
  * The [LaunchTaskContext] for [ModInstallTask]

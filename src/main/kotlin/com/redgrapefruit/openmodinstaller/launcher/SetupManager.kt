@@ -30,12 +30,11 @@ object SetupManager {
         /**
          * The ID of the target version. For example, `"1.17"`
          */
-        targetVersion: String,
-        /**
-         * A dedicated cache folder for manifest JSONs
-         */
-        manifestCacheFolderPath: String
+        targetVersion: String
         ) {
+        var game = File(gamePath)
+
+        if (!game.exists()) game.mkdirs()
 
         // Check if the version info exists first
         val versionInfoPath = "$gamePath/versions/$targetVersion/$targetVersion.json"
@@ -44,9 +43,6 @@ object SetupManager {
         if (versionInfoFile.exists()) return
 
         // Download the manifest
-        val manifestCacheFolderFile = File(manifestCacheFolderPath)
-        if (!manifestCacheFolderFile.exists()) manifestCacheFolderFile.mkdirs()
-
         val manifestPath = "./cache/dedicated/manifest_${Random.nextInt(Int.MAX_VALUE)}"
         downloadFile(MANIFEST_URL, manifestPath)
 
@@ -110,5 +106,21 @@ object SetupManager {
 
         // This is a quite heavy process and always takes a while if not in OkHttp cache
         downloadFile(jarURL, jarPath)
+    }
+
+    /**
+     * Sets up a local Java install, not reusable anywhere outside of the launcher.
+     *
+     * If [targetVersion] is below 1.17, JRE 8 is installed.
+     *
+     * If [targetVersion] is 1.17 or higher, JDK 16 is installed.
+     */
+    fun setupJava(
+        /**
+         * The targeted Minecraft version
+         */
+        targetVersion: String) {
+
+
     }
 }
