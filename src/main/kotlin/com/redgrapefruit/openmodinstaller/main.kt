@@ -11,7 +11,10 @@ val JSON = Json {
 }
 
 fun main() = Window(title = "OpenModInstaller") {
-    SetupManager.setupVersionInfo("C:/Users/karpo/AppData/Roaming/.minecraft", "1.17")
+    val gamePath = "C:/Users/karpo/AppData/Roaming/.minecraft"
+
+    SetupManager.setupVersionInfo(gamePath, "1.17")
+    SetupManager.setupJAR(gamePath, "1.17")
 //    MaterialTheme {
 //        renderHomepage()
 //    }

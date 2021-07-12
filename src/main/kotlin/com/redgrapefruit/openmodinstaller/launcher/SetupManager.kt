@@ -76,11 +76,7 @@ object SetupManager {
         /**
          * The targeted Minecraft version
          */
-        targetVersion: String,
-        /**
-         * Path to the dedicated cache folder for Minecraft JARs
-         */
-        jarCacheFolderPath: String) {
+        targetVersion: String) {
 
         val versionInfoPath = "$gamePath/versions/$targetVersion/$targetVersion.json"
 
