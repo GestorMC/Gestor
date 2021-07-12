@@ -168,10 +168,7 @@ object ArgumentManager {
         val builder = StringBuilder(this)
 
         builder += " -Xmx${maxMemory}M"
-        builder += " -XX:+UseConcMarkSweepGC"
         builder += " $jvmArgs"
-        builder += " -XX:+CMSIncrementalMode"
-        builder += " -XX:-UseAdaptiveSizePolicy"
 
         // Fill classpath with the main JAR and all libraries' JARs
         builder += " -cp ${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"

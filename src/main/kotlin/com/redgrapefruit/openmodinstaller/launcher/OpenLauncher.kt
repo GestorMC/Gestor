@@ -89,9 +89,15 @@ class OpenLauncher private constructor(private val root: String) {
                 jvmArgs = jvmArgs)
         }
 
+        // Obtain the main class and create the command that launches Minecraft
+        val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
+        val command = "java -classpath ${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}\"\"$root/versions/$version/$version.jar\" $mainClass $arguments"
+
+        println(command)
+
         // Launch the Minecraft process
         try {
-            val process = Runtime.getRuntime().exec("java -jar $root/versions/$version/$version.jar $arguments")
+            val process = Runtime.getRuntime().exec(command)
             observeProcessOutput(process)
             process.waitFor()
         } catch (ex: Exception) {
