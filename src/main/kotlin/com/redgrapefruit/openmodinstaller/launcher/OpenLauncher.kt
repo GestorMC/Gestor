@@ -11,6 +11,11 @@ import java.io.*
  */
 class OpenLauncher private constructor(private val root: String) {
     /**
+     * Has the launcher setup been run yet.
+     */
+    private var isSetUp: Boolean = false
+
+    /**
      * Sets up a new game instance.
      *
      * If making from scratch, run [clear] beforehand
@@ -33,6 +38,7 @@ class OpenLauncher private constructor(private val root: String) {
         // Make dirs
         File("$root/assets").mkdirs()
 
+        isSetUp = true
     }
 
     /**
@@ -56,8 +62,8 @@ class OpenLauncher private constructor(private val root: String) {
 
         val versionInfoPath = "$root/versions/$version/$version.json"
 
-        // Make sure version info is set up
-        if (!File(versionInfoPath).exists()) SetupManager.setupVersionInfo(root, version)
+        // Make sure the setup has been run
+        if (!isSetUp) throw RuntimeException("Cannot launch the game since the setup hasn't been run yet")
 
         // Parse version info
         val versionInfoObject: JsonObject
@@ -129,6 +135,7 @@ class OpenLauncher private constructor(private val root: String) {
              * Output [PrintStream]
              */
             printStream: PrintStream) {
+
             try {
                 val reader = BufferedReader(InputStreamReader(inputStream))
                 var line: String?
