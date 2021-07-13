@@ -26,8 +26,8 @@ and the status of their development: [Github Projects](https://github.com/OpenMo
 
 ## Download
 
-There are only Nightly builds currently available 
-[Get your Nighlty build](https://nightly.link/OpenModInstaller/OpenModInstaller/workflows/nightly/master/Artifacts.zip).
+There are only Nightly builds currently available.\
+[Get your Nightly build](https://nightly.link/OpenModInstaller/OpenModInstaller/workflows/nightly/master/Artifacts.zip).\
 Stable builds will be available later.
 
 ## Contribute
