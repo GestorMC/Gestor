@@ -52,6 +52,7 @@ class OpenLauncher private constructor(private val root: String) {
     }
 
     fun launch(
+        optInLegacyJava: Boolean = false,
         username: String,
         maxMemory: Int,
         jvmArgs: String = "",
@@ -97,8 +98,7 @@ class OpenLauncher private constructor(private val root: String) {
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
-        //val command = "java -classpath ${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}\"\"$root/versions/$version/$version.jar\" $mainClass $arguments"
-        val javaFile = File("./java/adoptopenjre16/jdk-16.0.1+9-jre/bin/java.exe")
+        val javaFile = File(findLocalJavaPath(optInLegacyJava))
 
         val command = "${javaFile.absolutePath} -Djava.library.path=$root/natives/ -classpath .;$root/versions/$version/$version.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass $arguments"
 
@@ -155,6 +155,30 @@ class OpenLauncher private constructor(private val root: String) {
 
         observe(process.inputStream, System.out)
         observe(process.errorStream, System.err)
+    }
+
+    /**
+     * Finds the path for the local Java installation
+     */
+    private fun findLocalJavaPath(
+        /**
+         * Opt in legacy Java 8 for older Minecraft versions
+         */
+        optInLegacyJava: Boolean): String {
+
+        // Get the root for the Java installation
+        val root = if (optInLegacyJava) "./java/adoptopenjre8" else "./java/adoptopenjre16"
+        val rootFile = File(root)
+
+        // Get the only subfolder with the actual Java (also prevents unnecessary hardcoding)
+        var subroot: File? = null
+        rootFile.listFiles()!!.forEach { file ->
+            subroot = file
+        }
+        if (subroot == null) throw RuntimeException("Couldn't find the subroot of the Java installation. The root is empty")
+
+        // Return the main Java executable in the binaries folder
+        return "${subroot!!.absolutePath}/bin/java.exe"
     }
 
     companion object {
