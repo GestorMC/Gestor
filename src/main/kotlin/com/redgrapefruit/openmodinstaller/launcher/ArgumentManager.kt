@@ -8,12 +8,12 @@ import kotlinx.serialization.json.JsonObject
 import org.apache.commons.lang3.SystemUtils
 import java.io.FileInputStream
 
-private const val LAUNCHER_BRAND = "OpenLauncher"
-
 /**
  * Manages Minecraft process execution arguments
  */
 object ArgumentManager {
+    private const val LAUNCHER_BRAND = "OpenLauncher"
+
     /**
      * Generates launch arguments using the legacy format
      */
@@ -102,6 +102,34 @@ object ArgumentManager {
         builder += " --accessToken $authAccessToken"
         builder += " --userType mojang"
         builder += " --versionType $versionType"
+
+        return builder.toString()
+    }
+
+    /**
+     * Generates special options for the JVM when launching Minecraft
+     */
+    internal fun generateJVMArguments(
+        /**
+         * Maximum process memory in megabytes
+         */
+        maxMemory: String,
+        /**
+         * Additional JVM arguments
+         */
+        jvmArgs: String): String {
+
+        val builder = StringBuilder()
+
+        builder += "-Xmx${maxMemory}M"
+        if (jvmArgs.isNotEmpty()) builder += " $jvmArgs"
+        if (SystemUtils.IS_OS_MAC_OSX) {
+            builder += " -XstartOnFirstThread"
+        }
+        if (SystemUtils.OS_ARCH == "x86") {
+            builder += " -Xss1M"
+        }
+        builder += " -Dminecraft.launcher.brand=$LAUNCHER_BRAND"
 
         return builder.toString()
     }
