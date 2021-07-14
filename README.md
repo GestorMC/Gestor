@@ -22,7 +22,7 @@ Alpha releases are expected to be available in the middle of July 2021.
 ## Features
 
 Here's an exhaustive list of features coming into the 1.0 release
-and the status of their development: [Github Projects](https://github.com/OpenModInstaller/OpenModInstaller/projects/2)
+and the status of their development: [GitHub Projects](https://github.com/OpenModInstaller/OpenModInstaller/projects/2)
 
 ## Download
 
