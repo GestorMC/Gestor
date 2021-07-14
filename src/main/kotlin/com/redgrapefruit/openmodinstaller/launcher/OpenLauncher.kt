@@ -34,6 +34,7 @@ class OpenLauncher private constructor(private val root: String) {
         SetupManager.setupLibraries(root, version)
         SetupManager.setupJAR(root, version)
         SetupManager.setupJava(optInLegacyJava)
+        SetupManager.setupAssetIndex(root, version)
 
         // Make dirs
         File("$root/assets").mkdirs()

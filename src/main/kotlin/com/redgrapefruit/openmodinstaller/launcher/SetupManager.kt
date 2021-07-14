@@ -195,4 +195,31 @@ object SetupManager {
             unzip(javaArchivePath, javaTargetPath)
         }
     }
+
+    /**
+     * Sets up Minecraft's asset index JSON file
+     */
+    fun setupAssetIndex(
+        /**
+         * The root folder of the game
+         */
+        gamePath: String,
+        /**
+         * The targeted Minecraft version
+         */
+        targetVersion: String) {
+
+        // Ensure that the folder for asset indexes exists
+        val assetIndexesFile = File("$gamePath/assets/indexes")
+        if (!assetIndexesFile.exists()) assetIndexesFile.mkdirs()
+
+        // Read the version info
+        val versionInfoObject: JsonObject
+        FileInputStream("$gamePath/versions/$targetVersion/$targetVersion.json").use { stream ->
+            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+
+        // Download the index
+        downloadFile(input = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content, output = "$assetIndexesFile/$targetVersion.json")
+    }
 }

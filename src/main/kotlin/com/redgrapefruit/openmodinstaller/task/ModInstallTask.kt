@@ -78,7 +78,6 @@ fun downloadFile(
     output: String,
 ) {
     val outputFile = File(output)
-
     outputFile.mkdirs()
 
     Files.copy(downloadFileRaw(input)!!.byteStream(), Path.of(output), StandardCopyOption.REPLACE_EXISTING)
