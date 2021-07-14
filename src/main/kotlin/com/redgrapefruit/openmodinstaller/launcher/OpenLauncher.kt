@@ -80,9 +80,7 @@ class OpenLauncher private constructor(private val root: String) {
                 version = version,
                 assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
                 authUuid = authUuid,
-                authAccessToken = authAccessToken,
-                maxMemory = maxMemory,
-                jvmArgs = jvmArgs)
+                authAccessToken = authAccessToken)
         } else {
             ArgumentManager.generateModernArguments(
                 version = version,
@@ -91,17 +89,13 @@ class OpenLauncher private constructor(private val root: String) {
                 username = username,
                 authUuid = authUuid,
                 authAccessToken = authAccessToken,
-                versionType = versionType,
-                maxMemory = maxMemory,
-                jvmArgs = jvmArgs)
+                versionType = versionType)
         }
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
 
-        val command = "${findLocalJavaPath(optInLegacyJava)} -classpath .;$root/versions/$version/$version.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass $arguments"
-
-        println(command)
+        val command = "${findLocalJavaPath(optInLegacyJava)} -Xmx${maxMemory}M $jvmArgs -classpath .;$root/versions/$version/$version.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass $arguments"
 
         // Launch the Minecraft process
         try {

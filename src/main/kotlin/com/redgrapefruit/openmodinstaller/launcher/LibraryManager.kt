@@ -2,10 +2,12 @@ package com.redgrapefruit.openmodinstaller.launcher
 
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.plusAssign
-import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Path
 
 /**
  * Checks and installs Minecraft's libraries
@@ -37,10 +39,6 @@ object LibraryManager {
          */
         gamePath: String,
         /**
-         * A root [JsonObject] for the Mojang version info JSON
-         */
-        versionInfoObject: JsonObject,
-        /**
          * A [JsonArray] of libraries for the game
          */
         librariesArray: JsonArray,
@@ -54,7 +52,7 @@ object LibraryManager {
         this.gamePath = gamePath
 
         // Check the main libraries array
-        checkAndDownload(librariesArray)
+        checkAndDownload(librariesArray, nativesPath)
     }
 
     /**
@@ -69,14 +67,6 @@ object LibraryManager {
          * [JsonObject] for the Mojang version info JSON
          */
         versionInfoObject: JsonObject): String {
-
-        fun format(library: JsonElement, builder: StringBuilder) {
-
-        }
-
-        fun formatNative(library: JsonElement, builder: StringBuilder) {
-
-        }
 
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
         val builder = StringBuilder()
@@ -130,7 +120,11 @@ object LibraryManager {
         /**
          * The checked libraries [JsonArray]
          */
-        librariesArray: JsonArray) {
+        librariesArray: JsonArray,
+        /**
+         * The path to the natives folder
+         */
+        nativesFolder: String) {
 
         for (library in librariesArray) {
             // Extract the JsonObject
@@ -188,6 +182,8 @@ object LibraryManager {
                     )
 
                     nativeLibraries += libraryObject
+
+                    Files.copy(Path.of(nativePath), FileOutputStream("$nativesFolder/$cut3.jar"))
                 }
             }
 
