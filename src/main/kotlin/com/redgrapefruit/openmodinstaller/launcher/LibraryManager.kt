@@ -19,7 +19,7 @@ object LibraryManager {
     /**
      * A [MutableList] of all natives
      */
-    private val nativeLibraries: MutableList<String> = mutableListOf()
+    private val nativeLibraries: MutableList<JsonElement> = mutableListOf()
 
     /**
      * The path to the root directory of the game (for example AppData/Roaming/.minecraft on Windows)
@@ -55,17 +55,6 @@ object LibraryManager {
 
         // Check the main libraries array
         checkAndDownload(librariesArray)
-
-        // Delete current natives if they exist
-        val nativesFile = File(nativesPath)
-        if (nativesFile.exists()) nativesFile.deleteRecursively()
-
-        // Unjar all natives
-        val natives = nativeLibraries
-
-        nativeLibraries.forEach { native ->
-            unjar(native, nativesPath)
-        }
     }
 
     /**
@@ -81,10 +70,18 @@ object LibraryManager {
          */
         versionInfoObject: JsonObject): String {
 
+        fun format(library: JsonElement, builder: StringBuilder) {
+
+        }
+
+        fun formatNative(library: JsonElement, builder: StringBuilder) {
+
+        }
+
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
         val builder = StringBuilder()
 
-        for (library in librariesArray) {
+        librariesArray.forEach { library ->
             val libraryObject = library.jsonObject
 
             // Get the name and cut it into pieces for making an absolute path for the library
@@ -96,6 +93,29 @@ object LibraryManager {
 
             // Join the pieces together into an absolute path
             val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
+
+            builder += "$libraryPath;"
+        }
+        nativeLibraries.forEach { library ->
+            val libraryObject = library.jsonObject
+
+            // Get the name and cut it into pieces for making an absolute path for the library
+            val name = libraryObject["name"]!!.jsonPrimitive.content
+
+            val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
+            val cut2: String = name.substring(name.lastIndexOf(":") + 1)
+            val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
+
+            val nativeObjectNames = when {
+                // Compat with multiple format versions
+                SystemUtils.IS_OS_WINDOWS -> NATIVES_WINDOWS_VARIANTS
+                SystemUtils.IS_OS_LINUX -> NATIVES_LINUX_VARIANTS
+                SystemUtils.IS_OS_MAC_OSX -> NATIVES_OSX_VARIANTS
+                else -> throw RuntimeException("App running not on Windows, Linux or MacOS. This is not allowed for Java Edition")
+            }
+            val nativeObjectName = getNativeKeyName(nativeObjectNames, libraryObject["downloads"]!!.jsonObject)
+
+            val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3-$nativeObjectName.jar"
 
             builder += "$libraryPath;"
         }
@@ -167,7 +187,7 @@ object LibraryManager {
                         output = nativePath
                     )
 
-                    nativeLibraries += nativePath
+                    nativeLibraries += libraryObject
                 }
             }
 

@@ -61,7 +61,6 @@ object ArgumentManager {
             .replace(JavaArgumentHack.AUTH_ACCESS_TOKEN, authAccessToken)
             .replace(JavaArgumentHack.USER_PROPERTIES, "{}")
             .replace(JavaArgumentHack.USER_TYPE, "mojang")
-            .mcFillCustomArguments(maxMemory, jvmArgs, root, version)
     }
 
     /**
@@ -120,52 +119,18 @@ object ArgumentManager {
         builder += " --userType mojang"
         builder += " --versionType $versionType"
 
-        // JVM arguments (some OS-specific)
-        if (SystemUtils.IS_OS_MAC_OSX) {
-            builder += " -XstartOnFirstThread"
-        }
-        if (SystemUtils.IS_OS_WINDOWS_10) {
-            builder += " -Dos.name=Windows 10"
-            builder += " -Dos.version=10.0"
-        }
-        if (SystemUtils.OS_ARCH == "x86") {
-            builder += " -Xss1M"
-        }
-        builder += " -Dminecraft.launcher.brand=$LAUNCHER_BRAND"
-
-        return builder.toString().mcFillCustomArguments(maxMemory, jvmArgs, root, version)
-    }
-
-    /**
-     * Fills more custom arguments added by the launcher
-     */
-    private fun String.mcFillCustomArguments(
-        /**
-         * Maximum process heap memory
-         */
-        maxMemory: Int,
-        /**
-         * Additional JVM arguments
-         */
-        jvmArgs: String,
-        /**
-         * Root game directory
-         */
-        root: String,
-        /**
-         * Launched Minecraft version
-         */
-        version: String): String {
-
-        // Load version info
-        val versionInfoObject: JsonObject
-        FileInputStream("$root/versions/$version/$version.json").use { stream ->
-            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
-        }
-
-        // Fill custom parameters
-        val builder = StringBuilder(this)
-        builder += " -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump"
+//        // JVM arguments (some OS-specific)
+//        if (SystemUtils.IS_OS_MAC_OSX) {
+//            builder += " -XstartOnFirstThread"
+//        }
+//        if (SystemUtils.IS_OS_WINDOWS_10) {
+//            builder += " -Dos.name=Windows 10"
+//            builder += " -Dos.version=10.0"
+//        }
+//        if (SystemUtils.OS_ARCH == "x86") {
+//            builder += " -Xss1M"
+//        }
+//        builder += " -Dminecraft.launcher.brand=$LAUNCHER_BRAND"
 
         return builder.toString()
     }
