@@ -119,7 +119,7 @@ class OpenLauncher private constructor(
         var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
         // Apply all tweaks
-        tweaks.forEach { tweak -> command = tweak.apply(command) }
+        tweaks.forEach { tweak -> command = tweak.apply(command, root, version, jarTemplate) }
 
         // Launch the Minecraft process
         try {

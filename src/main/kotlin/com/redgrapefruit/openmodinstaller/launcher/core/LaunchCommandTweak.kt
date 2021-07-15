@@ -9,5 +9,5 @@ interface LaunchCommandTweak {
     /**
      * Tweaks the [source] command and returns the output result
      */
-    fun apply(source: String): String
+    fun apply(source: String, gamePath: String, targetVersion: String, jarTemplate: String): String
 }

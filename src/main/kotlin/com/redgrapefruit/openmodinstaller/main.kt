@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.ui.Dashboard
 import com.redgrapefruit.openmodinstaller.ui.lightColors
 import kotlinx.serialization.json.Json
@@ -36,26 +37,29 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
 
-    // addind ComposePanel on JFrame
+    // adding ComposePanel on JFrame
     window.contentPane.add(composePanel, BorderLayout.CENTER)
 
     // setting the content
-    composePanel.setContent {
-        content()
-    }
+    composePanel.setContent { content() }
     window.minimumSize = Dimension(260, 100)
     window.setSize(800, 600)
-    window.setVisible(true)
+    window.isVisible = true
 }
 
 fun main() {
-    CWindow(title = "OpenModInstaller") {
-        MaterialTheme(colors = lightColors) {
-            DesktopTheme {
-                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
-                    Dashboard()
-                }
-            }
-        }
-    }
+    val launcher = OpenLauncher.create("C:/Users/karpo/AppData/Roaming/.minecraft", testingLaunch = true)
+
+    launcher.setup("1.17.1", false)
+    launcher.launch(false, "Yass", 3000, "", "1.17.1", "release")
+
+//    CWindow(title = "OpenModInstaller") {
+//        MaterialTheme(colors = lightColors) {
+//            DesktopTheme {
+//                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+//                    Dashboard()
+//                }
+//            }
+//        }
+//    }
 }
