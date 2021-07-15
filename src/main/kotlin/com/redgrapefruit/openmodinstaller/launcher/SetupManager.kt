@@ -111,10 +111,8 @@ object SetupManager {
             .jsonObject[jarTemplate]!!
             .jsonObject["url"]!!.jsonPrimitive.content
 
-        // Search for the JAR in the appropriate codec, if has entry, copy it to the target folder, else download it
-        val jarPath = "$gamePath/versions/$targetVersion/$targetVersion-$jarTemplate.jar"
-
         // This is a quite heavy process and always takes a while if not in OkHttp cache
+        val jarPath = "$gamePath/versions/$targetVersion/$targetVersion-$jarTemplate.jar"
         downloadFile(jarURL, jarPath)
     }
 

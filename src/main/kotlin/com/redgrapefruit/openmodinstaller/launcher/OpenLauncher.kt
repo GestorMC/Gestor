@@ -104,8 +104,6 @@ class OpenLauncher private constructor(
 
         val command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
-        println(command)
-
         // Launch the Minecraft process
         try {
             val process = Runtime.getRuntime().exec(command)
