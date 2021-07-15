@@ -54,7 +54,7 @@ object SetupManager {
         if (versionInfoFile.exists()) return
 
         // Download the manifest
-        val manifestPath = "./cache/dedicated/manifest_${Random.nextInt(Int.MAX_VALUE)}"
+        val manifestPath = "$gamePath/versions/version_manifest.json"
         downloadFile(MANIFEST_URL, manifestPath)
 
         val manifest: VersionManifest
@@ -87,7 +87,11 @@ object SetupManager {
         /**
          * The targeted Minecraft version
          */
-        targetVersion: String) {
+        targetVersion: String,
+        /**
+         * Download the Minecraft server JAR
+         */
+        downloadServer: Boolean = false) {
 
         val versionInfoPath = "$gamePath/versions/$targetVersion/$targetVersion.json"
 
@@ -101,11 +105,8 @@ object SetupManager {
 
         // Get the URL for the JAR
         val jarURL =
-            // /downloads
             versionInfoObject["downloads"]!!
-            // /downloads/client
-            .jsonObject["client"]!!
-            // /downloads/client/url
+            .jsonObject[if (downloadServer) "server" else "client"]!!
             .jsonObject["url"]!!.jsonPrimitive.content
 
         // Search for the JAR in the appropriate codec, if has entry, copy it to the target folder, else download it
