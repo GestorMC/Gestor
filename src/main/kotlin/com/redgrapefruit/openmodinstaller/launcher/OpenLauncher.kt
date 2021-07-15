@@ -1,10 +1,7 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
-import com.redgrapefruit.openmodinstaller.launcher.core.ArgumentManager
-import com.redgrapefruit.openmodinstaller.launcher.core.AuthManager
-import com.redgrapefruit.openmodinstaller.launcher.core.LibraryManager
-import com.redgrapefruit.openmodinstaller.launcher.core.SetupManager
+import com.redgrapefruit.openmodinstaller.launcher.core.*
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
 import java.io.*
@@ -15,6 +12,7 @@ import java.io.*
 class OpenLauncher private constructor(
     private val root: String,
     private val isServer: Boolean,
+    private val tweaks: List<LaunchCommandTweak> = listOf(),
     private val authentication: YggdrasilUserAuthentication? = null,
     private val jarTemplate: String = if (isServer) "server" else "client") {
 
@@ -118,8 +116,10 @@ class OpenLauncher private constructor(
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
+        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
-        val command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
+        // Apply all tweaks
+        tweaks.forEach { tweak -> command = tweak.apply(command) }
 
         // Launch the Minecraft process
         try {
@@ -223,7 +223,7 @@ class OpenLauncher private constructor(
 
             auth?.logIn()
 
-            return OpenLauncher(root, isServer, auth)
+            return OpenLauncher(root, isServer, authentication = auth)
         }
     }
 
