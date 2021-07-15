@@ -1,4 +1,4 @@
-package com.redgrapefruit.openmodinstaller.launcher
+package com.redgrapefruit.openmodinstaller.launcher.core
 
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.plusAssign
@@ -49,7 +49,7 @@ object LibraryManager {
     ) {
 
         // Save game path for later
-        this.gamePath = gamePath
+        LibraryManager.gamePath = gamePath
 
         // Check the main libraries array
         checkAndDownload(librariesArray, nativesPath)

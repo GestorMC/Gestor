@@ -1,8 +1,9 @@
-package com.redgrapefruit.openmodinstaller.launcher
+package com.redgrapefruit.openmodinstaller.launcher.core
 
 import com.mojang.authlib.Agent
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.redgrapefruit.openmodinstaller.consts.AUTH_SERVICE
+import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream

@@ -1,6 +1,10 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
+import com.redgrapefruit.openmodinstaller.launcher.core.ArgumentManager
+import com.redgrapefruit.openmodinstaller.launcher.core.AuthManager
+import com.redgrapefruit.openmodinstaller.launcher.core.LibraryManager
+import com.redgrapefruit.openmodinstaller.launcher.core.SetupManager
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
 import java.io.*
