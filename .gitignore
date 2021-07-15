@@ -1,4 +1,6 @@
 .gradle
-cache
-
+.DS_Store
 build
+local.properties
+cache
+java
