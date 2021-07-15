@@ -1,9 +1,8 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
+import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.sun.security.auth.module.NTSystem
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.io.*
 
 /**
@@ -12,6 +11,7 @@ import java.io.*
 class OpenLauncher private constructor(
     private val root: String,
     private val isServer: Boolean,
+    private val authentication: YggdrasilUserAuthentication? = null,
     private val jarTemplate: String = if (isServer) "server" else "client") {
 
     /**
@@ -56,14 +56,30 @@ class OpenLauncher private constructor(
         rootFile.mkdir()
     }
 
+    /**
+     * Launches Minecraft
+     */
     fun launch(
+        /**
+         * Opt in legacy AdoptOpenJRE 8 for older Minecraft versions (1.16 and lower)
+         */
         optInLegacyJava: Boolean = false,
+        /**
+         * The username of the player
+         */
         username: String,
+        /**
+         * Maximum process memory in megabytes
+         */
         maxMemory: Int,
+        /**
+         * Extra JVM arguments
+         */
         jvmArgs: String = "",
+        /**
+         * Launched Minecraft version
+         */
         version: String,
-        authUuid: String,
-        authAccessToken: String,
         versionType: String = "release") {
 
         val versionInfoPath = "$root/versions/$version/$version.json"
@@ -83,17 +99,14 @@ class OpenLauncher private constructor(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
                 root = root,
                 version = version,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
-                authUuid = authUuid,
-                authAccessToken = authAccessToken)
+                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,)
         } else {
             ArgumentManager.generateModernArguments(
                 version = version,
                 root = root,
                 assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
                 username = username,
-                authUuid = authUuid,
-                authAccessToken = authAccessToken,
+                auth = authentication,
                 versionType = versionType)
         }
 
@@ -193,8 +206,22 @@ class OpenLauncher private constructor(
             /**
              * Is the Minecraft launched a server
              */
-            isServer: Boolean = false)
+            isServer: Boolean = false,
+            /**
+             * If `true`, bypasses auth checks and runs pirated Minecraft.
+             *
+             * Do **not** set this to `true` outside of testing!
+             */
+            testingLaunch: Boolean = false)
 
-        : OpenLauncher = OpenLauncher(root, isServer)
+        : OpenLauncher {
+            val auth = if (testingLaunch) null else AuthManager.start()
+
+            auth?.logIn()
+
+            return OpenLauncher(root, isServer, auth)
+        }
     }
+
+    data class AuthDetails(val username: String, val password: String, val token: String = "")
 }
