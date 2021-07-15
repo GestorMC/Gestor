@@ -31,3 +31,5 @@ fun BitmapFromImageURL(url: String): ImageBitmap {
 
     return Image.makeFromEncoded(raw).asImageBitmap()
 }
+
+operator fun StringBuilder.plusAssign(assign: String) { append(assign) }

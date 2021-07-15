@@ -18,18 +18,20 @@ repositories {
 }
 
 dependencies {
-    implementation(compose.desktop.currentOs)
+    implementation(compose.desktop.currentOs) // JetPack Compose itself
+    
+    // --- Core dependencies ---
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2") // KotlinX Serialization. JSON support
     implementation("org.commonmark:commonmark:0.18.0") // CommonMark3. Markdown -> HTML rendering
     implementation("com.mojang:authlib:2.3.31")  // Mojang Authlib. Verification of accounts
 
     // --- Miscellaneous utilities ---
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
-    implementation(group = "com.google.code.gson", name = "gson", version = "2.8.7")
-    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0")
+    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1") // OkHttp. The high-performance HTTP client used
+    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0") // Commons Lang3. A misc utility library
+    implementation(group = "org.apache.commons", name = "commons-compress", version = "1.20") // Commons Compress. Empowers all compression/decompression operations
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "15"
 }
 

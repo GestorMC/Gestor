@@ -20,6 +20,7 @@ import javax.swing.WindowConstants
 val JSON = Json {
     ignoreUnknownKeys = true
 }
+
 fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtilities.invokeLater {
     val window = JFrame()
 

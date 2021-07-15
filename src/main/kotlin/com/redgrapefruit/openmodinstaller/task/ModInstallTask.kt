@@ -1,10 +1,12 @@
 package com.redgrapefruit.openmodinstaller.task
 
+import com.redgrapefruit.openmodinstaller.consts.assetCache
 import com.redgrapefruit.openmodinstaller.data.ReleaseEntry
-import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
-import java.nio.channels.Channels
+import okhttp3.*
+import java.io.*
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 
 /**
  * A [Task] which handles automatic installation of mods
@@ -16,7 +18,7 @@ object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContex
             if (File(path).exists())
 
                 try {
-                    downloadFile(entry.url, path, true)
+                    downloadFile(entry.url, path)
                 } catch (exception: Exception) {
                     // TODO: Handle with a popup RenderTask (lucsoft)
                 }
@@ -25,45 +27,60 @@ object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContex
 }
 
 /**
- * Downloads a file from the Internet using the `java.nio` API
+ * An event handling cache misses for use in OkHttp
+ */
+private class Event(
+    /**
+     * The requested download URL
+     */
+    val url: String) : EventListener() {
+
+    override fun cacheMiss(call: Call) {
+        super.cacheMiss(call)
+
+        println("Loading asset: $url")
+    }
+
+    override fun cacheHit(call: Call, response: Response) = hit()
+    override fun cacheConditionalHit(call: Call, cachedResponse: Response) = hit()
+
+    private fun hit() {
+        println("Loading asset from cache: $url")
+    }
+}
+
+
+/**
+ * Raw [downloadFile] that returns a raw HTTP [ResponseBody]
+ */
+fun downloadFileRaw(
+    input: String,
+): ResponseBody? {
+    // Init OkHttp client
+    val client = OkHttpClient.Builder().cache(assetCache).eventListener(Event(input)).build()
+    // Make request
+    val request = Request.Builder().url(input).build()
+    // Call
+    return client.newCall(request).execute().body
+}
+
+/**
+ * Downloads a file from the Internet using the OkHttp client
  */
 fun downloadFile(
     /**
-     * The input URL. Should be full (e.g. not `github.com`, but `https://www.github.com`)
+     * The input URL. Recommended to provide full URLs (e.g. not `github.com`, but `https://www.github.com`)
      */
     input: String,
     /**
-     * The output file URI
+     * The output URI
      */
     output: String,
-    /**
-     * If the file at the [output] URI doesn't exist, should the utility create it
-     */
-    createFile: Boolean = false
 ) {
+    val outputFile = File(output)
+    outputFile.mkdirs()
 
-    // Create file if needed & requested
-    if (createFile) {
-        val outputFile = File(output)
-
-        if (!outputFile.exists()) {
-            outputFile.createNewFile()
-        }
-    }
-
-    // Make URL
-    val url = URL(input)
-
-    // Open a channel for the URL and a stream for the output file
-    val channel = Channels.newChannel(url.openStream())
-    val stream = FileOutputStream(output)
-
-    // Read from 0 to max (full file)
-    stream.channel.transferFrom(channel, 0, Long.MAX_VALUE)
-
-    // Close all streams and channels
-    channel.close()
-    stream.close()
+    Files.copy(downloadFileRaw(input)!!.byteStream(), Path.of(output), StandardCopyOption.REPLACE_EXISTING)
 }
 
 /**

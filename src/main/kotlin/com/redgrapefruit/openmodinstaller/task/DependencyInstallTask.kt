@@ -29,7 +29,7 @@ object DependencyInstallTask :
                         // Avoid rewrites completely
                         if (file.exists()) file.delete()
 
-                        downloadFile(entry.url, path, true)
+                        downloadFile(entry.url, path)
                     }
                 }
             }
