@@ -9,7 +9,11 @@ import java.io.*
 /**
  * The main class for launching the game
  */
-class OpenLauncher private constructor(private val root: String) {
+class OpenLauncher private constructor(
+    private val root: String,
+    private val isServer: Boolean,
+    private val jarTemplate: String = if (isServer) "server" else "client") {
+
     /**
      * Has the launcher setup been run yet.
      */
@@ -32,7 +36,7 @@ class OpenLauncher private constructor(private val root: String) {
 
         SetupManager.setupVersionInfo(root, version)
         SetupManager.setupLibraries(root, version)
-        SetupManager.setupJAR(root, version)
+        SetupManager.setupJAR(root, version, isServer)
         SetupManager.setupJava(optInLegacyJava)
         SetupManager.setupAssetIndex(root, version)
 
@@ -98,7 +102,7 @@ class OpenLauncher private constructor(private val root: String) {
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
 
-        val command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass $arguments"
+        val command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
         println(command)
 
@@ -187,8 +191,12 @@ class OpenLauncher private constructor(private val root: String) {
             /**
              * Game's root folder. Win AppData by default
              */
-            root: String = "C:/Users/${NTSystem().name}/AppData/Roaming/.minecraft")
+            root: String = "C:/Users/${NTSystem().name}/AppData/Roaming/.minecraft",
+            /**
+             * Is the Minecraft launched a server
+             */
+            isServer: Boolean = false)
 
-        : OpenLauncher = OpenLauncher(root)
+        : OpenLauncher = OpenLauncher(root, isServer)
     }
 }
