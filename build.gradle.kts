@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.5.10"
     kotlin("plugin.serialization") version "1.5.20"
-    id("org.jetbrains.compose") version "0.5.0-build235"
+    id("org.jetbrains.compose") version "0.5.0-build245"
 }
 
 group = "com.redgrapefruit"
