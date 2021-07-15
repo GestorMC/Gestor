@@ -9,6 +9,7 @@ import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileInputStream
+import java.nio.file.Paths
 import kotlin.random.Random
 
 /**
@@ -17,6 +18,8 @@ import kotlin.random.Random
 object SetupManager {
     // Manifest with MC versions
     private const val MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
+    // The sub-sub-domain of Minecraft.net containing asset downloads for the asset index
+    private const val ASSET_DOWNLOAD_DOMAIN_URL = "https://resources.download.minecraft.net"
 
     // AdoptOpenJRE 8 downloads (legacy, opt-in for older versions)
     private const val JRE_8_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_windows_hotspot_8u292b10.zip"
@@ -198,9 +201,9 @@ object SetupManager {
     }
 
     /**
-     * Sets up Minecraft's asset index JSON file
+     * Sets up Minecraft's asset index JSON file and the assets themselves
      */
-    fun setupAssetIndex(
+    fun setupAssets(
         /**
          * The root folder of the game
          */
@@ -222,5 +225,36 @@ object SetupManager {
 
         // Download the index
         downloadFile(input = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content, output = "$assetIndexesFile/$targetVersion.json")
+
+        // Read the asset index
+        val assetIndexObject: JsonObject
+        FileInputStream("$assetIndexesFile/$targetVersion.json").use { stream ->
+            assetIndexObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+
+        // Ensure the objects folder exists
+        val objectsFile = File("$gamePath/assets/objects")
+        if (objectsFile.exists()) objectsFile.mkdirs()
+
+        // Iterate through all asset objects
+        val objectsObject = assetIndexObject["objects"]!!.jsonObject // the naming is a bit cursed here though
+        objectsObject.keys.forEach { key ->
+            val assetObject = objectsObject[key]!!.jsonObject
+
+            // Get hash and its first two symbols which act as a key in Minecraft's asset system
+            val hash = assetObject["hash"]!!.jsonPrimitive.content
+            val hashPrefix = hash.substring(0, 2)
+
+            // Get the local path
+            val localAssetPath = "${objectsFile.absolutePath}/$hashPrefix/$hash"
+            val localAssetFile = File(localAssetPath)
+
+            // Validate the local path, if doesn't exist, create the remote path and download from it
+            if (!localAssetFile.exists()) {
+                val remoteAssetPath = "$ASSET_DOWNLOAD_DOMAIN_URL/$hashPrefix/$hash"
+
+                downloadFile(remoteAssetPath, localAssetPath)
+            }
+        }
     }
 }
