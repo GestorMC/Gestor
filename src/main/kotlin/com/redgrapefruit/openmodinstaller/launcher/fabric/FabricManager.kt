@@ -1,11 +1,9 @@
 package com.redgrapefruit.openmodinstaller.launcher.fabric
 
+import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.task.downloadFile
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -39,12 +37,12 @@ object FabricManager {
         // Parse the manifest JSON
         val manifestObject: JsonObject
         FileInputStream(manifestFile).use { stream ->
-            manifestObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+            manifestObject = JSON.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
 
         // Get the URL to the latest installer JAR and download it
-        val installerURL = manifestObject["0"]!!.jsonObject["url"]!!.jsonPrimitive.content
-        val installerVersion = manifestObject["0"]!!.jsonObject["version"]!!.jsonPrimitive.content
+        val installerURL = manifestObject["array"]!!.jsonArray[0].jsonObject["url"]!!.jsonPrimitive.content
+        val installerVersion = manifestObject["array"]!!.jsonArray[0].jsonObject["version"]!!.jsonPrimitive.content
         downloadFile(installerURL, "$gamePath/openmodinstaller/fabric/installer/installer_$installerVersion.jar")
     }
 
@@ -71,11 +69,11 @@ object FabricManager {
 
         val manifestObject: JsonObject
         FileInputStream(manifestFile).use { stream ->
-            manifestObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+            manifestObject = JSON.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
 
         // Locate the installer
-        val installerVersion = manifestObject["0"]!!.jsonObject["url"]!!.jsonPrimitive.content
+        val installerVersion = manifestObject["array"]!!.jsonArray[0].jsonObject["url"]!!.jsonPrimitive.content
         val installerPath = "$gamePath/openmodinstaller/fabric/installer/installer_$installerVersion.jar"
 
         // Create a command for launching the installer and launch it without output observation
