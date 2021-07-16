@@ -2,6 +2,8 @@ package com.redgrapefruit.openmodinstaller.launcher
 
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.redgrapefruit.openmodinstaller.launcher.core.*
+import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricCommandModification
+import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricManager
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
 import java.io.*
@@ -13,6 +15,7 @@ class OpenLauncher private constructor(
     private val root: String,
     private val isServer: Boolean,
     private val modifications: Set<CommandModification> = emptySet(),
+    private val extraSetup: (String, Boolean, String) -> Unit = { _, _, _ -> }, // can be used to add extra setup instructions
     private val authentication: YggdrasilUserAuthentication? = null,
     private val jarTemplate: String = if (isServer) "server" else "client") {
 
@@ -41,6 +44,7 @@ class OpenLauncher private constructor(
         SetupManager.setupJAR(root, version, isServer)
         SetupManager.setupJava(optInLegacyJava)
         SetupManager.setupAssets(root, version)
+        extraSetup.invoke(version, optInLegacyJava, root)
 
         // Make dirs
         File("$root/assets").mkdirs()
@@ -198,6 +202,13 @@ class OpenLauncher private constructor(
     }
 
     companion object {
+        // Setup functions
+
+        private val FABRIC_SETUP: (String, Boolean, String) -> Unit = { version, optInLegacyJava, gamePath ->
+            FabricManager.setupInstaller(gamePath)
+            FabricManager.runInstaller(gamePath, version, optInLegacyJava)
+        }
+
         /**
          * Creates a new instance of [OpenLauncher] for running vanilla Minecraft
          */
@@ -221,6 +232,27 @@ class OpenLauncher private constructor(
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
             return OpenLauncher(root, isServer, authentication = auth)
+        }
+
+        /**
+         * Creates a new instance of [OpenLauncher] for running Fabric Minecraft
+         */
+        fun fabric(
+            /**
+             * Game's root folder. Windows AppData by default
+             */
+            root: String = "C:/Users/${NTSystem().name}/AppData/Roaming/.minecraft",
+            /**
+             * If `true`, bypasses auth checks and runs pirated Minecraft.
+             *
+             * Do **not** set this to `true` outside of testing!
+             */
+            testingLaunch: Boolean = false
+
+        ): OpenLauncher {
+            val auth = if (testingLaunch) null else AuthManager.start()
+            auth?.logIn()
+            return OpenLauncher(root, false, modifications = setOf(FabricCommandModification), authentication = auth, extraSetup = FABRIC_SETUP)
         }
 
         /**
