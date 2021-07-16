@@ -147,7 +147,7 @@ object SetupManager {
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
 
         // Launch LibraryManager
-        LibraryManager.checkLibraries(gamePath, librariesArray, nativesFile.absolutePath)
+        LibraryManager.checkLibraries(gamePath, versionInfoObject, librariesArray, nativesFile.absolutePath)
     }
 
     /**

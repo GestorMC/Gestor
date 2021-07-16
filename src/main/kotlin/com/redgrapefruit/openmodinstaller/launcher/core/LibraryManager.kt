@@ -5,6 +5,7 @@ import com.redgrapefruit.openmodinstaller.util.plusAssign
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -39,6 +40,10 @@ object LibraryManager {
          */
         gamePath: String,
         /**
+         * The root [JsonObject] for the version info JSON
+         */
+        versionInfoObject: JsonObject,
+        /**
          * A [JsonArray] of libraries for the game
          */
         librariesArray: JsonArray,
@@ -47,6 +52,25 @@ object LibraryManager {
          */
         nativesPath: String
     ) {
+
+        if (versionInfoObject.contains("inheritsFrom")) {
+            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
+
+            // Try obtain parent version info
+            val parentFile = File("$gamePath/versions/$parent/$parent.json")
+            if (!parentFile.exists()) {
+                throw RuntimeException("Could not find parent version info: $parent. Please install it")
+            } else {
+                // Parse
+                val parentObject: JsonObject
+                FileInputStream(parentFile).use { stream ->
+                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                }
+
+                // Check parent libraries
+                checkAndDownload(parentObject["libraries"]!!.jsonArray, nativesPath)
+            }
+        }
 
         // Save game path for later
         LibraryManager.gamePath = gamePath
