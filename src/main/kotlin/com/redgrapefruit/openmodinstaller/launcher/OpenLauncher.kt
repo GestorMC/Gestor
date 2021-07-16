@@ -124,12 +124,20 @@ class OpenLauncher private constructor(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
                 root = root,
                 version = version,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content)
+                assetsIndexName =
+                if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets"))
+                    getParentObject(versionInfoObject, root)["assets"]!!.jsonPrimitive.content
+                else
+                    versionInfoObject["assets"]!!.jsonPrimitive.content)
         } else {
             ArgumentManager.generateModernArguments(
                 version = version,
                 root = root,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
+                assetsIndexName =
+                if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets"))
+                    getParentObject(versionInfoObject, root)["assets"]!!.jsonPrimitive.content
+                else
+                    versionInfoObject["assets"]!!.jsonPrimitive.content,
                 username = username,
                 auth = authentication,
                 versionType = versionType)
@@ -142,20 +150,7 @@ class OpenLauncher private constructor(
         // Create classpath
         var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
         if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
-            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
-            val parentPath = "$root/versions/$parent/$parent.json"
-
-            if (!File(parentPath).exists()) {
-                throw RuntimeException("Couldn't find parent version info $parent. Please install it")
-            } else {
-                // Parse
-                val parentObject: JsonObject
-                FileInputStream(parentPath).use { stream ->
-                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
-                }
-                // Insert all parent libs into the classpath
-                classpath += LibraryManager.getLibrariesFormatted(root, parentObject)
-            }
+            classpath += LibraryManager.getLibrariesFormatted(root, getParentObject(versionInfoObject, root))
         }
         plugins.forEach { plugin -> plugin.onClasspathCreation(classpath, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
 
@@ -294,6 +289,27 @@ class OpenLauncher private constructor(
 
             // Return the main Java executable in the binaries folder
             return "${subroot!!.absolutePath}/bin/java.exe"
+        }
+
+        /**
+         * Returns the parent version info. Only call if has `inheritsFrom`
+         */
+        @InternalAPI
+        fun getParentObject(versionInfoObject: JsonObject, root: String): JsonObject {
+            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
+            val parentPath = "$root/versions/$parent/$parent.json"
+
+            val parentObject: JsonObject
+            if (!File(parentPath).exists()) {
+                throw RuntimeException("Couldn't find parent version info $parent. Please install it")
+            } else {
+                // Parse
+                FileInputStream(parentPath).use { stream ->
+                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                }
+            }
+
+            return parentObject
         }
     }
 

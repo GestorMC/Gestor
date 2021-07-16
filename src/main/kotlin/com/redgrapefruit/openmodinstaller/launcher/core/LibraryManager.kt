@@ -1,5 +1,6 @@
 package com.redgrapefruit.openmodinstaller.launcher.core
 
+import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.plusAssign
 import kotlinx.serialization.json.*
@@ -54,22 +55,8 @@ object LibraryManager {
     ) {
 
         if (versionInfoObject.contains("inheritsFrom")) {
-            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
-
-            // Try obtain parent version info
-            val parentFile = File("$gamePath/versions/$parent/$parent.json")
-            if (!parentFile.exists()) {
-                throw RuntimeException("Could not find parent version info: $parent. Please install it")
-            } else {
-                // Parse
-                val parentObject: JsonObject
-                FileInputStream(parentFile).use { stream ->
-                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
-                }
-
-                // Check parent libraries
-                checkAndDownload(parentObject["libraries"]!!.jsonArray, nativesPath)
-            }
+            // Check parent libraries
+            checkAndDownload(OpenLauncher.getParentObject(versionInfoObject, gamePath)["libraries"]!!.jsonArray, nativesPath)
         }
 
         // Save game path for later

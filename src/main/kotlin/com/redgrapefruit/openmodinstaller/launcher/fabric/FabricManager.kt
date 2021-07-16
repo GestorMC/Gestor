@@ -40,8 +40,11 @@ object FabricManager {
             initial = istream.readBytes().decodeToString()
         }
 
-        FileOutputStream(manifestFile).use { stream ->
-            stream.write("{\n\t\"array\": $initial}".encodeToByteArray())
+        if (!initial.contains("{\n\t\"array\": ")) {
+            FileOutputStream(manifestFile).use { stream ->
+                // Hotfix at runtime because the formatting on the manifests is bad
+                stream.write("{\n\t\"array\": $initial}".encodeToByteArray())
+            }
         }
 
         // Parse the manifest JSON
