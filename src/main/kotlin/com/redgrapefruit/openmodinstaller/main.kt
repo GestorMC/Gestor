@@ -54,6 +54,7 @@ fun main() {
 
     val launcher = OpenLauncher.fabric(path, isServer = false, testingLaunch = true)
     launcher.setup("1.17.1", false)
+    launcher.launch(false, "Fellow FabricMC chad", 3000, "", "1.17.1-fabric", "release")
 
 //    CWindow(title = "OpenModInstaller") {
 //        MaterialTheme(colors = lightColors) {

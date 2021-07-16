@@ -4,6 +4,7 @@ import com.redgrapefruit.openmodinstaller.JSON
 import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import kotlinx.serialization.json.*
+import okio.ByteString.Companion.encode
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -33,6 +34,15 @@ object FabricManager {
         if (!manifestFolderFile.exists()) manifestFolderFile.mkdirs()
         val manifestFile = File("${manifestFolderFile.absolutePath}/installer_manifest")
         if (!manifestFile.exists()) downloadFile(INSTALLER_MANIFEST_URL, manifestFile.absolutePath)
+
+        val initial: String
+        FileInputStream(manifestFile).use { istream ->
+            initial = istream.readBytes().decodeToString()
+        }
+
+        FileOutputStream(manifestFile).use { stream ->
+            stream.write("{\n\t\"array\": $initial}".encodeToByteArray())
+        }
 
         // Parse the manifest JSON
         val manifestObject: JsonObject
@@ -73,11 +83,12 @@ object FabricManager {
         }
 
         // Locate the installer
-        val installerVersion = manifestObject["array"]!!.jsonArray[0].jsonObject["url"]!!.jsonPrimitive.content
+        val installerVersion = manifestObject["array"]!!.jsonArray[0].jsonObject["version"]!!.jsonPrimitive.content
         val installerPath = "$gamePath/openmodinstaller/fabric/installer/installer_$installerVersion.jar"
 
         // Create a command for launching the installer and launch it without output observation
         val command = "${OpenLauncher.findLocalJavaPath(optInLegacyJava)} -jar $installerPath client -dir $gamePath -mcversion $targetVersion -snapshot -noprofile"
+        println(command)
         val process = Runtime.getRuntime().exec(command)
         process.waitFor()
 
