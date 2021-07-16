@@ -198,7 +198,7 @@ class OpenLauncher private constructor(
         /**
          * Creates a new instance of [OpenLauncher]
          */
-        fun create(
+        fun vanilla(
             /**
              * Game's root folder. Win AppData by default
              */
@@ -216,9 +216,7 @@ class OpenLauncher private constructor(
 
         : OpenLauncher {
             val auth = if (testingLaunch) null else AuthManager.start()
-
             auth?.logIn()
-
             return OpenLauncher(root, isServer, auth)
         }
     }

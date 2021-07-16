@@ -25,7 +25,6 @@ object SetupManager {
     private const val JRE_8_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_windows_hotspot_8u292b10.zip"
     private const val JRE_8_LINUX = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_linux_hotspot_8u292b10.tar.gz"
     private const val JRE_8_OSX = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_mac_hotspot_8u292b10.tar.gz"
-
     // AdoptOpenJRE 16 downloads (default)
     private const val JRE_16_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_windows_hotspot_16.0.1_9.zip"
     private const val JRE_16_LINUX = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz"
@@ -180,7 +179,7 @@ object SetupManager {
             when {
                 SystemUtils.IS_OS_WINDOWS -> JRE_16_WINDOWS
                 SystemUtils.IS_OS_LINUX -> JRE_16_LINUX
-                SystemUtils.IS_OS_MAC -> JRE_16_OSX
+                SystemUtils.IS_OS_MAC_OSX -> JRE_16_OSX
                 else -> throw RuntimeException("App not run on Windows, Linux or OSX")
             }
         }
@@ -222,13 +221,14 @@ object SetupManager {
         FileInputStream("$gamePath/versions/$targetVersion/$targetVersion.json").use { stream ->
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
+        val indexVersion = versionInfoObject["assets"]!!.jsonPrimitive.content
 
         // Download the index
-        downloadFile(input = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content, output = "$assetIndexesFile/$targetVersion.json")
+        downloadFile(input = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content, output = "$assetIndexesFile/$indexVersion.json")
 
         // Read the asset index
         val assetIndexObject: JsonObject
-        FileInputStream("$assetIndexesFile/$targetVersion.json").use { stream ->
+        FileInputStream("$assetIndexesFile/$indexVersion.json").use { stream ->
             assetIndexObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
 
