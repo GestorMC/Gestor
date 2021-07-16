@@ -1,4 +1,4 @@
-package com.redgrapefruit.openmodinstaller.launcher
+package com.redgrapefruit.openmodinstaller.launcher.core
 
 import com.redgrapefruit.openmodinstaller.data.ManifestReleaseEntry
 import com.redgrapefruit.openmodinstaller.data.VersionManifest
@@ -9,7 +9,6 @@ import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileInputStream
-import java.nio.file.Paths
 import kotlin.random.Random
 
 /**
