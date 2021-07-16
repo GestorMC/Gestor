@@ -4,6 +4,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.redgrapefruit.openmodinstaller.launcher.core.*
 import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricCommandModification
 import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricManager
+import com.redgrapefruit.openmodinstaller.util.InternalAPI
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
 import java.io.*
@@ -260,6 +261,7 @@ class OpenLauncher private constructor(
          *
          * Can be used as a utility externally.
          */
+        @InternalAPI
         fun findLocalJavaPath(
             /**
              * Opt in legacy Java 8 for older Minecraft versions
