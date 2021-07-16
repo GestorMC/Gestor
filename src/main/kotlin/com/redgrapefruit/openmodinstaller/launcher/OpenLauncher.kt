@@ -196,7 +196,7 @@ class OpenLauncher private constructor(
 
     companion object {
         /**
-         * Creates a new instance of [OpenLauncher]
+         * Creates a new instance of [OpenLauncher] for running vanilla Minecraft
          */
         fun vanilla(
             /**
