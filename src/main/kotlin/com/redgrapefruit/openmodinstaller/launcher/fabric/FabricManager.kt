@@ -111,4 +111,25 @@ object FabricManager {
         // Remove the entire old directory
         File(sourceFolderPath!!).deleteRecursively()
     }
+
+    /**
+     * Migrates (copies) the Minecraft client JAR from the vanilla directory to the Fabric directory.
+     *
+     * The old vanilla JAR will still be there, so it's compatible :)
+     */
+    fun migrateClientJAR(
+        /**
+         * The root for the Minecraft directory
+         */
+        gamePath: String,
+        /**
+         * The launched Minecraft version
+         */
+        targetVersion: String) {
+
+        val oldPath = "$gamePath/versions/$targetVersion/$targetVersion-client.jar"
+        val newPath = "$gamePath/versions/$targetVersion-fabric/$targetVersion-fabric.jar"
+
+        Files.copy(Paths.get(oldPath), FileOutputStream(newPath))
+    }
 }

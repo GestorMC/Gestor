@@ -52,10 +52,8 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 fun main() {
     val path = "C:/Users/karpo/AppData/Roaming/.minecraft"
 
-    val launcher = OpenLauncher.vanilla(path, isServer = false, testingLaunch = true)
+    val launcher = OpenLauncher.fabric(path, isServer = false, testingLaunch = true)
     launcher.setup("1.17.1", false)
-    FabricManager.setupInstaller(path)
-    FabricManager.runInstaller(path, "1.17.1")
 
 //    CWindow(title = "OpenModInstaller") {
 //        MaterialTheme(colors = lightColors) {

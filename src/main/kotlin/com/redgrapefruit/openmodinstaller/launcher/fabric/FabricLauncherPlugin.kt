@@ -23,9 +23,10 @@ object FabricLauncherPlugin : LauncherPlugin {
             newValue = "$root/versions/$version-fabric/$version-fabric.jar")
     }
 
-    override fun onSetupStart(root: String, version: String, optInLegacyJava: Boolean) {
+    override fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) {
         // Launch additional setup from FabricManager
         FabricManager.setupInstaller(root)
         FabricManager.runInstaller(root, version, optInLegacyJava)
+        FabricManager.migrateClientJAR(root, version)
     }
 }
