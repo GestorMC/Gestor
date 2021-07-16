@@ -2,8 +2,7 @@ package com.redgrapefruit.openmodinstaller.launcher
 
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.redgrapefruit.openmodinstaller.launcher.core.*
-import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricCommandModification
-import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricManager
+import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricLauncherPlugin
 import com.redgrapefruit.openmodinstaller.util.InternalAPI
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
@@ -15,8 +14,7 @@ import java.io.*
 class OpenLauncher private constructor(
     private val root: String,
     private val isServer: Boolean,
-    private val modifications: Set<CommandModification> = emptySet(),
-    private val extraSetup: (String, Boolean, String) -> Unit = { _, _, _ -> }, // can be used to add extra setup instructions
+    private val plugins: MutableSet<LauncherPlugin> = mutableSetOf(),
     private val authentication: YggdrasilUserAuthentication? = null,
     private val jarTemplate: String = if (isServer) "server" else "client") {
 
@@ -24,6 +22,19 @@ class OpenLauncher private constructor(
      * Has the launcher setup been run yet.
      */
     private var isSetUp: Boolean = false
+
+    init {
+        plugins.forEach { plugin -> plugin.onCreate(root, isServer, authentication, jarTemplate) }
+    }
+
+    /**
+     * Adds the [plugin] to the plugin list
+     */
+    fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
+        if (!plugins.contains(plugin)) plugins += plugin
+        plugins.forEach { plugin_ -> plugin_.onAddPlugin(plugin) }
+        return this
+    }
 
     /**
      * Sets up a new game instance.
@@ -40,17 +51,20 @@ class OpenLauncher private constructor(
          */
         optInLegacyJava: Boolean = false) {
 
+        plugins.forEach { plugin -> plugin.onSetupStart(root, version, optInLegacyJava) }
+
         SetupManager.setupVersionInfo(root, version)
         SetupManager.setupLibraries(root, version)
         SetupManager.setupJAR(root, version, isServer)
         SetupManager.setupJava(optInLegacyJava)
         SetupManager.setupAssets(root, version)
-        extraSetup.invoke(version, optInLegacyJava, root)
 
         // Make dirs
         File("$root/assets").mkdirs()
 
         isSetUp = true
+
+        plugins.forEach { plugin -> plugin.onSetupEnd(root, version, optInLegacyJava) }
     }
 
     /**
@@ -61,6 +75,8 @@ class OpenLauncher private constructor(
 
         rootFile.deleteRecursively()
         rootFile.mkdir()
+
+        plugins.forEach { plugin -> plugin.onClear(root) }
     }
 
     /**
@@ -89,6 +105,8 @@ class OpenLauncher private constructor(
         version: String,
         versionType: String = "release") {
 
+        plugins.forEach { plugin -> plugin.onLaunchStart(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+
         val versionInfoPath = "$root/versions/$version/$version.json"
 
         // Make sure the setup has been run
@@ -106,7 +124,7 @@ class OpenLauncher private constructor(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
                 root = root,
                 version = version,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,)
+                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content)
         } else {
             ArgumentManager.generateModernArguments(
                 version = version,
@@ -116,8 +134,10 @@ class OpenLauncher private constructor(
                 auth = authentication,
                 versionType = versionType)
         }
+        plugins.forEach { plugin -> plugin.onArgumentCreation(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
 
         val jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
+        plugins.forEach { plugin -> plugin.onJvmArgumentCreation(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
 
         // Create classpath
         var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
@@ -137,17 +157,13 @@ class OpenLauncher private constructor(
                 classpath += LibraryManager.getLibrariesFormatted(root, parentObject)
             }
         }
+        plugins.forEach { plugin -> plugin.onClasspathCreation(classpath, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
         var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
-        // Apply all command modifications if there are any
-        if (modifications.isNotEmpty()) {
-            modifications.forEach { modification ->
-                command = modification.modify(command, version, root, jarTemplate)
-            }
-        }
+        plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
 
         // Launch the Minecraft process
         try {
@@ -157,6 +173,8 @@ class OpenLauncher private constructor(
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+
+        plugins.forEach { plugin -> plugin.onLaunchEnd(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
     }
 
     /**
@@ -205,11 +223,6 @@ class OpenLauncher private constructor(
     companion object {
         // Setup functions
 
-        private val FABRIC_SETUP: (String, Boolean, String) -> Unit = { version, optInLegacyJava, gamePath ->
-            FabricManager.setupInstaller(gamePath)
-            FabricManager.runInstaller(gamePath, version, optInLegacyJava)
-        }
-
         /**
          * Creates a new instance of [OpenLauncher] for running vanilla Minecraft
          */
@@ -235,25 +248,25 @@ class OpenLauncher private constructor(
             return OpenLauncher(root, isServer, authentication = auth)
         }
 
-        /**
-         * Creates a new instance of [OpenLauncher] for running Fabric Minecraft
-         */
         fun fabric(
             /**
-             * Game's root folder. Windows AppData by default
+             * Game's root folder. Win AppData by default
              */
-            root: String = "C:/Users/${NTSystem().name}/AppData/Roaming/.minecraft",
+            root: String,
+            /**
+             * Is the Minecraft launched a server
+             */
+            isServer: Boolean = false,
             /**
              * If `true`, bypasses auth checks and runs pirated Minecraft.
              *
              * Do **not** set this to `true` outside of testing!
              */
-            testingLaunch: Boolean = false
+            testingLaunch: Boolean = false): OpenLauncher {
 
-        ): OpenLauncher {
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
-            return OpenLauncher(root, false, modifications = setOf(FabricCommandModification), authentication = auth, extraSetup = FABRIC_SETUP)
+            return OpenLauncher(root, isServer, authentication = auth).withPlugin(FabricLauncherPlugin)
         }
 
         /**
