@@ -114,9 +114,28 @@ class OpenLauncher private constructor(
 
         val jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
 
+        // Create classpath
+        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
+        if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
+            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
+            val parentPath = "$root/versions/$parent/$parent.json"
+
+            if (!File(parentPath).exists()) {
+                throw RuntimeException("Couldn't find parent version info $parent. Please install it")
+            } else {
+                // Parse
+                val parentObject: JsonObject
+                FileInputStream(parentPath).use { stream ->
+                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                }
+                // Insert all parent libs into the classpath
+                classpath += LibraryManager.getLibrariesFormatted(root, parentObject)
+            }
+        }
+
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
-        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
+        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
         // Apply all command modifications if there are any
         if (modifications.isNotEmpty()) {

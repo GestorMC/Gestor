@@ -95,6 +95,7 @@ object LibraryManager {
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
         val builder = StringBuilder()
 
+        // Normal libraries
         librariesArray.forEach { library ->
             val libraryObject = library.jsonObject
 
@@ -110,6 +111,8 @@ object LibraryManager {
 
             builder += "$libraryPath;"
         }
+
+        // Native libraries
         nativeLibraries.forEach { library ->
             val libraryObject = library.jsonObject
 

@@ -107,10 +107,32 @@ object SetupManager {
         // Get the URL for the JAR
         val jarTemplate = if (downloadServer) "server" else "client"
 
-        val jarURL =
-            versionInfoObject["downloads"]!!
-            .jsonObject[jarTemplate]!!
-            .jsonObject["url"]!!.jsonPrimitive.content
+        val jarURL: String
+        if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("downloads")) { // inheritance support
+            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
+            val parentPath = "$gamePath/versions/$parent/$parent.json"
+
+            if (!File(parentPath).exists()) {
+                throw RuntimeException("Couldn't find parent version info $parent. Please install it")
+            } else {
+                // Parse
+                val parentObject: JsonObject
+                FileInputStream(parentPath).use { stream ->
+                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                }
+
+                // Get parent JAR URL
+                jarURL = parentObject["downloads"]!!
+                    .jsonObject[jarTemplate]!!
+                    .jsonObject["url"]!!.jsonPrimitive.content
+            }
+
+        } else {
+            jarURL =
+                versionInfoObject["downloads"]!!
+                    .jsonObject[jarTemplate]!!
+                    .jsonObject["url"]!!.jsonPrimitive.content
+        }
 
         // This is a quite heavy process and always takes a while if not in OkHttp cache
         val jarPath = "$gamePath/versions/$targetVersion/$targetVersion-$jarTemplate.jar"
@@ -220,10 +242,32 @@ object SetupManager {
         FileInputStream("$gamePath/versions/$targetVersion/$targetVersion.json").use { stream ->
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
-        val indexVersion = versionInfoObject["assets"]!!.jsonPrimitive.content
+
+        val indexVersion: String
+        val url: String
+        if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets") && !versionInfoObject.contains("assetIndex")) { // inheritance support
+            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
+            val parentPath = "$gamePath/versions/$parent/$parent.json"
+
+            if (!File(parentPath).exists()) {
+                throw RuntimeException("Couldn't find parent version info $parent. Please install it")
+            } else {
+                // Parse
+                val parentObject: JsonObject
+                FileInputStream(parentPath).use { stream ->
+                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                }
+
+                indexVersion = parentObject["assets"]!!.jsonPrimitive.content
+                url = parentObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content
+            }
+        } else {
+            indexVersion = versionInfoObject["assets"]!!.jsonPrimitive.content
+            url = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content
+        }
 
         // Download the index
-        downloadFile(input = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content, output = "$assetIndexesFile/$indexVersion.json")
+        downloadFile(input = url, output = "$assetIndexesFile/$indexVersion.json")
 
         // Read the asset index
         val assetIndexObject: JsonObject
