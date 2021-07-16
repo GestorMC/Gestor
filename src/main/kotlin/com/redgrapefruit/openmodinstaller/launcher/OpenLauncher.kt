@@ -178,30 +178,6 @@ class OpenLauncher private constructor(
         observe(process.errorStream, System.err)
     }
 
-    /**
-     * Finds the path for the local Java installation
-     */
-    private fun findLocalJavaPath(
-        /**
-         * Opt in legacy Java 8 for older Minecraft versions
-         */
-        optInLegacyJava: Boolean): String {
-
-        // Get the root for the Java installation
-        val root = if (optInLegacyJava) "./java/adoptopenjre8" else "./java/adoptopenjre16"
-        val rootFile = File(root)
-
-        // Get the only subfolder with the actual Java (also prevents unnecessary hardcoding)
-        var subroot: File? = null
-        rootFile.listFiles()!!.forEach { file ->
-            subroot = file
-        }
-        if (subroot == null) throw RuntimeException("Couldn't find the subroot of the Java installation. The root is empty")
-
-        // Return the main Java executable in the binaries folder
-        return "${subroot!!.absolutePath}/bin/java.exe"
-    }
-
     companion object {
         /**
          * Creates a new instance of [OpenLauncher] for running vanilla Minecraft
@@ -226,6 +202,32 @@ class OpenLauncher private constructor(
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
             return OpenLauncher(root, isServer, authentication = auth)
+        }
+
+        /**
+         * Finds the path for the local Java installation.
+         *
+         * Can be used as a utility externally.
+         */
+        fun findLocalJavaPath(
+            /**
+             * Opt in legacy Java 8 for older Minecraft versions
+             */
+            optInLegacyJava: Boolean): String {
+
+            // Get the root for the Java installation
+            val root = if (optInLegacyJava) "./java/adoptopenjre8" else "./java/adoptopenjre16"
+            val rootFile = File(root)
+
+            // Get the only subfolder with the actual Java (also prevents unnecessary hardcoding)
+            var subroot: File? = null
+            rootFile.listFiles()!!.forEach { file ->
+                subroot = file
+            }
+            if (subroot == null) throw RuntimeException("Couldn't find the subroot of the Java installation. The root is empty")
+
+            // Return the main Java executable in the binaries folder
+            return "${subroot!!.absolutePath}/bin/java.exe"
         }
     }
 
