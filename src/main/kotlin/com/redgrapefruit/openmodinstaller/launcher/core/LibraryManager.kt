@@ -155,6 +155,20 @@ object LibraryManager {
             val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
             val libraryFile = File(libraryPath)
 
+            // Separate handling for FabricMC library format
+            if (!libraryObject.contains("downloads")) {
+                if (!libraryFile.exists()) {
+                    val url1 = "https://maven.fabricmc.net" // the base domain
+                    val url2 = name.substring(0, name.lastIndexOf(":")).replace(":", "/").replace(".", "/") // the name
+                    val url3 = name.substring(name.lastIndexOf(":") + 1, name.lastIndex + 1) // the version
+                    val url4 = "${name.split(":")[1]}-$url3.jar"// the filename
+
+                    val url = "$url1/$url2/$url3/$url4"
+                    downloadFile(url, libraryPath)
+                }
+                continue
+            }
+
             if (libraryObject["downloads"]!!.jsonObject.contains("classifiers")) {
                 val libraryPathAppended = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${when {
                     SystemUtils.IS_OS_WINDOWS -> "windows"

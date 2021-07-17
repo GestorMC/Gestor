@@ -1,6 +1,7 @@
 package com.redgrapefruit.openmodinstaller.launcher.fabric
 
 import com.redgrapefruit.openmodinstaller.launcher.LauncherPlugin
+import com.redgrapefruit.openmodinstaller.launcher.core.SetupManager
 
 /**
  * A [LauncherPlugin] providing FabricMC mod support
@@ -28,5 +29,6 @@ object FabricLauncherPlugin : LauncherPlugin {
         FabricManager.setupInstaller(root)
         FabricManager.runInstaller(root, version, optInLegacyJava)
         FabricManager.migrateClientJAR(root, version)
+        SetupManager.setupLibraries(root, "$version-fabric")
     }
 }
