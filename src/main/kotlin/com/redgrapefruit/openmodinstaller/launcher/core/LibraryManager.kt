@@ -154,7 +154,7 @@ object LibraryManager {
             var srcBinPath: String? = null
             var binName: String? = null
             libraryExtractedFile.listFiles()!!.forEach { file ->
-                if (file.extension == extension) {
+                if (file.extension == extension && !file.absolutePath.contains("32")) { // we do not support 32-bit architectures
                     srcBinPath = file.absolutePath
                     binName = file.nameWithoutExtension
                 }
