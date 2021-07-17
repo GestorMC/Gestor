@@ -3,12 +3,14 @@ package com.redgrapefruit.openmodinstaller.launcher.core
 import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.plusAssign
+import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Checks and installs Minecraft's libraries
@@ -23,6 +25,11 @@ object LibraryManager {
      * A [MutableList] of all natives
      */
     private val nativeLibraries: MutableList<JsonElement> = mutableListOf()
+
+    /**
+     * A [MutableList] of all natives which are not supported on the current user's OS
+     */
+    private val unsupportedNativeLibraries: MutableList<JsonElement> = mutableListOf()
 
     /**
      * The path to the root directory of the game (for example AppData/Roaming/.minecraft on Windows)
@@ -52,6 +59,10 @@ object LibraryManager {
          */
         nativesPath: String
     ) {
+
+        // Empty everything
+        nativeLibraries.clear()
+        unsupportedNativeLibraries.clear()
 
         if (versionInfoObject.contains("inheritsFrom")) {
             // Check parent libraries
@@ -98,32 +109,66 @@ object LibraryManager {
             builder += "$libraryPath;"
         }
 
-        // Native libraries
-        nativeLibraries.forEach { library ->
-            val libraryObject = library.jsonObject
+        return builder.toString()
+    }
 
-            // Get the name and cut it into pieces for making an absolute path for the library
+    /**
+     * Prepares all native libraries to be used.
+     *
+     * Libraries have to be checked beforehand in order to run this correctly.
+     */
+    internal fun prepareNativeLibraries(
+        /**
+         * Root game path
+         */
+        gamePath: String) {
+
+        for (library in nativeLibraries) {
+            if (unsupportedNativeLibraries.contains(library)) continue
+
+            val libraryObject = library.jsonObject
             val name = libraryObject["name"]!!.jsonPrimitive.content
 
+            // Get path
             val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
             val cut2: String = name.substring(name.lastIndexOf(":") + 1)
             val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
 
-            val nativeObjectNames = when {
-                // Compat with multiple format versions
-                SystemUtils.IS_OS_WINDOWS -> NATIVES_WINDOWS_VARIANTS
-                SystemUtils.IS_OS_LINUX -> NATIVES_LINUX_VARIANTS
-                SystemUtils.IS_OS_MAC_OSX -> NATIVES_OSX_VARIANTS
-                else -> throw RuntimeException("App running not on Windows, Linux or MacOS. This is not allowed for Java Edition")
+            val libraryPathJAR = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${when {
+                SystemUtils.IS_OS_WINDOWS -> "windows"
+                SystemUtils.IS_OS_LINUX -> "linux"
+                SystemUtils.IS_OS_MAC_OSX -> "macos"
+                else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
+            }}.jar"
+
+            // If needs to be extracted, extract
+            val libraryExtractedPath = "$gamePath/libraries/$cut1/$cut2/extracts/"
+            val libraryExtractedFile = File(libraryExtractedPath)
+            if (!libraryExtractedFile.exists()){
+                libraryExtractedFile.mkdirs()
+                unjar(libraryPathJAR, libraryExtractedPath)
             }
-            val nativeObjectName = getNativeKeyName(nativeObjectNames, libraryObject["downloads"]!!.jsonObject)
 
-            val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3-$nativeObjectName.jar"
+            // Locate the DLL (Windows) or SO (Unix) file and save its name without extension
+            val extension = if (SystemUtils.IS_OS_WINDOWS) "dll" else "so"
+            var srcBinPath: String? = null
+            var binName: String? = null
+            libraryExtractedFile.listFiles()!!.forEach { file ->
+                if (file.extension == extension) {
+                    srcBinPath = file.absolutePath
+                    binName = file.nameWithoutExtension
+                }
+            }
+            if (srcBinPath == null) throw RuntimeException("Could not locate source native binary file: $name")
+            if (binName == null) throw RuntimeException("Could not find the name of the native binary file: $name")
 
-            builder += "$libraryPath;"
+            // Copy over the DLL/SO into the natives folder
+            val nativesFolderFile = File("$gamePath/natives") // make sure the natives folder exists first
+            if (!nativesFolderFile.exists()) nativesFolderFile.mkdirs()
+
+            val outBinPath = "${nativesFolderFile.absolutePath}/$binName.$extension"
+            Files.copy(Paths.get(srcBinPath!!), FileOutputStream(outBinPath))
         }
-
-        return builder.toString()
     }
 
     /**
@@ -195,6 +240,7 @@ object LibraryManager {
                     // Some libraries, like Java-ObjC-Bridge do not support natives for some OSs, so check for that
                     if (!downloadsObject["classifiers"]!!.jsonObject.contains(nativeObjectName)) {
                         println("Natives library $cut3 is not supported on the current OS")
+                        unsupportedNativeLibraries += libraryObject
                         continue
                     }
 

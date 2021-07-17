@@ -128,7 +128,7 @@ object SetupManager {
     }
 
     /**
-     * Sets up Minecraft libraries, downloads missing and unzips natives
+     * Sets up Minecraft libraries, downloads missing and prepares natives
      */
     fun setupLibraries(
         /**
@@ -156,8 +156,9 @@ object SetupManager {
         // Get libraries JsonArray from the JsonObject
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
 
-        // Launch LibraryManager
+        // Launch LibraryManager check first, then set up natives
         LibraryManager.checkLibraries(gamePath, versionInfoObject, librariesArray, nativesFile.absolutePath)
+        LibraryManager.prepareNativeLibraries(gamePath)
     }
 
     /**
