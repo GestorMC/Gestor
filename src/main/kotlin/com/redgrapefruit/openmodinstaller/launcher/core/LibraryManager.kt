@@ -6,7 +6,6 @@ import com.redgrapefruit.openmodinstaller.util.plusAssign
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -177,6 +176,8 @@ object LibraryManager {
                     else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
                 }}.jar"
 
+                nativeLibraries += libraryObject
+
                 if (!File(libraryPathAppended).exists()) {
                     val downloadsObject = libraryObject["downloads"]!!.jsonObject
 
@@ -208,8 +209,6 @@ object LibraryManager {
                             .jsonObject["url"]!!.jsonPrimitive.content,
                         output = nativePath
                     )
-
-                    nativeLibraries += libraryObject
 
                     Files.copy(Path.of(nativePath), FileOutputStream("$nativesFolder/$cut3.jar"))
                 }

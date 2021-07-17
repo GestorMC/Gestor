@@ -160,6 +160,8 @@ class OpenLauncher private constructor(
 
         plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
 
+        println(command)
+
         // Launch the Minecraft process
         try {
             val process = Runtime.getRuntime().exec(command)
