@@ -1,6 +1,7 @@
 package com.gestormc.gestor.launcher.fabric
 
 import com.gestormc.gestor.JSON
+import com.gestormc.gestor.launcher.ModloaderManager
 import com.gestormc.gestor.launcher.OpenLauncher
 import com.gestormc.gestor.task.downloadFile
 import kotlinx.serialization.json.*
@@ -11,23 +12,15 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 /**
- * Manages creating environments plausible for launching Fabric Minecraft.
+ * The [ModloaderManager] for Fabric.
  */
-object FabricManager {
+object FabricManager : ModloaderManager {
     /**
      * The URL for a manifest on meta.fabricmc.net that contains all Fabric Installer versions and their download links
      */
     private const val INSTALLER_MANIFEST_URL = "https://meta.fabricmc.net/v2/versions/installer"
 
-    /**
-     * Sets up the Fabric Installer
-     */
-    fun setupInstaller(
-        /**
-         * The root for the Minecraft directory
-         */
-        gamePath: String) {
-
+    override fun setupInstaller(gamePath: String, targetVersion: String) {
         // Download the manifest with installer versions
         val manifestFolderFile = File("$gamePath/openmodinstaller/fabric/manifests/")
         if (!manifestFolderFile.exists()) manifestFolderFile.mkdirs()
@@ -58,26 +51,10 @@ object FabricManager {
         downloadFile(installerURL, "$gamePath/openmodinstaller/fabric/installer/installer_$installerVersion.jar")
     }
 
-    /**
-     * Runs the Fabric Installer and copies over the version info to the correct directory used by the launcher
-     */
-    fun runInstaller(
-        /**
-         * The root for the Minecraft directory
-         */
-        gamePath: String,
-        /**
-         * The targeted Minecraft version
-         */
-        targetVersion: String,
-        /**
-         * Use legacy Java 8 for older Minecraft versions (1.16 and lower)
-         */
-        optInLegacyJava: Boolean = false) {
-
+    override fun runInstaller(gamePath: String, targetVersion: String, optInLegacyJava: Boolean) {
         // Parse the manifest JSON again in order to find out the installer version
         val manifestFile = File("$gamePath/openmodinstaller/fabric/manifests/installer_manifest")
-        if (!manifestFile.exists()) setupInstaller(gamePath) // extra bit of safety here
+        if (!manifestFile.exists()) setupInstaller(gamePath, targetVersion) // extra bit of safety here
 
         val manifestObject: JsonObject
         FileInputStream(manifestFile).use { stream ->
@@ -125,20 +102,7 @@ object FabricManager {
         File(sourceFolderPath!!).deleteRecursively()
     }
 
-    /**
-     * Migrates (copies) the Minecraft client JAR from the vanilla directory to the Fabric directory.
-     *
-     * The old vanilla JAR will still be there, so it's compatible :)
-     */
-    fun migrateClientJAR(
-        /**
-         * The root for the Minecraft directory
-         */
-        gamePath: String,
-        /**
-         * The launched Minecraft version
-         */
-        targetVersion: String) {
+    override fun migrateClientJAR(gamePath: String, targetVersion: String) {
 
         val oldPath = "$gamePath/versions/$targetVersion/$targetVersion-client.jar"
         val newPath = "$gamePath/versions/$targetVersion-fabric/$targetVersion-fabric.jar"
