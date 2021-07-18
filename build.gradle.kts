@@ -26,6 +26,7 @@ dependencies {
     implementation("com.mojang:authlib:2.3.31")  // Mojang Authlib. Verification of accounts
 
     // --- Miscellaneous utilities ---
+    implementation("org.jsoup:jsoup:1.14.1")
     implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1") // OkHttp. The high-performance HTTP client used
     implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0") // Commons Lang3. A misc utility library
     implementation(group = "org.apache.commons", name = "commons-compress", version = "1.20") // Commons Compress. Empowers all compression/decompression operations

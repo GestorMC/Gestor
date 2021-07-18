@@ -54,7 +54,7 @@ object FabricLauncherPlugin : LauncherPlugin {
 
     override fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) {
         // Launch additional setup from FabricManager
-        FabricManager.setupInstaller(root)
+        FabricManager.setupInstaller(root, version)
         FabricManager.runInstaller(root, version, optInLegacyJava)
         FabricManager.migrateClientJAR(root, version)
         SetupManager.setupLibraries(root, "$version-fabric")

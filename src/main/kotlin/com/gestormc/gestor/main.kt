@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import com.gestormc.gestor.launcher.forge.ForgeManager
 import com.gestormc.gestor.task.downloadFileRaw
 import com.gestormc.gestor.ui.Dashboard
 import com.gestormc.gestor.ui.lightColors
@@ -49,7 +50,7 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 }
 
 fun main() {
-    println(downloadFileRaw("https://files.minecraftforge.net/project_index.html")!!.bytes().decodeToString())
+    ForgeManager.runInstaller("C:/Users/karpo/AppData/Roaming/.minecraft", "1.16.5")
 
 //    CWindow(title = "Gestor") {
 //        MaterialTheme(colors = lightColors) {
