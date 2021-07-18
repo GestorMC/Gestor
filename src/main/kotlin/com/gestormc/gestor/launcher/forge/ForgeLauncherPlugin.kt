@@ -1,8 +1,7 @@
-package com.gestormc.gestor.launcher.fabric
+package com.gestormc.gestor.launcher.forge
 
 import com.gestormc.gestor.launcher.LauncherPlugin
 import com.gestormc.gestor.launcher.core.LibraryManager
-import com.gestormc.gestor.launcher.core.SetupManager
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -10,9 +9,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.io.FileInputStream
 
 /**
- * A [LauncherPlugin] providing FabricMC mod support
+ * A [LauncherPlugin] providing MinecraftForge mod support
  */
-object FabricLauncherPlugin : LauncherPlugin {
+object ForgeLauncherPlugin : LauncherPlugin {
     override fun processCommand(
         source: String,
         root: String,
@@ -24,20 +23,20 @@ object FabricLauncherPlugin : LauncherPlugin {
         versionType: String,
         jarTemplate: String
     ): String {
-        // Use the Fabric JAR as the launched Minecraft JAR and fix to use the correct main class
+        // Use the Forge remapped JAR as the launched JAR and fix main class
         // Load version info's
-        val fabricVersionInfo: JsonObject
+        val forgeVersionInfo: JsonObject
         val vanillaVersionInfo: JsonObject
-        FileInputStream("$root/versions/$version-fabric/$version-fabric.json").use { stream ->
-            fabricVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        FileInputStream("$root/versions/$version-forge/$version-forge.json").use { stream ->
+            forgeVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
         FileInputStream("$root/versions/$version/$version.json").use { stream ->
             vanillaVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
 
         return source
-            .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-fabric/$version-fabric.jar")
-            .replace(vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content, fabricVersionInfo["mainClass"]!!.jsonPrimitive.content)
+            .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-forge/$version-forge.jar")
+            .replace(vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content, forgeVersionInfo["mainClass"]!!.jsonPrimitive.content)
     }
 
     override fun processClasspath(
@@ -50,10 +49,9 @@ object FabricLauncherPlugin : LauncherPlugin {
         version: String,
         versionType: String
     ): String {
-        // Load Fabric version info
-        val versionInfoPath = "$root/versions/$version-fabric/$version-fabric.json"
+        // Load Forge version info
         val versionInfoObject: JsonObject
-        FileInputStream(versionInfoPath).use { stream ->
+        FileInputStream("$root/versions/$version-forge/$version-forge.json").use { stream ->
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
         // Add all libs from there
@@ -64,10 +62,10 @@ object FabricLauncherPlugin : LauncherPlugin {
     }
 
     override fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) {
-        // Launch additional setup from FabricManager
-        FabricManager.setupInstaller(root, version)
-        FabricManager.runInstaller(root, version, optInLegacyJava)
-        FabricManager.migrateClientJAR(root, version)
-        SetupManager.setupLibraries(root, "$version-fabric")
+        // Launch extra setup from ForgeManager
+        // Library-checking is not needed, unlike Fabric, since the Forge installation process already does the job
+        ForgeManager.setupInstaller(root, version)
+        ForgeManager.runInstaller(root, version, optInLegacyJava)
+        ForgeManager.migrateClientJAR(root, version)
     }
 }

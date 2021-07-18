@@ -1,6 +1,7 @@
 package com.gestormc.gestor.launcher.forge
 
 import com.gestormc.gestor.launcher.ModloaderManager
+import com.gestormc.gestor.launcher.OpenLauncher
 import com.gestormc.gestor.task.downloadFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -71,9 +72,18 @@ object ForgeManager : ModloaderManager {
         val mainInstallerPath = "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
         if (!File(mainInstallerPath).exists()) setupInstaller(gamePath, targetVersion)
 
+        // Setup launcher profiles
+        val launcherProfilesFile = File("$gamePath/launcher_profiles.json")
+        if (!launcherProfilesFile.exists()) {
+            FileOutputStream(launcherProfilesFile).use { stream ->
+                stream.write("{}".encodeToByteArray())
+            }
+        }
+
         // Run the installer
-        val command = "java -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath"
+        val command = "${OpenLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
         val process = Runtime.getRuntime().exec(command)
+        OpenLauncher.observeProcessOutput(process)
         process.waitFor()
 
         // Rename the Forge folder
@@ -86,13 +96,20 @@ object ForgeManager : ModloaderManager {
         if (sourceFolderPath == null) throw RuntimeException("Could not locate the Forge folder created by the installer")
         val outputFolderPath = "$gamePath/versions/$targetVersion-forge"
         File(sourceFolderPath!!).renameTo(File(outputFolderPath))
+
+        // Rename the Forge version info
+        File(outputFolderPath).listFiles()!!.forEach { file ->
+            if (file.extension == "json") {
+                File(file.absolutePath).renameTo(File("$outputFolderPath/$targetVersion-forge.json"))
+            }
+        }
     }
 
     override fun migrateClientJAR(gamePath: String, targetVersion: String) {
         // Forge installs its remapped JAR in the libraries folder, so pick it from there
         var sourcePath: String? = null
         var forgeVersion: String
-        File("$gamePath/libraries/net/minecraft/minecraftforge/forge").listFiles()!!.forEach { file ->
+        File("$gamePath/libraries/net/minecraftforge/forge").listFiles()!!.forEach { file ->
             if (file.isDirectory && file.absolutePath.contains(targetVersion)) {
                 forgeVersion = file.name.substring(file.name.indexOf("-") + 1, file.name.lastIndex + 1)
                 sourcePath = "${file.absolutePath}/forge-$targetVersion-$forgeVersion-client.jar"

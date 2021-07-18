@@ -1,10 +1,12 @@
 package com.gestormc.gestor.launcher
 
+import com.gestormc.gestor.data.ManifestReleaseType
 import com.gestormc.gestor.launcher.core.ArgumentManager
 import com.gestormc.gestor.launcher.core.AuthManager
 import com.gestormc.gestor.launcher.core.LibraryManager
 import com.gestormc.gestor.launcher.core.SetupManager
 import com.gestormc.gestor.launcher.fabric.FabricLauncherPlugin
+import com.gestormc.gestor.launcher.forge.ForgeLauncherPlugin
 import com.gestormc.gestor.util.InternalAPI
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.sun.security.auth.module.NTSystem
@@ -33,7 +35,7 @@ class OpenLauncher private constructor(
     /**
      * Adds the [plugin] to the plugin list
      */
-    fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
+    private fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
         if (!plugins.contains(plugin)) plugins += plugin
         plugins.forEach { plugin_ -> plugin_.onAddPlugin(plugin) }
         return this
@@ -106,6 +108,11 @@ class OpenLauncher private constructor(
          * Launched Minecraft version
          */
         version: String,
+        /**
+         * The type of the launched Minecraft version.
+         *
+         * See [ManifestReleaseType] for more.
+         */
         versionType: String = "release") {
 
         plugins.forEach { plugin -> plugin.onLaunchStart(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
@@ -183,49 +190,6 @@ class OpenLauncher private constructor(
         plugins.forEach { plugin -> plugin.onLaunchEnd(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
     }
 
-    /**
-     * Observes the out and err outputs of a [Process]
-     */
-    private fun observeProcessOutput(
-        /**
-         * Observed [Process]
-         */
-        process: Process) {
-
-        /**
-         * Observes some output
-         */
-        fun observe(
-            /**
-             * [InputStream] of the process
-             */
-            inputStream: InputStream,
-            /**
-             * Output [PrintStream]
-             */
-            printStream: PrintStream) {
-
-            try {
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                var line: String?
-                while (reader.readLine().also { line = it } != null) {
-                    printStream.println(line)
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-                try {
-                    inputStream.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-
-        observe(process.inputStream, System.out)
-        observe(process.errorStream, System.err)
-    }
-
     companion object {
         // Setup functions
 
@@ -254,6 +218,9 @@ class OpenLauncher private constructor(
             return OpenLauncher(root, isServer, authentication = auth)
         }
 
+        /**
+         * Creates a new instance of [OpenLauncher] for running Minecraft with FabricMC mods
+         */
         fun fabric(
             /**
              * Game's root folder. Win AppData by default
@@ -273,6 +240,74 @@ class OpenLauncher private constructor(
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
             return OpenLauncher(root, isServer, authentication = auth).withPlugin(FabricLauncherPlugin)
+        }
+
+        /**
+         * Creates a new instance of [OpenLauncher] for running Minecraft with MinecraftForge mods
+         */
+        fun forge(
+            /**
+             * Game's root folder. Win AppData by default
+             */
+            root: String,
+            /**
+             * Is the Minecraft launched a server
+             */
+            isServer: Boolean = false,
+            /**
+             * If `true`, bypasses auth checks and runs pirated Minecraft.
+             *
+             * Do **not** set this to `true` outside of testing!
+             */
+            testingLaunch: Boolean = false): OpenLauncher {
+
+            val auth = if (testingLaunch) null else AuthManager.start()
+            auth?.logIn()
+            return OpenLauncher(root, isServer, authentication = auth).withPlugin(ForgeLauncherPlugin)
+        }
+
+        /**
+         * Observes the out and err outputs of a [Process]
+         */
+        @InternalAPI
+        fun observeProcessOutput(
+            /**
+             * Observed [Process]
+             */
+            process: Process) {
+
+            /**
+             * Observes some output
+             */
+            fun observe(
+                /**
+                 * [InputStream] of the process
+                 */
+                inputStream: InputStream,
+                /**
+                 * Output [PrintStream]
+                 */
+                printStream: PrintStream) {
+
+                try {
+                    val reader = BufferedReader(InputStreamReader(inputStream))
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) {
+                        printStream.println(line)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } finally {
+                    try {
+                        inputStream.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            observe(process.inputStream, System.out)
+            observe(process.errorStream, System.err)
         }
 
         /**
