@@ -19,6 +19,7 @@ import javax.swing.WindowConstants
 
 val JSON = Json {
     ignoreUnknownKeys = true
+    isLenient = true
 }
 
 fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtilities.invokeLater {
@@ -36,16 +37,14 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
 
-    // addind ComposePanel on JFrame
+    // adding ComposePanel on JFrame
     window.contentPane.add(composePanel, BorderLayout.CENTER)
 
     // setting the content
-    composePanel.setContent {
-        content()
-    }
+    composePanel.setContent { content() }
     window.minimumSize = Dimension(260, 100)
     window.setSize(800, 600)
-    window.setVisible(true)
+    window.isVisible = true
 }
 
 fun main() {

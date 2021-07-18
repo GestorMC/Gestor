@@ -1,7 +1,8 @@
-package com.redgrapefruit.openmodinstaller.launcher
+package com.redgrapefruit.openmodinstaller.launcher.core
 
 import com.redgrapefruit.openmodinstaller.data.ManifestReleaseEntry
 import com.redgrapefruit.openmodinstaller.data.VersionManifest
+import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.untar
 import com.redgrapefruit.openmodinstaller.util.unzip
@@ -9,7 +10,6 @@ import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileInputStream
-import java.nio.file.Paths
 import kotlin.random.Random
 
 /**
@@ -108,10 +108,19 @@ object SetupManager {
         // Get the URL for the JAR
         val jarTemplate = if (downloadServer) "server" else "client"
 
-        val jarURL =
-            versionInfoObject["downloads"]!!
-            .jsonObject[jarTemplate]!!
-            .jsonObject["url"]!!.jsonPrimitive.content
+        val jarURL: String
+        if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("downloads")) { // inheritance support
+            // Get parent JAR URL
+            jarURL = OpenLauncher.getParentObject(versionInfoObject, gamePath)["downloads"]!!
+                .jsonObject[jarTemplate]!!
+                .jsonObject["url"]!!.jsonPrimitive.content
+
+        } else {
+            jarURL =
+                versionInfoObject["downloads"]!!
+                    .jsonObject[jarTemplate]!!
+                    .jsonObject["url"]!!.jsonPrimitive.content
+        }
 
         // This is a quite heavy process and always takes a while if not in OkHttp cache
         val jarPath = "$gamePath/versions/$targetVersion/$targetVersion-$jarTemplate.jar"
@@ -119,7 +128,7 @@ object SetupManager {
     }
 
     /**
-     * Sets up Minecraft libraries, downloads missing and unzips natives
+     * Sets up Minecraft libraries, downloads missing and prepares natives
      */
     fun setupLibraries(
         /**
@@ -147,8 +156,8 @@ object SetupManager {
         // Get libraries JsonArray from the JsonObject
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
 
-        // Launch LibraryManager
-        LibraryManager.checkLibraries(gamePath, librariesArray, nativesFile.absolutePath)
+        // Launch LibraryManager check first, then set up natives
+        LibraryManager.checkLibraries(gamePath, versionInfoObject, librariesArray, nativesFile.absolutePath)
     }
 
     /**
@@ -221,10 +230,20 @@ object SetupManager {
         FileInputStream("$gamePath/versions/$targetVersion/$targetVersion.json").use { stream ->
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
-        val indexVersion = versionInfoObject["assets"]!!.jsonPrimitive.content
+
+        val indexVersion: String
+        val url: String
+        if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets") && !versionInfoObject.contains("assetIndex")) { // inheritance support
+            val parentObject = OpenLauncher.getParentObject(versionInfoObject, gamePath)
+            indexVersion = parentObject["assets"]!!.jsonPrimitive.content
+            url = parentObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content
+        } else {
+            indexVersion = versionInfoObject["assets"]!!.jsonPrimitive.content
+            url = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content
+        }
 
         // Download the index
-        downloadFile(input = versionInfoObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content, output = "$assetIndexesFile/$indexVersion.json")
+        downloadFile(input = url, output = "$assetIndexesFile/$indexVersion.json")
 
         // Read the asset index
         val assetIndexObject: JsonObject

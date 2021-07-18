@@ -1,13 +1,10 @@
-package com.redgrapefruit.openmodinstaller.launcher
+package com.redgrapefruit.openmodinstaller.launcher.core
 
 import com.mcgoodtime.gjmlc.core.JavaArgumentHack
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.redgrapefruit.openmodinstaller.data.ManifestReleaseType
 import com.redgrapefruit.openmodinstaller.util.plusAssign
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import org.apache.commons.lang3.SystemUtils
-import java.io.FileInputStream
 
 /**
  * Manages Minecraft process execution arguments

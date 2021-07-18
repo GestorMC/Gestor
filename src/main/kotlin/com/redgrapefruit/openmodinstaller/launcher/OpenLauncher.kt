@@ -1,6 +1,9 @@
 package com.redgrapefruit.openmodinstaller.launcher
 
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
+import com.redgrapefruit.openmodinstaller.launcher.core.*
+import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricLauncherPlugin
+import com.redgrapefruit.openmodinstaller.util.InternalAPI
 import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.*
 import java.io.*
@@ -11,6 +14,7 @@ import java.io.*
 class OpenLauncher private constructor(
     private val root: String,
     private val isServer: Boolean,
+    private val plugins: MutableSet<LauncherPlugin> = mutableSetOf(),
     private val authentication: YggdrasilUserAuthentication? = null,
     private val jarTemplate: String = if (isServer) "server" else "client") {
 
@@ -18,6 +22,19 @@ class OpenLauncher private constructor(
      * Has the launcher setup been run yet.
      */
     private var isSetUp: Boolean = false
+
+    init {
+        plugins.forEach { plugin -> plugin.onCreate(root, isServer, authentication, jarTemplate) }
+    }
+
+    /**
+     * Adds the [plugin] to the plugin list
+     */
+    fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
+        if (!plugins.contains(plugin)) plugins += plugin
+        plugins.forEach { plugin_ -> plugin_.onAddPlugin(plugin) }
+        return this
+    }
 
     /**
      * Sets up a new game instance.
@@ -34,6 +51,8 @@ class OpenLauncher private constructor(
          */
         optInLegacyJava: Boolean = false) {
 
+        plugins.forEach { plugin -> plugin.onSetupStart(root, version, optInLegacyJava) }
+
         SetupManager.setupVersionInfo(root, version)
         SetupManager.setupLibraries(root, version)
         SetupManager.setupJAR(root, version, isServer)
@@ -44,6 +63,8 @@ class OpenLauncher private constructor(
         File("$root/assets").mkdirs()
 
         isSetUp = true
+
+        plugins.forEach { plugin -> plugin.onSetupEnd(root, version, optInLegacyJava) }
     }
 
     /**
@@ -54,6 +75,8 @@ class OpenLauncher private constructor(
 
         rootFile.deleteRecursively()
         rootFile.mkdir()
+
+        plugins.forEach { plugin -> plugin.onClear(root) }
     }
 
     /**
@@ -82,6 +105,8 @@ class OpenLauncher private constructor(
         version: String,
         versionType: String = "release") {
 
+        plugins.forEach { plugin -> plugin.onLaunchStart(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+
         val versionInfoPath = "$root/versions/$version/$version.json"
 
         // Make sure the setup has been run
@@ -99,23 +124,45 @@ class OpenLauncher private constructor(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
                 root = root,
                 version = version,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,)
+                assetsIndexName =
+                if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets"))
+                    getParentObject(versionInfoObject, root)["assets"]!!.jsonPrimitive.content
+                else
+                    versionInfoObject["assets"]!!.jsonPrimitive.content)
         } else {
             ArgumentManager.generateModernArguments(
                 version = version,
                 root = root,
-                assetsIndexName = versionInfoObject["assets"]!!.jsonPrimitive.content,
+                assetsIndexName =
+                if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets"))
+                    getParentObject(versionInfoObject, root)["assets"]!!.jsonPrimitive.content
+                else
+                    versionInfoObject["assets"]!!.jsonPrimitive.content,
                 username = username,
                 auth = authentication,
                 versionType = versionType)
         }
+        plugins.forEach { plugin -> plugin.onArgumentCreation(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
 
         val jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
+        plugins.forEach { plugin -> plugin.onJvmArgumentCreation(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+
+        // Create classpath
+        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
+        if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
+            classpath += LibraryManager.getLibrariesFormatted(root, getParentObject(versionInfoObject, root))
+        }
+        plugins.forEach { plugin ->
+            classpath = plugin.processClasspath(classpath, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+        }
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
+        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
-        val command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath .;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)} $mainClass ${if (isServer) "nogui" else ""} $arguments"
+        plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
+
+        println(command)
 
         // Launch the Minecraft process
         try {
@@ -125,6 +172,8 @@ class OpenLauncher private constructor(
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
+
+        plugins.forEach { plugin -> plugin.onLaunchEnd(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
     }
 
     /**
@@ -170,31 +219,9 @@ class OpenLauncher private constructor(
         observe(process.errorStream, System.err)
     }
 
-    /**
-     * Finds the path for the local Java installation
-     */
-    private fun findLocalJavaPath(
-        /**
-         * Opt in legacy Java 8 for older Minecraft versions
-         */
-        optInLegacyJava: Boolean): String {
-
-        // Get the root for the Java installation
-        val root = if (optInLegacyJava) "./java/adoptopenjre8" else "./java/adoptopenjre16"
-        val rootFile = File(root)
-
-        // Get the only subfolder with the actual Java (also prevents unnecessary hardcoding)
-        var subroot: File? = null
-        rootFile.listFiles()!!.forEach { file ->
-            subroot = file
-        }
-        if (subroot == null) throw RuntimeException("Couldn't find the subroot of the Java installation. The root is empty")
-
-        // Return the main Java executable in the binaries folder
-        return "${subroot!!.absolutePath}/bin/java.exe"
-    }
-
     companion object {
+        // Setup functions
+
         /**
          * Creates a new instance of [OpenLauncher] for running vanilla Minecraft
          */
@@ -217,7 +244,76 @@ class OpenLauncher private constructor(
         : OpenLauncher {
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
-            return OpenLauncher(root, isServer, auth)
+            return OpenLauncher(root, isServer, authentication = auth)
+        }
+
+        fun fabric(
+            /**
+             * Game's root folder. Win AppData by default
+             */
+            root: String,
+            /**
+             * Is the Minecraft launched a server
+             */
+            isServer: Boolean = false,
+            /**
+             * If `true`, bypasses auth checks and runs pirated Minecraft.
+             *
+             * Do **not** set this to `true` outside of testing!
+             */
+            testingLaunch: Boolean = false): OpenLauncher {
+
+            val auth = if (testingLaunch) null else AuthManager.start()
+            auth?.logIn()
+            return OpenLauncher(root, isServer, authentication = auth).withPlugin(FabricLauncherPlugin)
+        }
+
+        /**
+         * Finds the path for the local Java installation.
+         *
+         * Can be used as a utility externally.
+         */
+        @InternalAPI
+        fun findLocalJavaPath(
+            /**
+             * Opt in legacy Java 8 for older Minecraft versions
+             */
+            optInLegacyJava: Boolean): String {
+
+            // Get the root for the Java installation
+            val root = if (optInLegacyJava) "./java/adoptopenjre8" else "./java/adoptopenjre16"
+            val rootFile = File(root)
+
+            // Get the only subfolder with the actual Java (also prevents unnecessary hardcoding)
+            var subroot: File? = null
+            rootFile.listFiles()!!.forEach { file ->
+                subroot = file
+            }
+            if (subroot == null) throw RuntimeException("Couldn't find the subroot of the Java installation. The root is empty")
+
+            // Return the main Java executable in the binaries folder
+            return "${subroot!!.absolutePath}/bin/java.exe"
+        }
+
+        /**
+         * Returns the parent version info. Only call if has `inheritsFrom`
+         */
+        @InternalAPI
+        fun getParentObject(versionInfoObject: JsonObject, root: String): JsonObject {
+            val parent = versionInfoObject["inheritsFrom"]!!.jsonPrimitive.content
+            val parentPath = "$root/versions/$parent/$parent.json"
+
+            val parentObject: JsonObject
+            if (!File(parentPath).exists()) {
+                throw RuntimeException("Couldn't find parent version info $parent. Please install it")
+            } else {
+                // Parse
+                FileInputStream(parentPath).use { stream ->
+                    parentObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+                }
+            }
+
+            return parentObject
         }
     }
 

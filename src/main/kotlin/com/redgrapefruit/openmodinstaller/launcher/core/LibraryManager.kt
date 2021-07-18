@@ -1,13 +1,16 @@
-package com.redgrapefruit.openmodinstaller.launcher
+package com.redgrapefruit.openmodinstaller.launcher.core
 
+import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
 import com.redgrapefruit.openmodinstaller.task.downloadFile
 import com.redgrapefruit.openmodinstaller.util.plusAssign
+import com.redgrapefruit.openmodinstaller.util.unjar
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Checks and installs Minecraft's libraries
@@ -22,6 +25,11 @@ object LibraryManager {
      * A [MutableList] of all natives
      */
     private val nativeLibraries: MutableList<JsonElement> = mutableListOf()
+
+    /**
+     * A [MutableList] of all natives which are not supported on the current user's OS
+     */
+    private val unsupportedNativeLibraries: MutableList<JsonElement> = mutableListOf()
 
     /**
      * The path to the root directory of the game (for example AppData/Roaming/.minecraft on Windows)
@@ -39,6 +47,10 @@ object LibraryManager {
          */
         gamePath: String,
         /**
+         * The root [JsonObject] for the version info JSON
+         */
+        versionInfoObject: JsonObject,
+        /**
          * A [JsonArray] of libraries for the game
          */
         librariesArray: JsonArray,
@@ -48,8 +60,17 @@ object LibraryManager {
         nativesPath: String
     ) {
 
+        // Empty everything
+        nativeLibraries.clear()
+        unsupportedNativeLibraries.clear()
+
+        if (versionInfoObject.contains("inheritsFrom")) {
+            // Check parent libraries
+            checkAndDownload(OpenLauncher.getParentObject(versionInfoObject, gamePath)["libraries"]!!.jsonArray, nativesPath)
+        }
+
         // Save game path for later
-        this.gamePath = gamePath
+        LibraryManager.gamePath = gamePath
 
         // Check the main libraries array
         checkAndDownload(librariesArray, nativesPath)
@@ -71,6 +92,7 @@ object LibraryManager {
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
         val builder = StringBuilder()
 
+        // Normal libraries
         librariesArray.forEach { library ->
             val libraryObject = library.jsonObject
 
@@ -86,28 +108,26 @@ object LibraryManager {
 
             builder += "$libraryPath;"
         }
-        nativeLibraries.forEach { library ->
-            val libraryObject = library.jsonObject
 
-            // Get the name and cut it into pieces for making an absolute path for the library
+        for (library in nativeLibraries) {
+            if (unsupportedNativeLibraries.contains(library)) continue
+
+            val libraryObject = library.jsonObject
             val name = libraryObject["name"]!!.jsonPrimitive.content
 
+            // Get path
             val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
             val cut2: String = name.substring(name.lastIndexOf(":") + 1)
             val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
 
-            val nativeObjectNames = when {
-                // Compat with multiple format versions
-                SystemUtils.IS_OS_WINDOWS -> NATIVES_WINDOWS_VARIANTS
-                SystemUtils.IS_OS_LINUX -> NATIVES_LINUX_VARIANTS
-                SystemUtils.IS_OS_MAC_OSX -> NATIVES_OSX_VARIANTS
-                else -> throw RuntimeException("App running not on Windows, Linux or MacOS. This is not allowed for Java Edition")
-            }
-            val nativeObjectName = getNativeKeyName(nativeObjectNames, libraryObject["downloads"]!!.jsonObject)
+            val libraryPathJAR = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${when {
+                SystemUtils.IS_OS_WINDOWS -> "windows"
+                SystemUtils.IS_OS_LINUX -> "linux"
+                SystemUtils.IS_OS_MAC_OSX -> "macos"
+                else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
+            }}.jar"
 
-            val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3-$nativeObjectName.jar"
-
-            builder += "$libraryPath;"
+            builder += "$libraryPathJAR;"
         }
 
         return builder.toString()
@@ -141,6 +161,20 @@ object LibraryManager {
             val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
             val libraryFile = File(libraryPath)
 
+            // Separate handling for FabricMC library format
+            if (!libraryObject.contains("downloads")) {
+                if (!libraryFile.exists()) {
+                    val url1 = "https://maven.fabricmc.net" // the base domain
+                    val url2 = name.substring(0, name.lastIndexOf(":")).replace(":", "/").replace(".", "/") // the name
+                    val url3 = name.substring(name.lastIndexOf(":") + 1, name.lastIndex + 1) // the version
+                    val url4 = "${name.split(":")[1]}-$url3.jar"// the filename
+
+                    val url = "$url1/$url2/$url3/$url4"
+                    downloadFile(url, libraryPath)
+                }
+                continue
+            }
+
             if (libraryObject["downloads"]!!.jsonObject.contains("classifiers")) {
                 val libraryPathAppended = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${when {
                     SystemUtils.IS_OS_WINDOWS -> "windows"
@@ -148,6 +182,8 @@ object LibraryManager {
                     SystemUtils.IS_OS_MAC_OSX -> "macos"
                     else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
                 }}.jar"
+
+                nativeLibraries += libraryObject
 
                 if (!File(libraryPathAppended).exists()) {
                     val downloadsObject = libraryObject["downloads"]!!.jsonObject
@@ -166,6 +202,7 @@ object LibraryManager {
                     // Some libraries, like Java-ObjC-Bridge do not support natives for some OSs, so check for that
                     if (!downloadsObject["classifiers"]!!.jsonObject.contains(nativeObjectName)) {
                         println("Natives library $cut3 is not supported on the current OS")
+                        unsupportedNativeLibraries += libraryObject
                         continue
                     }
 
@@ -180,8 +217,6 @@ object LibraryManager {
                             .jsonObject["url"]!!.jsonPrimitive.content,
                         output = nativePath
                     )
-
-                    nativeLibraries += libraryObject
 
                     Files.copy(Path.of(nativePath), FileOutputStream("$nativesFolder/$cut3.jar"))
                 }
