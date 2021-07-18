@@ -196,6 +196,49 @@ class OpenLauncher private constructor(
         plugins.forEach { plugin -> plugin.onLaunchEnd(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
     }
 
+    /**
+     * Observes the out and err outputs of a [Process]
+     */
+    private fun observeProcessOutput(
+        /**
+         * Observed [Process]
+         */
+        process: Process) {
+
+        /**
+         * Observes some output
+         */
+        fun observe(
+            /**
+             * [InputStream] of the process
+             */
+            inputStream: InputStream,
+            /**
+             * Output [PrintStream]
+             */
+            printStream: PrintStream) {
+
+            try {
+                val reader = BufferedReader(InputStreamReader(inputStream))
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    printStream.println(line)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    inputStream.close()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        observe(process.inputStream, System.out)
+        observe(process.errorStream, System.err)
+    }
+
     companion object {
         // Setup functions
 
@@ -270,50 +313,6 @@ class OpenLauncher private constructor(
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
             return OpenLauncher(root, isServer, authentication = auth).withPlugin(ForgeLauncherPlugin)
-        }
-
-        /**
-         * Observes the out and err outputs of a [Process]
-         */
-        @InternalAPI
-        fun observeProcessOutput(
-            /**
-             * Observed [Process]
-             */
-            process: Process) {
-
-            /**
-             * Observes some output
-             */
-            fun observe(
-                /**
-                 * [InputStream] of the process
-                 */
-                inputStream: InputStream,
-                /**
-                 * Output [PrintStream]
-                 */
-                printStream: PrintStream) {
-
-                try {
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    var line: String?
-                    while (reader.readLine().also { line = it } != null) {
-                        printStream.println(line)
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } finally {
-                    try {
-                        inputStream.close()
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-
-            observe(process.inputStream, System.out)
-            observe(process.errorStream, System.err)
         }
 
         /**

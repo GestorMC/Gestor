@@ -80,11 +80,13 @@ object ForgeManager : ModloaderManager {
             }
         }
 
-        // Run the installer
-        val command = "${OpenLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
-        val process = Runtime.getRuntime().exec(command)
-        OpenLauncher.observeProcessOutput(process)
-        process.waitFor()
+        // Run the installer if needed
+        val forgeFolder = "$targetVersion-forge"
+        if (!File(forgeFolder).exists()) {
+            val command = "${OpenLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
+            val process = Runtime.getRuntime().exec(command)
+            process.waitFor()
+        }
 
         // Rename the Forge folder
         var sourceFolderPath: String? = null
