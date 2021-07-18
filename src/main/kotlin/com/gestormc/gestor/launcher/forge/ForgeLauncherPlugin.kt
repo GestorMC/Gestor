@@ -47,7 +47,20 @@ object ForgeLauncherPlugin : LauncherPlugin {
         version: String,
         versionType: String
     ): Map<String, (String) -> String> {
-        return mapOf("log4j" to { source -> source.replace("2.8.1", "2.11.2") })
+        // Parse version info's
+        val vanillaVersionInfo: JsonObject
+        val forgeVersionInfo: JsonObject
+        FileInputStream("$root/versions/$version/$version.json").use { stream ->
+            vanillaVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+        FileInputStream("$root/versions/$version-forge/$version-forge.json").use { stream ->
+            forgeVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+        // Read versions using the utility
+        val srcVersion = readVersion(vanillaVersionInfo, "log4j")
+        val outVersion = readVersion(forgeVersionInfo, "log4j")
+
+        return mapOf("log4j" to { source -> source.replace(srcVersion, outVersion) })
     }
 
     override fun processGameArguments(
@@ -102,5 +115,24 @@ object ForgeLauncherPlugin : LauncherPlugin {
         ForgeManager.setupInstaller(root, version)
         ForgeManager.runInstaller(root, version, optInLegacyJava)
         ForgeManager.migrateClientJAR(root, version)
+    }
+
+    /**
+     * Reads the version of a dependency
+     */
+    private fun readVersion(versionInfo: JsonObject, token: String): String {
+        var version: String? = null
+        versionInfo["libraries"]!!.jsonArray.forEach { library ->
+            val libraryObject = library.jsonObject
+            val name = libraryObject["name"]!!.jsonPrimitive.content
+
+            if (name.contains(token)) {
+                version = name.substring(name.lastIndexOf(":") + 1, name.lastIndex + 1)
+                return@forEach
+            }
+        }
+        if (version == null) throw RuntimeException("Could not get version for dependency by token $token")
+
+        return version!!
     }
 }
