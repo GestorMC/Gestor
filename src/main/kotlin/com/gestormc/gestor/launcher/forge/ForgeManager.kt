@@ -75,6 +75,17 @@ object ForgeManager : ModloaderManager {
         val command = "java -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath"
         val process = Runtime.getRuntime().exec(command)
         process.waitFor()
+
+        // Rename the Forge folder
+        var sourceFolderPath: String? = null
+        File("$gamePath/versions").listFiles()!!.forEach { file ->
+            if (file.isDirectory && file.name.contains("forge")) {
+                sourceFolderPath = file.absolutePath
+            }
+        }
+        if (sourceFolderPath == null) throw RuntimeException("Could not locate the Forge folder created by the installer")
+        val outputFolderPath = "$gamePath/versions/$targetVersion-forge"
+        File(sourceFolderPath!!).renameTo(File(outputFolderPath))
     }
 
     override fun migrateClientJAR(gamePath: String, targetVersion: String) {

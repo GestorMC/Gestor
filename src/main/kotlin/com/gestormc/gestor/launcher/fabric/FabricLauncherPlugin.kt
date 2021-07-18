@@ -6,6 +6,7 @@ import com.gestormc.gestor.launcher.core.SetupManager
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.FileInputStream
 
 /**
@@ -23,10 +24,16 @@ object FabricLauncherPlugin : LauncherPlugin {
         versionType: String,
         jarTemplate: String
     ): String {
-        // Use the Fabric JAR as the launched Minecraft JAR and fix to use KnotClient
+        // Use the Fabric JAR as the launched Minecraft JAR and fix to use the correct main class
+        // Load Fabric version info
+        val versionInfoObject: JsonObject
+        FileInputStream("$root/versions/$version-fabric/$version-fabric.json").use { stream ->
+            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+
         return source
             .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-fabric/$version-fabric.jar")
-            .replace("net.minecraft.client.main.Main", "net.fabricmc.loader.launch.knot.KnotClient")
+            .replace("net.minecraft.client.main.Main", versionInfoObject["mainClass"]!!.jsonPrimitive.content)
     }
 
     override fun processClasspath(
