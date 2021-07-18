@@ -57,7 +57,7 @@ interface LauncherPlugin {
     /**
      * An event called after the full classpath is generated.
      */
-    fun onClasspathCreation(classpath: String, root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String) = Unit
+    fun processClasspath(classpath: String, root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String): String = classpath
 
     /**
      * An extra hook allowing you to do additional processing on the Minecraft launch command.

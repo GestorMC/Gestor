@@ -152,7 +152,9 @@ class OpenLauncher private constructor(
         if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
             classpath += LibraryManager.getLibrariesFormatted(root, getParentObject(versionInfoObject, root))
         }
-        plugins.forEach { plugin -> plugin.onClasspathCreation(classpath, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        plugins.forEach { plugin ->
+            classpath = plugin.processClasspath(classpath, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+        }
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content

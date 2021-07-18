@@ -7,8 +7,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import com.redgrapefruit.openmodinstaller.launcher.OpenLauncher
-import com.redgrapefruit.openmodinstaller.launcher.fabric.FabricManager
 import com.redgrapefruit.openmodinstaller.ui.Dashboard
 import com.redgrapefruit.openmodinstaller.ui.lightColors
 import kotlinx.serialization.json.Json
@@ -50,19 +48,13 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 }
 
 fun main() {
-    val path = "C:/Users/karpo/AppData/Roaming/.minecraft"
-
-    val launcher = OpenLauncher.fabric(path, isServer = false, testingLaunch = true)
-    launcher.setup("1.17", false)
-    launcher.launch(false, "Fellow FabricMC chad", 3000, "", "1.17", "release")
-
-//    CWindow(title = "OpenModInstaller") {
-//        MaterialTheme(colors = lightColors) {
-//            DesktopTheme {
-//                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
-//                    Dashboard()
-//                }
-//            }
-//        }
-//    }
+    CWindow(title = "OpenModInstaller") {
+        MaterialTheme(colors = lightColors) {
+            DesktopTheme {
+                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+                    Dashboard()
+                }
+            }
+        }
+    }
 }

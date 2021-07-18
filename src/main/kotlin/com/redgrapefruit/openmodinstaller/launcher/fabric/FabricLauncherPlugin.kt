@@ -1,7 +1,12 @@
 package com.redgrapefruit.openmodinstaller.launcher.fabric
 
 import com.redgrapefruit.openmodinstaller.launcher.LauncherPlugin
+import com.redgrapefruit.openmodinstaller.launcher.core.LibraryManager
 import com.redgrapefruit.openmodinstaller.launcher.core.SetupManager
+import com.redgrapefruit.openmodinstaller.util.plusAssign
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import java.io.FileInputStream
 
 /**
  * A [LauncherPlugin] providing FabricMC mod support
@@ -18,10 +23,33 @@ object FabricLauncherPlugin : LauncherPlugin {
         versionType: String,
         jarTemplate: String
     ): String {
-        // Use the Fabric JAR as the launched Minecraft JAR
-        return source.replace(
-            oldValue = "$root/versions/$version/$version-$jarTemplate.jar",
-            newValue = "$root/versions/$version-fabric/$version-fabric.jar")
+        // Use the Fabric JAR as the launched Minecraft JAR and fix to use KnotClient
+        return source
+            .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-fabric/$version-fabric.jar")
+            .replace("net.minecraft.client.main.Main", "net.fabricmc.loader.launch.knot.KnotClient")
+    }
+
+    override fun processClasspath(
+        classpath: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): String {
+        // Load Fabric version info
+        val versionInfoPath = "$root/versions/$version-fabric/$version-fabric.json"
+        val versionInfoObject: JsonObject
+        FileInputStream(versionInfoPath).use { stream ->
+            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+        // Add all libs from there
+        val builder = StringBuilder(classpath)
+        builder += LibraryManager.getLibrariesFormatted(root, versionInfoObject)
+
+        return builder.toString()
     }
 
     override fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) {
