@@ -2,7 +2,7 @@ package com.gestormc.gestor.launcher.core
 
 import com.gestormc.gestor.data.ManifestReleaseEntry
 import com.gestormc.gestor.data.VersionManifest
-import com.gestormc.gestor.launcher.OpenLauncher
+import com.gestormc.gestor.launcher.GestorLauncher
 import com.gestormc.gestor.task.downloadFile
 import com.gestormc.gestor.util.untar
 import com.gestormc.gestor.util.unzip
@@ -110,7 +110,7 @@ object SetupManager {
 
         val jarURL = if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("downloads")) { // inheritance support
             // Get parent JAR URL
-            OpenLauncher.getParentObject(versionInfoObject, gamePath)["downloads"]!!
+            GestorLauncher.getParentObject(versionInfoObject, gamePath)["downloads"]!!
                 .jsonObject[jarTemplate]!!
                 .jsonObject["url"]!!.jsonPrimitive.content
 
@@ -232,7 +232,7 @@ object SetupManager {
         val indexVersion: String
         val url: String
         if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets") && !versionInfoObject.contains("assetIndex")) { // inheritance support
-            val parentObject = OpenLauncher.getParentObject(versionInfoObject, gamePath)
+            val parentObject = GestorLauncher.getParentObject(versionInfoObject, gamePath)
             indexVersion = parentObject["assets"]!!.jsonPrimitive.content
             url = parentObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content
         } else {

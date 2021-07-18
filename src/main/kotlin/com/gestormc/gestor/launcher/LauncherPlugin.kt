@@ -3,7 +3,7 @@ package com.gestormc.gestor.launcher
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 
 /**
- * A [LauncherPlugin] provides more capabilities for the user to extend the [OpenLauncher] with his/her own functionality.
+ * A [LauncherPlugin] provides more capabilities for the user to extend the [GestorLauncher] with his/her own functionality.
  *
  * All [LauncherPlugin] methods are optional to implement, so you can stick with just some of them.
  *
@@ -15,13 +15,13 @@ import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
  */
 interface LauncherPlugin {
     /**
-     * An event called when an instance of the [OpenLauncher] is created
+     * An event called when an instance of the [GestorLauncher] is created
      */
     fun onCreate(root: String, isServer: Boolean, authentication: YggdrasilUserAuthentication?, jarTemplate: String) =
         Unit
 
     /**
-     * An event called when a new plugin is added to the [OpenLauncher]
+     * An event called when a new plugin is added to the [GestorLauncher]
      */
     fun onAddPlugin(plugin: LauncherPlugin) = Unit
 
@@ -36,7 +36,7 @@ interface LauncherPlugin {
     fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) = Unit
 
     /**
-     * An event called when an environment is cleared by the [OpenLauncher]
+     * An event called when an environment is cleared by the [GestorLauncher]
      */
     fun onClear(root: String) = Unit
 

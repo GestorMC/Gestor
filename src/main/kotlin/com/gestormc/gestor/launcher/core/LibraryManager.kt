@@ -1,6 +1,6 @@
 package com.gestormc.gestor.launcher.core
 
-import com.gestormc.gestor.launcher.OpenLauncher
+import com.gestormc.gestor.launcher.GestorLauncher
 import com.gestormc.gestor.task.downloadFile
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.*
@@ -64,7 +64,7 @@ object LibraryManager {
 
         if (versionInfoObject.contains("inheritsFrom")) {
             // Check parent libraries
-            checkAndDownload(OpenLauncher.getParentObject(versionInfoObject, gamePath)["libraries"]!!.jsonArray, nativesPath)
+            checkAndDownload(GestorLauncher.getParentObject(versionInfoObject, gamePath)["libraries"]!!.jsonArray, nativesPath)
         }
 
         // Save game path for later

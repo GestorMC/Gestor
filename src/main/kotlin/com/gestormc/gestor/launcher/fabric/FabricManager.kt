@@ -2,7 +2,7 @@ package com.gestormc.gestor.launcher.fabric
 
 import com.gestormc.gestor.JSON
 import com.gestormc.gestor.launcher.ModloaderManager
-import com.gestormc.gestor.launcher.OpenLauncher
+import com.gestormc.gestor.launcher.GestorLauncher
 import com.gestormc.gestor.task.downloadFile
 import kotlinx.serialization.json.*
 import java.io.File
@@ -66,7 +66,7 @@ object FabricManager : ModloaderManager {
         val installerPath = "$gamePath/openmodinstaller/fabric/installer/installer_$installerVersion.jar"
 
         // Create a command for launching the installer and launch it without output observation
-        val command = "${OpenLauncher.findLocalJavaPath(optInLegacyJava)} -jar $installerPath client -dir $gamePath -mcversion $targetVersion -snapshot -noprofile"
+        val command = "${GestorLauncher.findLocalJavaPath(optInLegacyJava)} -jar $installerPath client -dir $gamePath -mcversion $targetVersion -snapshot -noprofile"
         println(command)
         val process = Runtime.getRuntime().exec(command)
         process.waitFor()

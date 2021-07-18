@@ -16,7 +16,7 @@ import java.io.*
 /**
  * The main class for launching the game
  */
-class OpenLauncher private constructor(
+class GestorLauncher private constructor(
     private val root: String,
     private val isServer: Boolean,
     private val plugins: MutableSet<LauncherPlugin> = mutableSetOf(),
@@ -35,7 +35,7 @@ class OpenLauncher private constructor(
     /**
      * Adds the [plugin] to the plugin list
      */
-    private fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
+    private fun withPlugin(plugin: LauncherPlugin): GestorLauncher {
         if (!plugins.contains(plugin)) plugins += plugin
         plugins.forEach { plugin_ -> plugin_.onAddPlugin(plugin) }
         return this
@@ -243,7 +243,7 @@ class OpenLauncher private constructor(
         // Setup functions
 
         /**
-         * Creates a new instance of [OpenLauncher] for running vanilla Minecraft
+         * Creates a new instance of [GestorLauncher] for running vanilla Minecraft
          */
         fun vanilla(
             /**
@@ -261,14 +261,14 @@ class OpenLauncher private constructor(
              */
             testingLaunch: Boolean = false)
 
-        : OpenLauncher {
+        : GestorLauncher {
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
-            return OpenLauncher(root, isServer, authentication = auth)
+            return GestorLauncher(root, isServer, authentication = auth)
         }
 
         /**
-         * Creates a new instance of [OpenLauncher] for running Minecraft with FabricMC mods
+         * Creates a new instance of [GestorLauncher] for running Minecraft with FabricMC mods
          */
         fun fabric(
             /**
@@ -284,15 +284,15 @@ class OpenLauncher private constructor(
              *
              * Do **not** set this to `true` outside of testing!
              */
-            testingLaunch: Boolean = false): OpenLauncher {
+            testingLaunch: Boolean = false): GestorLauncher {
 
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
-            return OpenLauncher(root, isServer, authentication = auth).withPlugin(FabricLauncherPlugin)
+            return GestorLauncher(root, isServer, authentication = auth).withPlugin(FabricLauncherPlugin)
         }
 
         /**
-         * Creates a new instance of [OpenLauncher] for running Minecraft with MinecraftForge mods
+         * Creates a new instance of [GestorLauncher] for running Minecraft with MinecraftForge mods
          */
         fun forge(
             /**
@@ -308,11 +308,11 @@ class OpenLauncher private constructor(
              *
              * Do **not** set this to `true` outside of testing!
              */
-            testingLaunch: Boolean = false): OpenLauncher {
+            testingLaunch: Boolean = false): GestorLauncher {
 
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
-            return OpenLauncher(root, isServer, authentication = auth).withPlugin(ForgeLauncherPlugin)
+            return GestorLauncher(root, isServer, authentication = auth).withPlugin(ForgeLauncherPlugin)
         }
 
         /**

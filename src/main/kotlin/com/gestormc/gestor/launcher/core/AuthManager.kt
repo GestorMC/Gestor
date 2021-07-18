@@ -1,7 +1,7 @@
 package com.gestormc.gestor.launcher.core
 
 import com.gestormc.gestor.const.AUTH_SERVICE
-import com.gestormc.gestor.launcher.OpenLauncher
+import com.gestormc.gestor.launcher.GestorLauncher
 import com.mojang.authlib.Agent
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import kotlinx.serialization.json.*
@@ -55,7 +55,7 @@ object AuthManager {
     /**
      * Encodes the [details] into a [JsonObject]
      */
-    private fun encode(details: OpenLauncher.AuthDetails): JsonObject {
+    private fun encode(details: GestorLauncher.AuthDetails): JsonObject {
         val encodedUsername = Base64.getEncoder().encode(details.username.encodeToByteArray()).decodeToString()
         val encodedPassword = Base64.getEncoder().encode(details.password.encodeToByteArray()).decodeToString()
         val encodedToken = Base64.getEncoder().encode("".encodeToByteArray()).decodeToString()
@@ -68,9 +68,9 @@ object AuthManager {
     }
 
     /**
-     * Decodes the [OpenLauncher.AuthDetails] from the [credentialFile]
+     * Decodes the [GestorLauncher.AuthDetails] from the [credentialFile]
      */
-    private fun decode(credentialFile: File): OpenLauncher.AuthDetails {
+    private fun decode(credentialFile: File): GestorLauncher.AuthDetails {
         val username: String
         val password: String
         val token: String
@@ -87,14 +87,14 @@ object AuthManager {
             token = Base64.getDecoder().decode(encodedToken.encodeToByteArray()).decodeToString()
         }
 
-        return OpenLauncher.AuthDetails(username, password, token)
+        return GestorLauncher.AuthDetails(username, password, token)
     }
 
     /**
      * Demands the auth details from the user
      */
-    private fun demandDetails(): OpenLauncher.AuthDetails {
+    private fun demandDetails(): GestorLauncher.AuthDetails {
         // TODO: Display a window demanding the user to enter the details
-        return OpenLauncher.AuthDetails("", "")
+        return GestorLauncher.AuthDetails("", "")
     }
 }

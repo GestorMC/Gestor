@@ -1,7 +1,7 @@
 package com.gestormc.gestor.launcher.forge
 
 import com.gestormc.gestor.launcher.ModloaderManager
-import com.gestormc.gestor.launcher.OpenLauncher
+import com.gestormc.gestor.launcher.GestorLauncher
 import com.gestormc.gestor.task.downloadFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -35,7 +35,14 @@ object ForgeManager : ModloaderManager {
         val indexPath = "$gamePath/openmodinstaller/html/index/index_$targetVersion.html"
         if (!File(indexPath).exists()) {
             // Download the HTML index
-            downloadFile("https://files.minecraftforge.net/net/minecraftforge/forge/index_$targetVersion.html", indexPath)
+            try {
+                downloadFile(
+                    "https://files.minecraftforge.net/net/minecraftforge/forge/index_$targetVersion.html",
+                    indexPath
+                )
+            } catch (exception: Exception) {
+                throw RuntimeException("Ya boi Lex didn't make Froge for $targetVersion. So go fuck yourself real quick!")
+            }
         }
 
         // Parse index using JSoup
@@ -83,7 +90,7 @@ object ForgeManager : ModloaderManager {
         // Run the installer if needed
         val forgeFolder = "$targetVersion-forge"
         if (!File(forgeFolder).exists()) {
-            val command = "${OpenLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
+            val command = "${GestorLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
             val process = Runtime.getRuntime().exec(command)
             process.waitFor()
         }
