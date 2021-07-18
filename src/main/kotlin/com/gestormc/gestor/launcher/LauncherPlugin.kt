@@ -17,7 +17,8 @@ interface LauncherPlugin {
     /**
      * An event called when an instance of the [OpenLauncher] is created
      */
-    fun onCreate(root: String, isServer: Boolean, authentication: YggdrasilUserAuthentication?, jarTemplate: String) = Unit
+    fun onCreate(root: String, isServer: Boolean, authentication: YggdrasilUserAuthentication?, jarTemplate: String) =
+        Unit
 
     /**
      * An event called when a new plugin is added to the [OpenLauncher]
@@ -42,30 +43,83 @@ interface LauncherPlugin {
     /**
      * An event called when the launch operation starts
      */
-    fun onLaunchStart(root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String) = Unit
+    fun onLaunchStart(
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ) = Unit
 
     /**
-     * An event called after the process arguments for Minecraft are generated.
+     * A hook allowing you to modify the game arguments in any way
      */
-    fun onArgumentCreation(arguments: String, root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String) = Unit
+    fun processGameArguments(
+        arguments: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): String = arguments
 
     /**
-     * An event called after the JVM arguments for Minecraft are generated.
+     * A hook allowing you to modify the JVM arguments in any way
      */
-    fun onJvmArgumentCreation(jvmArguments: String, root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String) = Unit
+    fun processJvmArguments(
+        jvmArguments: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): String = jvmArguments
 
     /**
      * An event called after the full classpath is generated.
      */
-    fun processClasspath(classpath: String, root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String): String = classpath
+    fun processClasspath(
+        classpath: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): String = classpath
 
     /**
      * An extra hook allowing you to do additional processing on the Minecraft launch command.
      */
-    fun processCommand(source: String, root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String, jarTemplate: String): String = source
+    fun processCommand(
+        source: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String,
+        jarTemplate: String
+    ): String = source
 
     /**
      * An event called when the launch operation ends.
      */
-    fun onLaunchEnd(root: String, optInLegacyJava: Boolean, username: String, maxMemory: Int, jvmArgs: String, version: String, versionType: String) = Unit
+    fun onLaunchEnd(
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ) = Unit
 }

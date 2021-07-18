@@ -122,7 +122,7 @@ class OpenLauncher private constructor(
         }
 
         // Generate arguments
-        val arguments = if (versionInfoObject.contains("minecraftArguments")) {
+        var arguments = if (versionInfoObject.contains("minecraftArguments")) {
             ArgumentManager.generateLegacyArguments(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
                 root = root,
@@ -145,10 +145,14 @@ class OpenLauncher private constructor(
                 auth = authentication,
                 versionType = versionType)
         }
-        plugins.forEach { plugin -> plugin.onArgumentCreation(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        plugins.forEach { plugin ->
+            arguments = plugin.processGameArguments(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+        }
 
-        val jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
-        plugins.forEach { plugin -> plugin.onJvmArgumentCreation(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        var jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
+        plugins.forEach { plugin ->
+            jvmArguments = plugin.processJvmArguments(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+        }
 
         // Create classpath
         var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"

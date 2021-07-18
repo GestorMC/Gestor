@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import com.gestormc.gestor.task.downloadFileRaw
 import com.gestormc.gestor.ui.Dashboard
 import com.gestormc.gestor.ui.lightColors
 import kotlinx.serialization.json.Json
@@ -48,13 +49,15 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 }
 
 fun main() {
-    CWindow(title = "Gestor") {
-        MaterialTheme(colors = lightColors) {
-            DesktopTheme {
-                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
-                    Dashboard()
-                }
-            }
-        }
-    }
+    println(downloadFileRaw("https://files.minecraftforge.net/project_index.html")!!.bytes().decodeToString())
+
+//    CWindow(title = "Gestor") {
+//        MaterialTheme(colors = lightColors) {
+//            DesktopTheme {
+//                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+//                    Dashboard()
+//                }
+//            }
+//        }
+//    }
 }
