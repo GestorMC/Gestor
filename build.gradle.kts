@@ -37,11 +37,11 @@ tasks.withType<KotlinCompile> {
 
 compose.desktop {
     application {
-        mainClass = "com.redgrapefruit.openmodinstaller.MainKt"
+        mainClass = "com.gestormc.gestor.MainKt"
         nativeDistributions {
             modules("jdk.crypto.ec")
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "OpenModInstaller"
+            packageName = "Gestor"
             packageVersion = "1.0.0"
         }
     }
