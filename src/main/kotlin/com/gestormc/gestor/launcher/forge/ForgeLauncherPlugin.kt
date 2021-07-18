@@ -100,11 +100,9 @@ object ForgeLauncherPlugin : LauncherPlugin {
         FileInputStream("$root/versions/$version-forge/$version-forge.json").use { stream ->
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
-        // Add all libs from there with a replacer for Log4J
+        // Add all libs from there
         val builder = StringBuilder(classpath)
         builder += LibraryManager.getLibrariesFormatted(root, versionInfoObject, exceptions = setOf("log4j"))
-
-        println(builder.toString())
 
         return builder.toString()
     }
