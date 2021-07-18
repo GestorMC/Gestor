@@ -85,7 +85,15 @@ object LibraryManager {
         /**
          * [JsonObject] for the Mojang version info JSON
          */
-        versionInfoObject: JsonObject): String {
+        versionInfoObject: JsonObject,
+        /**
+         * Advanced. Replacers allow you to replace any lib containing the token (key) with the result of the lambda (value)
+         */
+        replacers: Map<String, (String) -> String> = mutableMapOf(),
+        /**
+         * Advanced. Exceptions allow you to ignore adding any library that matches the token to the classpath
+         */
+        exceptions: Set<String> = mutableSetOf()): String {
 
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
         val builder = StringBuilder()
@@ -95,18 +103,31 @@ object LibraryManager {
             val libraryObject = library.jsonObject
 
             // Get the name and cut it into pieces for making an absolute path for the library
-            val name = libraryObject["name"]!!.jsonPrimitive.content
+            var name = libraryObject["name"]!!.jsonPrimitive.content
 
-            val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
-            val cut2: String = name.substring(name.lastIndexOf(":") + 1)
-            val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
+            // Apply replacers
+            replacers.forEach { (token, newValue) ->
+                if (name.contains(token)) {
+                    name = newValue.invoke(name)
+                }
+            }
+            // Apply exceptions
+            var cancel = false
+            exceptions.forEach { token -> cancel = name.contains(token) }
 
-            // Join the pieces together into an absolute path
-            val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
+            if (!cancel) {
+                val cut1: String = name.substring(0, name.lastIndexOf(":")).replace(".", "/").replace(":", "/")
+                val cut2: String = name.substring(name.lastIndexOf(":") + 1)
+                val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
 
-            builder += "$libraryPath;"
+                // Join the pieces together into an absolute path
+                val libraryPath = "$gamePath/libraries/$cut1/$cut2/$cut3.jar"
+
+                builder += "$libraryPath;"
+            }
         }
 
+        // Native libraries
         for (library in nativeLibraries) {
             if (unsupportedNativeLibraries.contains(library)) continue
 

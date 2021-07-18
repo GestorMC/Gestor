@@ -3,9 +3,7 @@ package com.gestormc.gestor.launcher.forge
 import com.gestormc.gestor.launcher.LauncherPlugin
 import com.gestormc.gestor.launcher.core.LibraryManager
 import com.gestormc.gestor.util.plusAssign
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import java.io.FileInputStream
 
 /**
@@ -39,6 +37,41 @@ object ForgeLauncherPlugin : LauncherPlugin {
             .replace(vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content, forgeVersionInfo["mainClass"]!!.jsonPrimitive.content)
     }
 
+    override fun generateLibraryReplacers(
+        jvmArguments: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): Map<String, (String) -> String> {
+        return mapOf("log4j" to { source -> source.replace("2.8.1", "2.11.2") })
+    }
+
+    override fun processGameArguments(
+        arguments: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): String {
+        // Read Forge version info with arguments
+        val versionInfoObject: JsonObject
+        FileInputStream("$root/versions/$version-forge/$version-forge.json").use { stream ->
+            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+        val argumentList = versionInfoObject["arguments"]!!.jsonObject["game"]!!.jsonArray
+
+        val builder = StringBuilder(arguments)
+        argumentList.forEach { argument -> builder += " ${argument.jsonPrimitive.content}" } // put all arguments
+        return builder.toString()
+    }
+
     override fun processClasspath(
         classpath: String,
         root: String,
@@ -54,9 +87,11 @@ object ForgeLauncherPlugin : LauncherPlugin {
         FileInputStream("$root/versions/$version-forge/$version-forge.json").use { stream ->
             versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
         }
-        // Add all libs from there
+        // Add all libs from there with a replacer for Log4J
         val builder = StringBuilder(classpath)
-        builder += LibraryManager.getLibrariesFormatted(root, versionInfoObject)
+        builder += LibraryManager.getLibrariesFormatted(root, versionInfoObject, exceptions = setOf("log4j"))
+
+        println(builder.toString())
 
         return builder.toString()
     }

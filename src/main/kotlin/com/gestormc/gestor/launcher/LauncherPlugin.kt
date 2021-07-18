@@ -82,6 +82,38 @@ interface LauncherPlugin {
     ): String = jvmArguments
 
     /**
+     * Allows you to generate library replacers.
+     *
+     * These are applied when the **main** classpath part is generated, for custom parts, you can use [processClasspath]
+     */
+    fun generateLibraryReplacers(
+        jvmArguments: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): Map<String, (String) -> String> = emptyMap()
+
+    /**
+     * Allows you to generate library exceptions.
+     *
+     * These are applied when the **main** classpath part is generated, for custom parts, you can use [processClasspath]
+     */
+    fun generateLibraryExceptions(
+        jvmArguments: String,
+        root: String,
+        optInLegacyJava: Boolean,
+        username: String,
+        maxMemory: Int,
+        jvmArgs: String,
+        version: String,
+        versionType: String
+    ): Set<String> = emptySet()
+
+    /**
      * An event called after the full classpath is generated.
      */
     fun processClasspath(

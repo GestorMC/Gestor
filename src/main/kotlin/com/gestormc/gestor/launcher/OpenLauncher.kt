@@ -162,7 +162,15 @@ class OpenLauncher private constructor(
         }
 
         // Create classpath
-        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
+        val replacers = mutableMapOf<String, (String) -> String>()
+        val exceptions = mutableSetOf<String>()
+
+        plugins.forEach { plugin ->
+            replacers.putAll(plugin.generateLibraryReplacers(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType))
+            exceptions.addAll(plugin.generateLibraryExceptions(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType))
+        }
+
+        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject, replacers, exceptions)}"
         if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
             classpath += LibraryManager.getLibrariesFormatted(root, getParentObject(versionInfoObject, root))
         }
@@ -175,8 +183,6 @@ class OpenLauncher private constructor(
         var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
         plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
-
-        println(command)
 
         // Launch the Minecraft process
         try {
