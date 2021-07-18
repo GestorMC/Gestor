@@ -158,7 +158,6 @@ object SetupManager {
 
         // Launch LibraryManager check first, then set up natives
         LibraryManager.checkLibraries(gamePath, versionInfoObject, librariesArray, nativesFile.absolutePath)
-        LibraryManager.prepareNativeLibraries(gamePath)
     }
 
     /**

@@ -53,8 +53,8 @@ fun main() {
     val path = "C:/Users/karpo/AppData/Roaming/.minecraft"
 
     val launcher = OpenLauncher.fabric(path, isServer = false, testingLaunch = true)
-    launcher.setup("1.17.1", false)
-    launcher.launch(false, "Fellow FabricMC chad", 3000, "", "1.17.1", "release")
+    launcher.setup("1.17", false)
+    launcher.launch(false, "Fellow FabricMC chad", 3000, "", "1.17", "release")
 
 //    CWindow(title = "OpenModInstaller") {
 //        MaterialTheme(colors = lightColors) {

@@ -156,7 +156,7 @@ class OpenLauncher private constructor(
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
-        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -Djava.library.path=\"$root\\natives\" -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
+        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
         plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
 

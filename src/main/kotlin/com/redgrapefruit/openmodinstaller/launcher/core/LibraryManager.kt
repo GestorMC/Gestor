@@ -109,20 +109,6 @@ object LibraryManager {
             builder += "$libraryPath;"
         }
 
-        return builder.toString()
-    }
-
-    /**
-     * Prepares all native libraries to be used.
-     *
-     * Libraries have to be checked beforehand in order to run this correctly.
-     */
-    internal fun prepareNativeLibraries(
-        /**
-         * Root game path
-         */
-        gamePath: String) {
-
         for (library in nativeLibraries) {
             if (unsupportedNativeLibraries.contains(library)) continue
 
@@ -141,34 +127,10 @@ object LibraryManager {
                 else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
             }}.jar"
 
-            // If needs to be extracted, extract
-            val libraryExtractedPath = "$gamePath/libraries/$cut1/$cut2/extracts/"
-            val libraryExtractedFile = File(libraryExtractedPath)
-            if (!libraryExtractedFile.exists()){
-                libraryExtractedFile.mkdirs()
-                unjar(libraryPathJAR, libraryExtractedPath)
-            }
-
-            // Locate the DLL (Windows) or SO (Unix) file and save its name without extension
-            val extension = if (SystemUtils.IS_OS_WINDOWS) "dll" else "so"
-            var srcBinPath: String? = null
-            var binName: String? = null
-            libraryExtractedFile.listFiles()!!.forEach { file ->
-                if (file.extension == extension && !file.absolutePath.contains("32")) { // we do not support 32-bit architectures
-                    srcBinPath = file.absolutePath
-                    binName = file.nameWithoutExtension
-                }
-            }
-            if (srcBinPath == null) throw RuntimeException("Could not locate source native binary file: $name")
-            if (binName == null) throw RuntimeException("Could not find the name of the native binary file: $name")
-
-            // Copy over the DLL/SO into the natives folder
-            val nativesFolderFile = File("$gamePath/natives") // make sure the natives folder exists first
-            if (!nativesFolderFile.exists()) nativesFolderFile.mkdirs()
-
-            val outBinPath = "${nativesFolderFile.absolutePath}/$binName.$extension"
-            Files.copy(Paths.get(srcBinPath!!), FileOutputStream(outBinPath))
+            builder += "$libraryPathJAR;"
         }
+
+        return builder.toString()
     }
 
     /**
