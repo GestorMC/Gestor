@@ -50,7 +50,8 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 }
 
 fun main() {
-    ForgeManager.runInstaller("C:/Users/karpo/AppData/Roaming/.minecraft", "1.16.5")
+    ForgeManager.setupInstaller("C:/Users/karpo/AppData/Roaming/.minecraft", "1.16.5")
+    ForgeManager.runInstaller("C:/Users/karpo/AppData/Roaming/.minecraft", "1.16.5", false)
 
 //    CWindow(title = "Gestor") {
 //        MaterialTheme(colors = lightColors) {

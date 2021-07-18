@@ -6,6 +6,9 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * The modloader manager for Minecraft Forge.
@@ -55,20 +58,38 @@ object ForgeManager : ModloaderManager {
         val url = temp.substring(temp.indexOf("=") + 1, temp.lastIndex + 1)
 
         // Download main installer
-
+        val mainInstallerPath = "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
+        if (!File(mainInstallerPath).exists()) {
+            downloadFile(url, mainInstallerPath)
+        }
     }
 
     override fun runInstaller(gamePath: String, targetVersion: String, optInLegacyJava: Boolean) {
-
         // Check if the installer exists, if not, run the setup
         val installerPath = "$gamePath/openmodinstaller/forge/installer/headless/forge-installer-headless-1.0.1.jar"
         if (!File(installerPath).exists()) setupInstaller(gamePath, targetVersion)
+        val mainInstallerPath = "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
+        if (!File(mainInstallerPath).exists()) setupInstaller(gamePath, targetVersion)
 
         // Run the installer
-
+        val command = "java -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath"
+        val process = Runtime.getRuntime().exec(command)
+        process.waitFor()
     }
 
     override fun migrateClientJAR(gamePath: String, targetVersion: String) {
+        // Forge installs its remapped JAR in the libraries folder, so pick it from there
+        var sourcePath: String? = null
+        var forgeVersion: String
+        File("$gamePath/libraries/net/minecraft/minecraftforge/forge").listFiles()!!.forEach { file ->
+            if (file.isDirectory && file.absolutePath.contains(targetVersion)) {
+                forgeVersion = file.name.substring(file.name.indexOf("-") + 1, file.name.lastIndex + 1)
+                sourcePath = "${file.absolutePath}/forge-$targetVersion-$forgeVersion-client.jar"
+            }
+        }
+        if (sourcePath == null) throw RuntimeException("Could not locate Forge client remapped JAR")
 
+        val outputPath = "$gamePath/versions/$targetVersion-forge/$targetVersion-forge.jar"
+        Files.copy(Paths.get(sourcePath!!), FileOutputStream(outputPath))
     }
 }
