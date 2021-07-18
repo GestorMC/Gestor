@@ -1,10 +1,12 @@
 package com.gestormc.gestor.launcher
 
+import com.gestormc.gestor.data.ManifestReleaseType
 import com.gestormc.gestor.launcher.core.ArgumentManager
 import com.gestormc.gestor.launcher.core.AuthManager
 import com.gestormc.gestor.launcher.core.LibraryManager
 import com.gestormc.gestor.launcher.core.SetupManager
 import com.gestormc.gestor.launcher.fabric.FabricLauncherPlugin
+import com.gestormc.gestor.launcher.forge.ForgeLauncherPlugin
 import com.gestormc.gestor.util.InternalAPI
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.sun.security.auth.module.NTSystem
@@ -33,7 +35,7 @@ class OpenLauncher private constructor(
     /**
      * Adds the [plugin] to the plugin list
      */
-    fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
+    private fun withPlugin(plugin: LauncherPlugin): OpenLauncher {
         if (!plugins.contains(plugin)) plugins += plugin
         plugins.forEach { plugin_ -> plugin_.onAddPlugin(plugin) }
         return this
@@ -106,6 +108,11 @@ class OpenLauncher private constructor(
          * Launched Minecraft version
          */
         version: String,
+        /**
+         * The type of the launched Minecraft version.
+         *
+         * See [ManifestReleaseType] for more.
+         */
         versionType: String = "release") {
 
         plugins.forEach { plugin -> plugin.onLaunchStart(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
@@ -122,7 +129,7 @@ class OpenLauncher private constructor(
         }
 
         // Generate arguments
-        val arguments = if (versionInfoObject.contains("minecraftArguments")) {
+        var arguments = if (versionInfoObject.contains("minecraftArguments")) {
             ArgumentManager.generateLegacyArguments(
                 raw = versionInfoObject["minecraftArguments"]!!.jsonPrimitive.content,
                 root = root,
@@ -145,13 +152,25 @@ class OpenLauncher private constructor(
                 auth = authentication,
                 versionType = versionType)
         }
-        plugins.forEach { plugin -> plugin.onArgumentCreation(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        plugins.forEach { plugin ->
+            arguments = plugin.processGameArguments(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+        }
 
-        val jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
-        plugins.forEach { plugin -> plugin.onJvmArgumentCreation(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        var jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
+        plugins.forEach { plugin ->
+            jvmArguments = plugin.processJvmArguments(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+        }
 
         // Create classpath
-        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject)}"
+        val replacers = mutableMapOf<String, (String) -> String>()
+        val exceptions = mutableSetOf<String>()
+
+        plugins.forEach { plugin ->
+            replacers.putAll(plugin.generateLibraryReplacers(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType))
+            exceptions.addAll(plugin.generateLibraryExceptions(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType))
+        }
+
+        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject, replacers, exceptions)}"
         if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
             classpath += LibraryManager.getLibrariesFormatted(root, getParentObject(versionInfoObject, root))
         }
@@ -164,8 +183,6 @@ class OpenLauncher private constructor(
         var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
         plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
-
-        println(command)
 
         // Launch the Minecraft process
         try {
@@ -250,6 +267,9 @@ class OpenLauncher private constructor(
             return OpenLauncher(root, isServer, authentication = auth)
         }
 
+        /**
+         * Creates a new instance of [OpenLauncher] for running Minecraft with FabricMC mods
+         */
         fun fabric(
             /**
              * Game's root folder. Win AppData by default
@@ -269,6 +289,30 @@ class OpenLauncher private constructor(
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
             return OpenLauncher(root, isServer, authentication = auth).withPlugin(FabricLauncherPlugin)
+        }
+
+        /**
+         * Creates a new instance of [OpenLauncher] for running Minecraft with MinecraftForge mods
+         */
+        fun forge(
+            /**
+             * Game's root folder. Win AppData by default
+             */
+            root: String,
+            /**
+             * Is the Minecraft launched a server
+             */
+            isServer: Boolean = false,
+            /**
+             * If `true`, bypasses auth checks and runs pirated Minecraft.
+             *
+             * Do **not** set this to `true` outside of testing!
+             */
+            testingLaunch: Boolean = false): OpenLauncher {
+
+            val auth = if (testingLaunch) null else AuthManager.start()
+            auth?.logIn()
+            return OpenLauncher(root, isServer, authentication = auth).withPlugin(ForgeLauncherPlugin)
         }
 
         /**

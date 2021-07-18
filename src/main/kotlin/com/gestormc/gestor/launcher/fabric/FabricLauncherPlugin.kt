@@ -6,6 +6,7 @@ import com.gestormc.gestor.launcher.core.SetupManager
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.FileInputStream
 
 /**
@@ -23,10 +24,20 @@ object FabricLauncherPlugin : LauncherPlugin {
         versionType: String,
         jarTemplate: String
     ): String {
-        // Use the Fabric JAR as the launched Minecraft JAR and fix to use KnotClient
+        // Use the Fabric JAR as the launched Minecraft JAR and fix to use the correct main class
+        // Load version info's
+        val fabricVersionInfo: JsonObject
+        val vanillaVersionInfo: JsonObject
+        FileInputStream("$root/versions/$version-fabric/$version-fabric.json").use { stream ->
+            fabricVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+        FileInputStream("$root/versions/$version/$version.json").use { stream ->
+            vanillaVersionInfo = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString())
+        }
+
         return source
             .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-fabric/$version-fabric.jar")
-            .replace("net.minecraft.client.main.Main", "net.fabricmc.loader.launch.knot.KnotClient")
+            .replace(vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content, fabricVersionInfo["mainClass"]!!.jsonPrimitive.content)
     }
 
     override fun processClasspath(
@@ -54,7 +65,7 @@ object FabricLauncherPlugin : LauncherPlugin {
 
     override fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) {
         // Launch additional setup from FabricManager
-        FabricManager.setupInstaller(root)
+        FabricManager.setupInstaller(root, version)
         FabricManager.runInstaller(root, version, optInLegacyJava)
         FabricManager.migrateClientJAR(root, version)
         SetupManager.setupLibraries(root, "$version-fabric")

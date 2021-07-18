@@ -7,6 +7,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import com.gestormc.gestor.launcher.OpenLauncher
+import com.gestormc.gestor.task.downloadFileRaw
 import com.gestormc.gestor.ui.Dashboard
 import com.gestormc.gestor.ui.lightColors
 import kotlinx.serialization.json.Json
@@ -48,13 +50,17 @@ fun CWindow(title: String? = null, content: @Composable () -> Unit) = SwingUtili
 }
 
 fun main() {
-    CWindow(title = "Gestor") {
-        MaterialTheme(colors = lightColors) {
-            DesktopTheme {
-                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
-                    Dashboard()
-                }
-            }
-        }
-    }
+    val launcher = OpenLauncher.forge("C:/Users/karpo/AppData/Roaming/.minecraft", isServer = false, testingLaunch = true)
+    launcher.setup("1.16.5", true)
+    launcher.launch(true, "MinecraftForge_Chad", 3000, "", "1.16.5", "release")
+
+//    CWindow(title = "Gestor") {
+//        MaterialTheme(colors = lightColors) {
+//            DesktopTheme {
+//                Surface(shape = RectangleShape, color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+//                    Dashboard()
+//                }
+//            }
+//        }
+//    }
 }
