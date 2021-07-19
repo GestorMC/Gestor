@@ -41,7 +41,7 @@ object ForgeManager : ModloaderManager {
                     indexPath
                 )
             } catch (exception: Exception) {
-                throw RuntimeException("Ya boi Lex didn't make Froge for $targetVersion. So go fuck yourself real quick!")
+                throw RuntimeException("Forge is currently not available for $targetVersion!")
             }
         }
 
