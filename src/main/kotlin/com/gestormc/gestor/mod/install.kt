@@ -6,7 +6,7 @@ import com.gestormc.gestor.data.ReleaseType
 import com.gestormc.gestor.task.downloadFile
 import java.io.File
 
-internal fun modInstallTask(
+fun modInstallTask(
     /**
      * The target mods folder
      */
@@ -30,7 +30,7 @@ internal fun modInstallTask(
     }
 }
 
-internal fun modDependencyInstallTask(
+fun modDependencyInstallTask(
     /**
      * The target mods folder
      */

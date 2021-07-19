@@ -2,7 +2,7 @@ package com.gestormc.gestor.mod
 
 import java.io.File
 
-internal fun fullRemoveTask(
+fun fullRemoveTask(
     /**
      * The path to the mods folder
      */

@@ -6,7 +6,7 @@ import com.gestormc.gestor.util.Hash
 import java.io.File
 import kotlin.random.Random
 
-internal fun modUpdateTask(
+fun modUpdateTask(
     /**
      * The [ReleaseEntry] of the mod
      */
@@ -27,7 +27,7 @@ internal fun modUpdateTask(
     downloadFile(entry.url, file.absolutePath)
 }
 
-internal fun modDependencyUpdateTask(
+fun modDependencyUpdateTask(
     /**
      * List of [ReleaseEntry]s for each dependency
      */
