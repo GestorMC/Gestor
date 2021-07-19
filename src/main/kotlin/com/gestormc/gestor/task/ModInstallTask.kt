@@ -11,6 +11,7 @@ import java.nio.file.StandardCopyOption
 /**
  * A [Task] which handles automatic installation of mods
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContext, DefaultPostLaunchTaskContext> {
     override fun launch(context: ModInstallLaunchContext) {
         context.apply {

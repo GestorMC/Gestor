@@ -1,11 +1,14 @@
 package com.gestormc.gestor.task
 
 import com.gestormc.gestor.data.ReleaseEntry
+import com.gestormc.gestor.util.Hash
 import java.io.File
+import kotlin.random.Random
 
 /**
  * A [Task] for handling mod dependency updating
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object DependencyUpdateTask :
     Task<DependencyUpdatePreLaunchContext, DependencyUpdateLaunchContext, DefaultPostLaunchTaskContext> {
     /**
@@ -28,7 +31,7 @@ object DependencyUpdateTask :
             // Check all dependencies for updates
             entries.forEach { entry ->
                 paths.forEach { depPath ->
-                    if (checkUpdates(cacheFolderPath, entry, depPath)) {
+                    if (checkUpdates(entry, depPath)) {
                         hasUpdates = true
                         updatables[entry] = depPath
                     }
@@ -55,6 +58,23 @@ object DependencyUpdateTask :
         hasUpdates = false
         updatables.clear()
     }
+}
+
+@Deprecated("Copied from com.gestormc.gestor.mod.UpdateKt for compatibility until the old tasks get removed")
+internal fun checkUpdates(entry: ReleaseEntry, jarPath: String): Boolean {
+    if (!File(jarPath).exists()) return false // extra check just in case
+
+    // Download latest JAR file
+    val latestJarPath = "./cache/dedicated/updater_${Random.nextInt(Int.MAX_VALUE)}"
+
+    File(latestJarPath).createNewFile()
+    downloadFile(entry.url, latestJarPath)
+
+    // Compare checksums
+    val currentChecksum = Hash.checksum(jarPath).decodeToString()
+    val latestChecksum = Hash.checksum(latestJarPath).decodeToString()
+
+    return currentChecksum == latestChecksum
 }
 
 data class DependencyUpdatePreLaunchContext(

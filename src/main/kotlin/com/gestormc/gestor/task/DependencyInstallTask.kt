@@ -9,6 +9,7 @@ import java.io.File
  *
  * Can be cancelled if dependencies are already in place.
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object DependencyInstallTask :
     Task<DefaultPreLaunchTaskContext, DependencyInstallLaunchContext, DefaultPostLaunchTaskContext> {
     override fun launch(context: DependencyInstallLaunchContext) {

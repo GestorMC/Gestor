@@ -8,6 +8,7 @@ import kotlin.random.Random
 /**
  * The [Task] for updating the main mod
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, DefaultPostLaunchTaskContext> {
     /**
      * [BlockingValue] for if the mod has updates.
@@ -16,7 +17,7 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
     private var hasUpdates: Boolean = false
 
     override fun preLaunch(context: ModUpdatePreLaunchContext) {
-        context.apply { hasUpdates = checkUpdates(cacheFolderPath, entry, jarPath) }
+        context.apply { hasUpdates = checkUpdates(entry, jarPath) }
     }
 
     override fun launch(context: ModUpdateLaunchContext) {
@@ -36,22 +37,7 @@ object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, D
     }
 }
 
-/**
- * Checks for updates
- */
-fun checkUpdates(cacheFolderPath: String, entry: ReleaseEntry, jarPath: String): Boolean {
-    // Download latest JAR file
-    val latestJarPath = "./cache/dedicated/updater_${Random.nextInt(Int.MAX_VALUE)}"
 
-    File(latestJarPath).createNewFile()
-    downloadFile(entry.url, latestJarPath)
-
-    // Compare checksums
-    val currentChecksum = Hash.checksum(jarPath).decodeToString()
-    val latestChecksum = Hash.checksum(latestJarPath).decodeToString()
-
-    return currentChecksum == latestChecksum
-}
 
 data class ModUpdatePreLaunchContext(
     /**
