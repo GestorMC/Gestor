@@ -36,4 +36,11 @@ object ModTasks {
      * See the referenced function ([modDependencyUpdateTask]) for extra information.
      */
     val updateDependencies = ::modDependencyUpdateTask
+
+    /**
+     * Removes the main mod as well as it's dependencies from the mods folder.
+     *
+     * See the referenced function ([fullRemoveTask]) for extra information.
+     */
+    val removeAll = ::fullRemoveTask
 }

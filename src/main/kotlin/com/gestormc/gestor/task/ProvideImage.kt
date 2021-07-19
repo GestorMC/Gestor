@@ -26,7 +26,7 @@ suspend fun getBitmapFromURL(url: String): ImageBitmap? {
         }
     }
 
-    val optionalImage = data.await();
+    val optionalImage = data.await()
 
     if(optionalImage !== null) cache[url] = optionalImage
     return optionalImage
