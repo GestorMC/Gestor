@@ -114,11 +114,11 @@ object ForgeLauncherPlugin : LauncherPlugin {
     }
 
     override fun onSetupEnd(root: String, version: String, optInLegacyJava: Boolean) {
-        // Launch extra setup from ForgeManager
+        // Launch extra setup tasks
         // Library-checking is not needed, unlike Fabric, since the Forge installation process already does the job
-        ForgeManager.setupInstaller(root, version)
-        ForgeManager.runInstaller(root, version, optInLegacyJava)
-        ForgeManager.migrateClientJAR(root, version)
+        forgeSetupInstallerTask(root, version)
+        forgeRunInstallerTask(root, version, optInLegacyJava)
+        forgeMigrateJarTask(root, version)
     }
 
     /**
