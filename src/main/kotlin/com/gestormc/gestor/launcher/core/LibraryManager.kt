@@ -64,7 +64,10 @@ object LibraryManager {
 
         if (versionInfoObject.contains("inheritsFrom")) {
             // Check parent libraries
-            checkAndDownload(GestorLauncher.getParentObject(versionInfoObject, gamePath)["libraries"]!!.jsonArray, nativesPath)
+            checkAndDownload(
+                GestorLauncher.getParentObject(versionInfoObject, gamePath)["libraries"]!!.jsonArray,
+                nativesPath
+            )
         }
 
         // Save game path for later
@@ -93,7 +96,8 @@ object LibraryManager {
         /**
          * Advanced. Exceptions allow you to ignore adding any library that matches the token to the classpath
          */
-        exceptions: Set<String> = mutableSetOf()): String {
+        exceptions: Set<String> = mutableSetOf()
+    ): String {
 
         val librariesArray = versionInfoObject["libraries"]!!.jsonArray
         val builder = StringBuilder()
@@ -139,12 +143,14 @@ object LibraryManager {
             val cut2: String = name.substring(name.lastIndexOf(":") + 1)
             val cut3: String = name.substring(name.indexOf(":") + 1).replace(":", "-")
 
-            val libraryPathJAR = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${when {
-                SystemUtils.IS_OS_WINDOWS -> "windows"
-                SystemUtils.IS_OS_LINUX -> "linux"
-                SystemUtils.IS_OS_MAC_OSX -> "macos"
-                else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
-            }}.jar"
+            val libraryPathJAR = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${
+                when {
+                    SystemUtils.IS_OS_WINDOWS -> "windows"
+                    SystemUtils.IS_OS_LINUX -> "linux"
+                    SystemUtils.IS_OS_MAC_OSX -> "macos"
+                    else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
+                }
+            }.jar"
 
             builder += "$libraryPathJAR;"
         }
@@ -163,7 +169,8 @@ object LibraryManager {
         /**
          * The path to the natives folder
          */
-        nativesFolder: String) {
+        nativesFolder: String
+    ) {
 
         for (library in librariesArray) {
             // Extract the JsonObject
@@ -195,12 +202,14 @@ object LibraryManager {
             }
 
             if (libraryObject["downloads"]!!.jsonObject.contains("classifiers")) {
-                val libraryPathAppended = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${when {
-                    SystemUtils.IS_OS_WINDOWS -> "windows"
-                    SystemUtils.IS_OS_LINUX -> "linux"
-                    SystemUtils.IS_OS_MAC_OSX -> "macos"
-                    else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
-                }}.jar"
+                val libraryPathAppended = "$gamePath/libraries/$cut1/$cut2/$cut3-natives-${
+                    when {
+                        SystemUtils.IS_OS_WINDOWS -> "windows"
+                        SystemUtils.IS_OS_LINUX -> "linux"
+                        SystemUtils.IS_OS_MAC_OSX -> "macos"
+                        else -> throw RuntimeException("Java Edition not run on Windows, Linux or Mac OSX")
+                    }
+                }.jar"
 
                 nativeLibraries += libraryObject
 
@@ -254,8 +263,8 @@ object LibraryManager {
                     // Just download the lib
                     downloadFile(
                         input =
-                            // /artifact
-                            downloadsObject["artifact"]!!
+                        // /artifact
+                        downloadsObject["artifact"]!!
                             // /artifact/url
                             .jsonObject["url"]!!.jsonPrimitive.content,
                         output = libraryPath

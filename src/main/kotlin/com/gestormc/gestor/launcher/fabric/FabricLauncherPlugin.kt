@@ -36,8 +36,14 @@ object FabricLauncherPlugin : LauncherPlugin {
         }
 
         return source
-            .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-fabric/$version-fabric.jar")
-            .replace(vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content, fabricVersionInfo["mainClass"]!!.jsonPrimitive.content)
+            .replace(
+                "$root/versions/$version/$version-$jarTemplate.jar",
+                "$root/versions/$version-fabric/$version-fabric.jar"
+            )
+            .replace(
+                vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content,
+                fabricVersionInfo["mainClass"]!!.jsonPrimitive.content
+            )
     }
 
     override fun processClasspath(

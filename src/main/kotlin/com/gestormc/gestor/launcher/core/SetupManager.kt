@@ -18,17 +18,25 @@ import kotlin.random.Random
 object SetupManager {
     // Manifest with MC versions
     private const val MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json"
+
     // The sub-sub-domain of Minecraft.net containing asset downloads for the asset index
     private const val ASSET_DOWNLOAD_DOMAIN_URL = "https://resources.download.minecraft.net"
 
     // AdoptOpenJRE 8 downloads (legacy, opt-in for older versions)
-    private const val JRE_8_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_windows_hotspot_8u292b10.zip"
-    private const val JRE_8_LINUX = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_linux_hotspot_8u292b10.tar.gz"
-    private const val JRE_8_OSX = "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_mac_hotspot_8u292b10.tar.gz"
+    private const val JRE_8_WINDOWS =
+        "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_windows_hotspot_8u292b10.zip"
+    private const val JRE_8_LINUX =
+        "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_linux_hotspot_8u292b10.tar.gz"
+    private const val JRE_8_OSX =
+        "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u292-b10/OpenJDK8U-jre_x64_mac_hotspot_8u292b10.tar.gz"
+
     // AdoptOpenJRE 16 downloads (default)
-    private const val JRE_16_WINDOWS = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_windows_hotspot_16.0.1_9.zip"
-    private const val JRE_16_LINUX = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz"
-    private const val JRE_16_OSX = "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_mac_hotspot_16.0.1_9.tar.gz"
+    private const val JRE_16_WINDOWS =
+        "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_windows_hotspot_16.0.1_9.zip"
+    private const val JRE_16_LINUX =
+        "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_linux_hotspot_16.0.1_9.tar.gz"
+    private const val JRE_16_OSX =
+        "https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download/jdk-16.0.1%2B9/OpenJDK16U-jre_x64_mac_hotspot_16.0.1_9.tar.gz"
 
     /**
      * Sets up the necessary `${VERSION}.info` file.
@@ -44,7 +52,7 @@ object SetupManager {
          * The ID of the target version. For example, `"1.17"`
          */
         targetVersion: String
-        ) {
+    ) {
         val game = File(gamePath)
 
         if (!game.exists()) game.mkdirs()
@@ -93,7 +101,8 @@ object SetupManager {
         /**
          * Download the Minecraft server JAR
          */
-        downloadServer: Boolean = false) {
+        downloadServer: Boolean = false
+    ) {
 
         val versionInfoPath = "$gamePath/versions/$targetVersion/$targetVersion.json"
 
@@ -108,17 +117,18 @@ object SetupManager {
         // Get the URL for the JAR
         val jarTemplate = if (downloadServer) "server" else "client"
 
-        val jarURL = if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("downloads")) { // inheritance support
-            // Get parent JAR URL
-            GestorLauncher.getParentObject(versionInfoObject, gamePath)["downloads"]!!
-                .jsonObject[jarTemplate]!!
-                .jsonObject["url"]!!.jsonPrimitive.content
+        val jarURL =
+            if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("downloads")) { // inheritance support
+                // Get parent JAR URL
+                GestorLauncher.getParentObject(versionInfoObject, gamePath)["downloads"]!!
+                    .jsonObject[jarTemplate]!!
+                    .jsonObject["url"]!!.jsonPrimitive.content
 
-        } else {
-            versionInfoObject["downloads"]!!
-                .jsonObject[jarTemplate]!!
-                .jsonObject["url"]!!.jsonPrimitive.content
-        }
+            } else {
+                versionInfoObject["downloads"]!!
+                    .jsonObject[jarTemplate]!!
+                    .jsonObject["url"]!!.jsonPrimitive.content
+            }
 
         // This is a quite heavy process and always takes a while if not in OkHttp cache
         val jarPath = "$gamePath/versions/$targetVersion/$targetVersion-$jarTemplate.jar"
@@ -136,14 +146,16 @@ object SetupManager {
         /**
          * The targeted Minecraft version for this launch
          */
-        targetVersion: String) {
+        targetVersion: String
+    ) {
 
         val versionInfoPath = "$gamePath/versions/$targetVersion/$targetVersion.json"
 
         // Load version info JsonObject
         val versionInfoObject: JsonObject
         FileInputStream(versionInfoPath).use { stream ->
-            versionInfoObject = Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString()).jsonObject
+            versionInfoObject =
+                Json.decodeFromString(JsonObject.serializer(), stream.readBytes().decodeToString()).jsonObject
         }
 
         // Determine native libraries path and clear it beforehand
@@ -165,7 +177,8 @@ object SetupManager {
         /**
          * Use AdoptOpenJRE 8 legacy version instead of 16 for older versions
          */
-        optInLegacyJava: Boolean = false) {
+        optInLegacyJava: Boolean = false
+    ) {
 
         // Check if Java is already installed
         val javaTargetPath = "./java/${if (optInLegacyJava) "adoptopenjre8" else "adoptopenjre16"}"
@@ -217,7 +230,8 @@ object SetupManager {
         /**
          * The targeted Minecraft version
          */
-        targetVersion: String) {
+        targetVersion: String
+    ) {
 
         // Ensure that the folder for asset indexes exists
         val assetIndexesFile = File("$gamePath/assets/indexes")
@@ -231,7 +245,10 @@ object SetupManager {
 
         val indexVersion: String
         val url: String
-        if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets") && !versionInfoObject.contains("assetIndex")) { // inheritance support
+        if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets") && !versionInfoObject.contains(
+                "assetIndex"
+            )
+        ) { // inheritance support
             val parentObject = GestorLauncher.getParentObject(versionInfoObject, gamePath)
             indexVersion = parentObject["assets"]!!.jsonPrimitive.content
             url = parentObject["assetIndex"]!!.jsonObject["url"]!!.jsonPrimitive.content

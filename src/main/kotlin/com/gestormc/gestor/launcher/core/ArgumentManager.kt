@@ -42,7 +42,8 @@ object ArgumentManager {
         /**
          * The [YggdrasilUserAuthentication]
          */
-        auth: YggdrasilUserAuthentication? = null): String {
+        auth: YggdrasilUserAuthentication? = null
+    ): String {
 
         // The legacy format acts as a template, and all we have to do here is replace the placeholders with actual values
         return raw
@@ -85,7 +86,8 @@ object ArgumentManager {
          *
          * Corresponds to the string values of the [ManifestReleaseType] enum
          */
-        versionType: String = "release"): String {
+        versionType: String = "release"
+    ): String {
 
         val builder = StringBuilder()
 
@@ -114,7 +116,8 @@ object ArgumentManager {
         /**
          * Additional JVM arguments
          */
-        jvmArgs: String): String {
+        jvmArgs: String
+    ): String {
 
         val builder = StringBuilder()
 

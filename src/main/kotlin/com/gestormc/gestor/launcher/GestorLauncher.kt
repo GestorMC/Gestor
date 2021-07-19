@@ -10,7 +10,9 @@ import com.gestormc.gestor.launcher.forge.ForgeLauncherPlugin
 import com.gestormc.gestor.util.InternalAPI
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication
 import com.sun.security.auth.module.NTSystem
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.*
 
 /**
@@ -21,7 +23,8 @@ class GestorLauncher private constructor(
     private val isServer: Boolean,
     private val plugins: MutableSet<LauncherPlugin> = mutableSetOf(),
     private val authentication: YggdrasilUserAuthentication? = null,
-    private val jarTemplate: String = if (isServer) "server" else "client") {
+    private val jarTemplate: String = if (isServer) "server" else "client"
+) {
 
     /**
      * Has the launcher setup been run yet.
@@ -54,7 +57,8 @@ class GestorLauncher private constructor(
         /**
          * Opt in legacy AdoptOpenJRE 8
          */
-        optInLegacyJava: Boolean = false) {
+        optInLegacyJava: Boolean = false
+    ) {
 
         plugins.forEach { plugin -> plugin.onSetupStart(root, version, optInLegacyJava) }
 
@@ -113,9 +117,20 @@ class GestorLauncher private constructor(
          *
          * See [ManifestReleaseType] for more.
          */
-        versionType: String = "release") {
+        versionType: String = "release"
+    ) {
 
-        plugins.forEach { plugin -> plugin.onLaunchStart(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        plugins.forEach { plugin ->
+            plugin.onLaunchStart(
+                root,
+                optInLegacyJava,
+                username,
+                maxMemory,
+                jvmArgs,
+                version,
+                versionType
+            )
+        }
 
         val versionInfoPath = "$root/versions/$version/$version.json"
 
@@ -138,7 +153,8 @@ class GestorLauncher private constructor(
                 if (versionInfoObject.contains("inheritsFrom") && !versionInfoObject.contains("assets"))
                     getParentObject(versionInfoObject, root)["assets"]!!.jsonPrimitive.content
                 else
-                    versionInfoObject["assets"]!!.jsonPrimitive.content)
+                    versionInfoObject["assets"]!!.jsonPrimitive.content
+            )
         } else {
             ArgumentManager.generateModernArguments(
                 version = version,
@@ -150,15 +166,34 @@ class GestorLauncher private constructor(
                     versionInfoObject["assets"]!!.jsonPrimitive.content,
                 username = username,
                 auth = authentication,
-                versionType = versionType)
+                versionType = versionType
+            )
         }
         plugins.forEach { plugin ->
-            arguments = plugin.processGameArguments(arguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+            arguments = plugin.processGameArguments(
+                arguments,
+                root,
+                optInLegacyJava,
+                username,
+                maxMemory,
+                jvmArgs,
+                version,
+                versionType
+            )
         }
 
         var jvmArguments = ArgumentManager.generateJVMArguments(maxMemory.toString(), jvmArgs)
         plugins.forEach { plugin ->
-            jvmArguments = plugin.processJvmArguments(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+            jvmArguments = plugin.processJvmArguments(
+                jvmArguments,
+                root,
+                optInLegacyJava,
+                username,
+                maxMemory,
+                jvmArgs,
+                version,
+                versionType
+            )
         }
 
         // Create classpath
@@ -166,23 +201,74 @@ class GestorLauncher private constructor(
         val exceptions = mutableSetOf<String>()
 
         plugins.forEach { plugin ->
-            replacers.putAll(plugin.generateLibraryReplacers(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType))
-            exceptions.addAll(plugin.generateLibraryExceptions(jvmArguments, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType))
+            replacers.putAll(
+                plugin.generateLibraryReplacers(
+                    jvmArguments,
+                    root,
+                    optInLegacyJava,
+                    username,
+                    maxMemory,
+                    jvmArgs,
+                    version,
+                    versionType
+                )
+            )
+            exceptions.addAll(
+                plugin.generateLibraryExceptions(
+                    jvmArguments,
+                    root,
+                    optInLegacyJava,
+                    username,
+                    maxMemory,
+                    jvmArgs,
+                    version,
+                    versionType
+                )
+            )
         }
 
-        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${LibraryManager.getLibrariesFormatted(root, versionInfoObject, replacers, exceptions)}"
+        var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${
+            LibraryManager.getLibrariesFormatted(
+                root,
+                versionInfoObject,
+                replacers,
+                exceptions
+            )
+        }"
         if (versionInfoObject.contains("inheritsFrom")) { // inheritance support
             classpath += LibraryManager.getLibrariesFormatted(root, getParentObject(versionInfoObject, root))
         }
         plugins.forEach { plugin ->
-            classpath = plugin.processClasspath(classpath, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType)
+            classpath = plugin.processClasspath(
+                classpath,
+                root,
+                optInLegacyJava,
+                username,
+                maxMemory,
+                jvmArgs,
+                version,
+                versionType
+            )
         }
 
         // Obtain the main class and create the command that launches Minecraft
         val mainClass = versionInfoObject["mainClass"]!!.jsonPrimitive.content
-        var command = "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
+        var command =
+            "${findLocalJavaPath(optInLegacyJava)} $jvmArguments -classpath $classpath $mainClass ${if (isServer) "nogui" else ""} $arguments"
 
-        plugins.forEach { plugin -> command = plugin.processCommand(command, root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType, jarTemplate) }
+        plugins.forEach { plugin ->
+            command = plugin.processCommand(
+                command,
+                root,
+                optInLegacyJava,
+                username,
+                maxMemory,
+                jvmArgs,
+                version,
+                versionType,
+                jarTemplate
+            )
+        }
 
         // Launch the Minecraft process
         try {
@@ -193,7 +279,17 @@ class GestorLauncher private constructor(
             ex.printStackTrace()
         }
 
-        plugins.forEach { plugin -> plugin.onLaunchEnd(root, optInLegacyJava, username, maxMemory, jvmArgs, version, versionType) }
+        plugins.forEach { plugin ->
+            plugin.onLaunchEnd(
+                root,
+                optInLegacyJava,
+                username,
+                maxMemory,
+                jvmArgs,
+                version,
+                versionType
+            )
+        }
     }
 
     /**
@@ -203,7 +299,8 @@ class GestorLauncher private constructor(
         /**
          * Observed [Process]
          */
-        process: Process) {
+        process: Process
+    ) {
 
         /**
          * Observes some output
@@ -216,7 +313,8 @@ class GestorLauncher private constructor(
             /**
              * Output [PrintStream]
              */
-            printStream: PrintStream) {
+            printStream: PrintStream
+        ) {
 
             try {
                 val reader = BufferedReader(InputStreamReader(inputStream))
@@ -259,9 +357,10 @@ class GestorLauncher private constructor(
              *
              * Do **not** set this to `true` outside of testing!
              */
-            testingLaunch: Boolean = false)
+            testingLaunch: Boolean = false
+        )
 
-        : GestorLauncher {
+                : GestorLauncher {
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
             return GestorLauncher(root, isServer, authentication = auth)
@@ -284,7 +383,8 @@ class GestorLauncher private constructor(
              *
              * Do **not** set this to `true` outside of testing!
              */
-            testingLaunch: Boolean = false): GestorLauncher {
+            testingLaunch: Boolean = false
+        ): GestorLauncher {
 
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
@@ -308,7 +408,8 @@ class GestorLauncher private constructor(
              *
              * Do **not** set this to `true` outside of testing!
              */
-            testingLaunch: Boolean = false): GestorLauncher {
+            testingLaunch: Boolean = false
+        ): GestorLauncher {
 
             val auth = if (testingLaunch) null else AuthManager.start()
             auth?.logIn()
@@ -325,7 +426,8 @@ class GestorLauncher private constructor(
             /**
              * Opt in legacy Java 8 for older Minecraft versions
              */
-            optInLegacyJava: Boolean): String {
+            optInLegacyJava: Boolean
+        ): String {
 
             // Get the root for the Java installation
             val root = if (optInLegacyJava) "./java/adoptopenjre8" else "./java/adoptopenjre16"

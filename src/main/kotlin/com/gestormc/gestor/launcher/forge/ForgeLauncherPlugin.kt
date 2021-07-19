@@ -33,8 +33,14 @@ object ForgeLauncherPlugin : LauncherPlugin {
         }
 
         return source
-            .replace("$root/versions/$version/$version-$jarTemplate.jar", "$root/versions/$version-forge/$version-forge.jar")
-            .replace(vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content, forgeVersionInfo["mainClass"]!!.jsonPrimitive.content)
+            .replace(
+                "$root/versions/$version/$version-$jarTemplate.jar",
+                "$root/versions/$version-forge/$version-forge.jar"
+            )
+            .replace(
+                vanillaVersionInfo["mainClass"]!!.jsonPrimitive.content,
+                forgeVersionInfo["mainClass"]!!.jsonPrimitive.content
+            )
     }
 
     override fun generateLibraryReplacers(

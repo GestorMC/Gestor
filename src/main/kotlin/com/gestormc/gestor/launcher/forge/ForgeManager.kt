@@ -1,7 +1,7 @@
 package com.gestormc.gestor.launcher.forge
 
-import com.gestormc.gestor.launcher.ModloaderManager
 import com.gestormc.gestor.launcher.GestorLauncher
+import com.gestormc.gestor.launcher.ModloaderManager
 import com.gestormc.gestor.task.downloadFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -20,7 +20,8 @@ object ForgeManager : ModloaderManager {
     /**
      * The URL to downloading the JAR of the latest ForgeHeadless release
      */
-    private const val HEADLESS_INSTALLER_URL = "https://github.com/xfl03/ForgeInstallerHeadless/releases/download/1.0.1/forge-installer-headless-1.0.1.jar"
+    private const val HEADLESS_INSTALLER_URL =
+        "https://github.com/xfl03/ForgeInstallerHeadless/releases/download/1.0.1/forge-installer-headless-1.0.1.jar"
 
 
     override fun setupInstaller(gamePath: String, targetVersion: String) {
@@ -66,7 +67,8 @@ object ForgeManager : ModloaderManager {
         val url = temp.substring(temp.indexOf("=") + 1, temp.lastIndex + 1)
 
         // Download main installer
-        val mainInstallerPath = "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
+        val mainInstallerPath =
+            "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
         if (!File(mainInstallerPath).exists()) {
             downloadFile(url, mainInstallerPath)
         }
@@ -76,7 +78,8 @@ object ForgeManager : ModloaderManager {
         // Check if the installer exists, if not, run the setup
         val installerPath = "$gamePath/openmodinstaller/forge/installer/headless/forge-installer-headless-1.0.1.jar"
         if (!File(installerPath).exists()) setupInstaller(gamePath, targetVersion)
-        val mainInstallerPath = "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
+        val mainInstallerPath =
+            "$gamePath/openmodinstaller/forge/installer/official/forge-installer-official-$targetVersion.jar"
         if (!File(mainInstallerPath).exists()) setupInstaller(gamePath, targetVersion)
 
         // Setup launcher profiles
@@ -90,7 +93,8 @@ object ForgeManager : ModloaderManager {
         // Run the installer if needed
         val forgeFolder = "$targetVersion-forge"
         if (!File(forgeFolder).exists()) {
-            val command = "${GestorLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
+            val command =
+                "${GestorLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
             val process = Runtime.getRuntime().exec(command)
             process.waitFor()
         }
