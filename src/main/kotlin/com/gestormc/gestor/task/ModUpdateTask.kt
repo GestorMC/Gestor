@@ -8,6 +8,7 @@ import kotlin.random.Random
 /**
  * The [Task] for updating the main mod
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object ModUpdateTask : Task<ModUpdatePreLaunchContext, ModUpdateLaunchContext, DefaultPostLaunchTaskContext> {
     /**
      * [BlockingValue] for if the mod has updates.

@@ -6,6 +6,7 @@ import java.io.File
 /**
  * A [Task] handling removal of the main mod **and** its dependencies in the same place for ease of use.
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object RemoveTask : Task<DefaultPreLaunchTaskContext, RemoveLaunchContext, DefaultPostLaunchTaskContext> {
     override fun launch(context: RemoveLaunchContext) {
         removeMain(context)

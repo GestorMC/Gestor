@@ -3,6 +3,7 @@ package com.gestormc.gestor.task
 /**
  * A task can be executed and has a [TaskContext] provided
  */
+@Deprecated("Old Task API")
 interface Task<
         TPreLaunchContext : PreLaunchTaskContext,
         TLaunchContext : LaunchTaskContext,
@@ -16,6 +17,7 @@ interface Task<
 /**
  * A launcher for [Task]s accepting all possible variations of used [TaskContext]s
  */
+@Deprecated("Old Task API")
 object TaskLauncher {
     fun <
             TPreLaunch : PreLaunchTaskContext,
@@ -87,4 +89,5 @@ object DefaultPostLaunchTaskContext : PostLaunchTaskContext
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.PROPERTY)
 @MustBeDocumented
+@Deprecated("Old Task API")
 annotation class BlockingValue

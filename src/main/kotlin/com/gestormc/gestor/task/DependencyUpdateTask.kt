@@ -6,6 +6,7 @@ import java.io.File
 /**
  * A [Task] for handling mod dependency updating
  */
+@Deprecated("Built on the old Task API. Currently being migrated")
 object DependencyUpdateTask :
     Task<DependencyUpdatePreLaunchContext, DependencyUpdateLaunchContext, DefaultPostLaunchTaskContext> {
     /**
