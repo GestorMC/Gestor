@@ -1,8 +1,7 @@
 package com.gestormc.gestor.launcher.fabric
 
 import com.gestormc.gestor.launcher.LauncherPlugin
-import com.gestormc.gestor.launcher.core.LibraryManager
-import com.gestormc.gestor.launcher.core.SetupManager
+import com.gestormc.gestor.launcher.core.*
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
@@ -64,7 +63,7 @@ object FabricLauncherPlugin : LauncherPlugin {
         }
         // Add all libs from there
         val builder = StringBuilder(classpath)
-        builder += LibraryManager.getLibrariesFormatted(root, versionInfoObject)
+        builder += launcherLibraryFormatTask(root, versionInfoObject, data = LibraryData())
 
         return builder.toString()
     }
@@ -74,6 +73,6 @@ object FabricLauncherPlugin : LauncherPlugin {
         fabricSetupInstallerTask(root)
         fabricRunInstallerTask(root, version, optInLegacyJava)
         fabricMigrateJarTask(root, version)
-        SetupManager.setupLibraries(root, "$version-fabric")
+        launcherSetupLibrariesTask(root, version, LibraryData())
     }
 }
