@@ -4,10 +4,9 @@ import com.gestormc.gestor.data.Mod
 import com.gestormc.gestor.data.ReleaseEntry
 import com.gestormc.gestor.data.ReleaseType
 import com.gestormc.gestor.task.downloadFile
-import com.gestormc.gestor.util.Tasks
 import java.io.File
 
-private fun modInstallTask(
+internal fun modInstallTask(
     /**
      * The target mods folder
      */
@@ -31,7 +30,7 @@ private fun modInstallTask(
     }
 }
 
-private fun modDependencyInstallTask(
+internal fun modDependencyInstallTask(
     /**
      * The target mods folder
      */
@@ -49,11 +48,12 @@ private fun modDependencyInstallTask(
      */
     mod: Mod) {
 
+    // Check if the lists provided are invalid
     if (releaseTypes.size != jarNames.size && jarNames.size != mod.dependencies.size) {
         // TODO: Handle with a popup
         return
     }
-    // This is a "solution"
+    // Iterate and install each dependency
     releaseTypes.forEach { type ->
         jarNames.forEach { jarName ->
             mod.dependencies.forEach { wrapper ->
@@ -70,17 +70,3 @@ private fun modDependencyInstallTask(
         }
     }
 }
-
-/**
- * Manages the installation of the main mod.
- *
- * See [modInstallTask] for details.
- */
-val Tasks.ModInstallTask get() = ::modInstallTask
-
-/**
- * Manages the installation of the mod's dependencies.
- *
- * See [modDependencyInstallTask] for details.
- */
-val Tasks.ModDependencyInstallTask get() = ::modDependencyInstallTask
