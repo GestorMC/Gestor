@@ -3,7 +3,7 @@ package com.gestormc.gestor.launcher.core
 import com.gestormc.gestor.data.ManifestReleaseEntry
 import com.gestormc.gestor.data.VersionManifest
 import com.gestormc.gestor.launcher.GestorLauncher
-import com.gestormc.gestor.task.downloadFile
+import com.gestormc.gestor.util.downloadFile
 import com.gestormc.gestor.util.untar
 import com.gestormc.gestor.util.unzip
 import kotlinx.serialization.json.*

@@ -6,8 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.gestormc.gestor.task.getBitmapFromURL
-import com.gestormc.gestor.task.getCachedBitmap
+import com.gestormc.gestor.util.getBitmapFromURL
+import com.gestormc.gestor.util.getCachedBitmap
 
 @Composable
 fun CachedImage(

@@ -1,7 +1,7 @@
 package com.gestormc.gestor.launcher.core
 
 import com.gestormc.gestor.launcher.GestorLauncher
-import com.gestormc.gestor.task.downloadFile
+import com.gestormc.gestor.util.downloadFile
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
