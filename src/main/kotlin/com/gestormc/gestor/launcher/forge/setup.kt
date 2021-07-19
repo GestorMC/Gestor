@@ -1,7 +1,7 @@
 package com.gestormc.gestor.launcher.forge
 
 import com.gestormc.gestor.launcher.GestorLauncher
-import com.gestormc.gestor.task.downloadFile
+import com.gestormc.gestor.util.downloadFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.io.File

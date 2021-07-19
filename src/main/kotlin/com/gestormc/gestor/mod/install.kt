@@ -3,7 +3,7 @@ package com.gestormc.gestor.mod
 import com.gestormc.gestor.data.Mod
 import com.gestormc.gestor.data.ReleaseEntry
 import com.gestormc.gestor.data.ReleaseType
-import com.gestormc.gestor.task.downloadFile
+import com.gestormc.gestor.util.downloadFile
 import java.io.File
 
 fun modInstallTask(

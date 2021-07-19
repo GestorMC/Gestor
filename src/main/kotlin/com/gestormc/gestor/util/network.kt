@@ -1,31 +1,16 @@
-package com.gestormc.gestor.task
+package com.gestormc.gestor.util
 
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import com.gestormc.gestor.const.assetCache
-import com.gestormc.gestor.data.ReleaseEntry
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import okhttp3.*
-import java.io.*
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
-
-/**
- * A [Task] which handles automatic installation of mods
- */
-@Deprecated("Built on the old Task API. Currently being migrated")
-object ModInstallTask : Task<DefaultPreLaunchTaskContext, ModInstallLaunchContext, DefaultPostLaunchTaskContext> {
-    override fun launch(context: ModInstallLaunchContext) {
-        context.apply {
-            val path = "$modsFolder/$jarName.jar"
-            if (File(path).exists())
-
-                try {
-                    downloadFile(entry.url, path)
-                } catch (exception: Exception) {
-                    // TODO: Handle with a popup RenderTask (lucsoft)
-                }
-        }
-    }
-}
 
 /**
  * An event handling cache misses for use in OkHttp
@@ -84,22 +69,30 @@ fun downloadFile(
     Files.copy(downloadFileRaw(input)!!.byteStream(), Path.of(output), StandardCopyOption.REPLACE_EXISTING)
 }
 
-/**
- * The [LaunchTaskContext] for [ModInstallTask]
- */
-data class ModInstallLaunchContext(
-    /**
-     * The target mods folder
-     */
-    val modsFolder: String,
-    /**
-     * The linked [ReleaseEntry]
-     */
-    val entry: ReleaseEntry,
-    /**
-     * The filename of the target JAR.
-     *
-     * If `mod`, the target file will be `mod.jar`
-     */
-    val jarName: String
-) : LaunchTaskContext
+var cache = mutableMapOf<String, ImageBitmap>()
+
+fun getCachedBitmap(url: String): ImageBitmap? = cache[url]
+
+@OptIn(DelicateCoroutinesApi::class)
+suspend fun getBitmapFromURL(url: String): ImageBitmap? {
+    if (cache.contains(url))
+        return cache[url]!!
+
+    val data = GlobalScope.async {
+        try {
+            return@async org.jetbrains.skija.Image.makeFromEncoded(
+                downloadFileRaw(url)!!.bytes()
+            ).asImageBitmap()
+
+        } catch (e: Exception) {
+            println("Failed to Download file $url")
+            println(e)
+            return@async null
+        }
+    }
+
+    val optionalImage = data.await()
+
+    if(optionalImage !== null) cache[url] = optionalImage
+    return optionalImage
+}

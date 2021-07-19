@@ -2,7 +2,7 @@ package com.gestormc.gestor.launcher.fabric
 
 import com.gestormc.gestor.JSON
 import com.gestormc.gestor.launcher.GestorLauncher
-import com.gestormc.gestor.task.downloadFile
+import com.gestormc.gestor.util.downloadFile
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject

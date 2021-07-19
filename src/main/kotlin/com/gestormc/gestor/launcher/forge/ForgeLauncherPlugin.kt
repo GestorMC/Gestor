@@ -1,7 +1,8 @@
 package com.gestormc.gestor.launcher.forge
 
 import com.gestormc.gestor.launcher.LauncherPlugin
-import com.gestormc.gestor.launcher.core.LibraryManager
+import com.gestormc.gestor.launcher.core.LibraryData
+import com.gestormc.gestor.launcher.core.launcherLibraryFormatTask
 import com.gestormc.gestor.util.plusAssign
 import kotlinx.serialization.json.*
 import java.io.FileInputStream
@@ -108,7 +109,7 @@ object ForgeLauncherPlugin : LauncherPlugin {
         }
         // Add all libs from there
         val builder = StringBuilder(classpath)
-        builder += LibraryManager.getLibrariesFormatted(root, versionInfoObject, exceptions = setOf("log4j"))
+        builder += launcherLibraryFormatTask(root, versionInfoObject, exceptions = setOf("log4j"), data = LibraryData())
 
         return builder.toString()
     }
