@@ -10,6 +10,7 @@ import com.sun.security.auth.module.NTSystem
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.apache.commons.lang3.SystemUtils
 import java.io.*
 
 /**
@@ -432,8 +433,15 @@ class GestorLauncher private constructor(
             }
             if (subroot == null) throw RuntimeException("Couldn't find the subroot of the Java installation. The root is empty")
 
+            var out = "${subroot!!.absolutePath}/bin/java.exe"
+
+            if (SystemUtils.IS_OS_UNIX) {
+                // a small issue with the paths, it's /home/exampleuser/gestor/./java instead of /home/exampleuser/gestor/java
+                out = out.replace("./", "")
+            }
+
             // Return the main Java executable in the binaries folder
-            return "${subroot!!.absolutePath}/bin/java.exe"
+            return out
         }
 
         /**
