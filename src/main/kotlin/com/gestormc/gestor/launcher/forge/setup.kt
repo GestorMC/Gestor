@@ -108,7 +108,7 @@ fun forgeRunInstallerTask(
     val forgeFolder = "$targetVersion-forge"
     if (!File(forgeFolder).exists()) {
         val command =
-            "${GestorLauncher.findLocalJavaPath(true)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
+            "${GestorLauncher.findLocalJavaPath(optInLegacyJava)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
         val process = Runtime.getRuntime().exec(command)
         process.waitFor()
     }

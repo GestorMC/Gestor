@@ -10,6 +10,7 @@ import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.FileInputStream
+import java.util.*
 import kotlin.random.Random
 
 // Manifest with MC versions
@@ -168,6 +169,14 @@ fun launcherSetupJavaTask(
     javaTargetFile.mkdirs()
 
     if (javaTargetFile.listFiles()!!.isNotEmpty()) return
+
+    // We currently do not auto Java setup on Unix-based systems (Linux, OSX)
+    if (SystemUtils.IS_OS_UNIX) {
+        println("Warning: automatic Java setup is currently not supported on Unix-based systems")
+        println("Ensure that you have Java on your system, if not, install it and add PATHs. Then enter anything in the console window to proceed")
+        Scanner(System.`in`).next()
+        return
+    }
 
     val javaURL = if (optInLegacyJava) {
         when {
