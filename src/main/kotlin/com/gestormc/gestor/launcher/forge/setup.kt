@@ -1,6 +1,7 @@
 package com.gestormc.gestor.launcher.forge
 
 import com.gestormc.gestor.launcher.GestorLauncher
+import com.gestormc.gestor.launcher.applyClasspathFixes
 import com.gestormc.gestor.util.downloadFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -108,7 +109,7 @@ fun forgeRunInstallerTask(
     val forgeFolder = "$targetVersion-forge"
     if (!File(forgeFolder).exists()) {
         val command =
-            "${GestorLauncher.findLocalJavaPath(optInLegacyJava)} -cp .;$installerPath;$mainInstallerPath me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
+            "${GestorLauncher.findLocalJavaPath(optInLegacyJava)} -cp ${".;$installerPath;$mainInstallerPath".applyClasspathFixes()} me.xfl03.HeadlessInstaller -installClient $gamePath -progress"
         val process = Runtime.getRuntime().exec(command)
         process.waitFor()
     }

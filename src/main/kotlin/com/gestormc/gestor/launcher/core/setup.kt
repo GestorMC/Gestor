@@ -4,7 +4,7 @@ import com.gestormc.gestor.data.ManifestReleaseEntry
 import com.gestormc.gestor.data.VersionManifest
 import com.gestormc.gestor.launcher.GestorLauncher
 import com.gestormc.gestor.util.downloadFile
-import com.gestormc.gestor.util.untar
+import com.gestormc.gestor.util.fullUntar
 import com.gestormc.gestor.util.unzip
 import kotlinx.serialization.json.*
 import org.apache.commons.lang3.SystemUtils
@@ -197,15 +197,29 @@ fun launcherSetupJavaTask(
     val useTarGZ = SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX
 
     // Download into dedicated cache
-    val javaArchivePath = "./cache/dedicated/cache_${Random.nextInt(Int.MAX_VALUE)}"
+    val javaArchivePath = "./cache/dedicated/cache_${Random.nextInt(Int.MAX_VALUE)}.${if (SystemUtils.IS_OS_WINDOWS) "zip" else "tar.gz"}"
     File(javaArchivePath).mkdirs()
     downloadFile(javaURL, javaArchivePath)
 
-    // UnZIP or UnTAR
+    // UnZIP or UnTAR.GZ
     if (useTarGZ) {
-        untar(javaArchivePath, javaTargetPath)
+        fullUntar(javaArchivePath, javaTargetPath)
     } else {
         unzip(javaArchivePath, javaTargetPath)
+    }
+
+    // On Unix, run chmod +x to grant execution permissions
+    if (SystemUtils.IS_OS_UNIX) {
+        // Find the bin folder
+        var binFolder: String? = null
+        val files = javaTargetFile.listFiles()!!
+        if (files.size > 1) throw RuntimeException("Java directory overflow.")
+        javaTargetFile.listFiles()!!.forEach { file ->
+            binFolder = "${file.absolutePath}/bin/"
+        }
+        if (binFolder == null) throw RuntimeException("Could not locate Java bin folder.")
+
+        val process = Runtime.getRuntime().exec("chmod +x $binFolder")
     }
 }
 

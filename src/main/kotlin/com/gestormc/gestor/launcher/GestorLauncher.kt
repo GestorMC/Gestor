@@ -228,9 +228,9 @@ class GestorLauncher private constructor(
 
         var classpath = ".;$root/versions/$version/$version-$jarTemplate.jar;${
             launcherLibraryFormatTask(root, versionInfoObject, replacers, exceptions, data)
-        }"
+        }".applyClasspathFixes()
         if (versionInfoObject.contains("inheritsFrom")) { // inheritance support. No replacers or exceptions are applied here
-            classpath += launcherLibraryFormatTask(root, getParentObject(versionInfoObject, root), data = data)
+            classpath += launcherLibraryFormatTask(root, getParentObject(versionInfoObject, root), data = data).applyClasspathFixes()
         }
         plugins.forEach { plugin ->
             classpath = plugin.processClasspath(
@@ -469,4 +469,13 @@ class GestorLauncher private constructor(
     }
 
     data class AuthDetails(val username: String, val password: String, val token: String = "")
+}
+
+// Additional Unix classpath-fixing
+fun String.applyClasspathFixes(): String {
+    if (SystemUtils.IS_OS_UNIX) {
+        replace(".;", "")
+        replace(";", ":")
+    }
+    return this
 }
