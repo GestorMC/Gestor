@@ -3,9 +3,9 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.10"
-    kotlin("plugin.serialization") version "1.5.20"
-    id("org.jetbrains.compose") version "0.5.0-build235"
+    kotlin("jvm") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.21"
+    id("org.jetbrains.compose") version "0.5.0-build262"
 }
 
 group = "com.redgrapefruit"
@@ -13,8 +13,8 @@ version = "1.0"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
-    maven { url = uri("https://libraries.minecraft.net/") } // libraries.minecraft.net has Authlib
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    maven("https://libraries.minecraft.net/")// libraries.minecraft.net has Authlib
 }
 
 dependencies {
@@ -27,9 +27,9 @@ dependencies {
 
     // --- Miscellaneous utilities ---
     implementation("org.jsoup:jsoup:1.14.1")
-    implementation(group = "com.squareup.okhttp3", name = "okhttp", version = "4.9.1") // OkHttp. The high-performance HTTP client used
-    implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.12.0") // Commons Lang3. A misc utility library
-    implementation(group = "org.apache.commons", name = "commons-compress", version = "1.20") // Commons Compress. Empowers all compression/decompression operations
+    implementation("com.squareup.okhttp3:okhttp:4.9.1") // OkHttp. The high-performance HTTP client used
+    implementation("org.apache.commons:commons-lang3:3.12.0") // Commons Lang3. A misc utility library
+    implementation("org.apache.commons:commons-compress:1.20") // Commons Compress. Empowers all compression/decompression operations
 }
 
 tasks.withType<KotlinCompile> {
