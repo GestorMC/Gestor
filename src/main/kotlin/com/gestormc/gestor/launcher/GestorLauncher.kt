@@ -436,8 +436,10 @@ class GestorLauncher private constructor(
             var out = "${subroot!!.absolutePath}/bin/java.exe"
 
             if (SystemUtils.IS_OS_UNIX) {
-                // We do not currently support automatic Java setup on Unix-based systems. You will have to have pre-installed Java beforehand
-                out = "java"
+                // Sometimes there are extra ./ sequences in paths generated, so remove them
+                if (out.contains("./")) {
+                    out = out.replace("./", "")
+                }
             }
 
             // Return the main Java executable in the binaries folder
