@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="29018bfa-ac0b-4783-a1b1-8befa8c78c56" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/gestormc/gestor/launcher/core/setup.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/gestormc/gestor/launcher/core/setup.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +253,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626874442066</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Add theoretical Unix Java support">
+      <created>1626874942436</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1626874942436</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -280,7 +287,8 @@
     <MESSAGE value="Commit project configs" />
     <MESSAGE value="Add full TAR.GZ support" />
     <MESSAGE value="Add Unix ./ fixing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Unix ./ fixing" />
+    <MESSAGE value="Add theoretical Unix Java support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add theoretical Unix Java support" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

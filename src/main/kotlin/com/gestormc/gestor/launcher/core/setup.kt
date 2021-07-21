@@ -219,7 +219,7 @@ fun launcherSetupJavaTask(
         }
         if (binFolder == null) throw RuntimeException("Could not locate Java bin folder.")
 
-        val process = Runtime.getRuntime().exec("chmod +x $binFolder")
+        val process = Runtime.getRuntime().exec("chmod +x *")
     }
 }
 
