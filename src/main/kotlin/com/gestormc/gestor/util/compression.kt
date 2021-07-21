@@ -7,17 +7,17 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.commons.io.IOUtils
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-
 // Apache Commons Compress abstractions
-
-private val ARCHIVE_STREAM_FACTORY = ArchiveStreamFactory()
 
 /**
  * Un-jars the [input] JAR to the [output] directory
@@ -30,7 +30,24 @@ fun unjar(input: String, output: String) = unarchive<JarArchiveInputStream>(inpu
 fun unzip(input: String, output: String) = unarchive<ZipArchiveInputStream>(input, output, ArchiveStreamFactory.ZIP)
 
 /**
- * Un-TARs the [input] TAR.GZ to the [output] directory
+ * Provides the support for the "full" TAR.GZ process.
+ *
+ * First un-GZIPs the .GZ, then calls [untar] to finish the job.
+ */
+fun fullUntar(input: String, output: String) {
+    val tarPath = input.removeSuffix(".gz") // store without the tar suffix (my.tar.gz -> my.tar)
+    // Un-GZIP
+    val inputStream = GzipCompressorInputStream(FileInputStream(input))
+    val outputStream = FileOutputStream(input.removeSuffix(".gz"))
+    IOUtils.copy(inputStream, outputStream)
+    // Un-TAR
+    untar(tarPath, output)
+}
+
+/**
+ * Un-TARs the [input] TAR to the [output] directory.
+ *
+ * For full TAR.GZ support, use [fullUntar]
  */
 fun untar(input: String, output: String) = unarchive<TarArchiveInputStream>(input, output, ArchiveStreamFactory.TAR)
 
