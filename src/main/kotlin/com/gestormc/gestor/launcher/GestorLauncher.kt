@@ -440,6 +440,13 @@ class GestorLauncher private constructor(
                 if (out.contains("./")) {
                     out = out.replace("./", "")
                 }
+                // Remove .exe
+                out = out.replace(".exe", "")
+
+                // Set executable permissions for the files in the bin folder
+                File(out).parentFile.listFiles()!!.forEach { file ->
+                    file.setExecutable(true)
+                }
             }
 
             // Return the main Java executable in the binaries folder

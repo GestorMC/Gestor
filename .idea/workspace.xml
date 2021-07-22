@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="29018bfa-ac0b-4783-a1b1-8befa8c78c56" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/gestormc/gestor/launcher/GestorLauncher.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/gestormc/gestor/launcher/GestorLauncher.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,6 +17,26 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="OpenModInstaller" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -260,7 +281,14 @@
       <option name="project" value="LOCAL" />
       <updated>1626874942436</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Correct command">
+      <created>1626876729892</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1626876729892</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -288,7 +316,8 @@
     <MESSAGE value="Add full TAR.GZ support" />
     <MESSAGE value="Add Unix ./ fixing" />
     <MESSAGE value="Add theoretical Unix Java support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add theoretical Unix Java support" />
+    <MESSAGE value="Correct command" />
+    <option name="LAST_COMMIT_MESSAGE" value="Correct command" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
