@@ -445,7 +445,13 @@ class GestorLauncher private constructor(
 
                 // Set executable permissions for the files in the bin folder
                 File(out).parentFile.listFiles()!!.forEach { file ->
-                    file.setExecutable(true)
+                    if (!file.canExecute()) {
+                        if (file.setExecutable(true)) {
+                            println("Java binary ${file.name} is now executable")
+                        } else {
+                            println("Not enough permissions to set ${file.name} to be executable")
+                        }
+                    }
                 }
             }
 
